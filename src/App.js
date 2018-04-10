@@ -6,21 +6,22 @@ import './App.css';
 var timerID = null;
 
 const resources = {
-  'fruits': {name: 'Fruits', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'roots': {name: 'Roots', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'fish': {name: 'Fish', locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 3},
-  'wildfowl': {name: 'Meat', locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 3},
-  'wood': {name: 'Wood', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'stone': {name: 'Stone', locked_till: 'quarry', difficulty: 20, max_cap: 2000, regen: 0.01},
-  'iron': {name: 'Iron', locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.001},
-  'moai': {name: 'Moai', locked_till: 'ahu', difficulty: 1000, max_cap: 42, regen: 0.0}
+  'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
+  'roots': {name: 'Roots', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
+  'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 3},
+  'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 3},
+  'wood': {name: 'Wood', is_nature: false, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
+  'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 20, max_cap: 2000, regen: 0.1},
+  'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
+  'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 1000, max_cap: 42, regen: 0.0}
 };
 
 const buildings = {
   'hut': {name: 'Hut', cost: {'wood': 100}, locked_till: true, text: 'Home for Two.'},
   'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
-  'garden': {name: 'Garden', cost: {'wood': 100}, locked_till: 'hut', text: 'Each garden accelerates the speed of one gardener.'},
-  'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'hut', text: 'Each field accelerates the speed of one fielder.'},
+  'keep': {name: 'Keep', cost: {'wood': 100}, locked_till: 'hut', text: 'Each nature keep increases the regeneration of the resources of living nature.'},
+  'garden': {name: 'Garden', cost: {'wood': 100}, locked_till: 'keep', text: 'Each garden accelerates the speed of one gardener.'},
+  'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'keep', text: 'Each field accelerates the speed of one fielder.'},
   'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Each pier accelerates the speed of one fisherman.'},
   'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10, locked_till: 'mine'}, text: 'Each lodge accelerates the speed of one hunter.'},
   'sawmill': {name: 'Sawmill', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
@@ -30,6 +31,7 @@ const buildings = {
 };
 
 const professions = {
+  'keeper': {resource: null, home: 'keep', locked_till: 'keep'},
   'gardener': {resource: 'fruits', home: 'garden', locked_till: 'hut'},
   'fielder': {resource: 'roots', home: 'field', locked_till: 'hut'},
   'fisherman': {resource: 'fish', home: 'pier', locked_till: 'pier'},
@@ -55,20 +57,21 @@ const default_state = {
   moai: 0,
 
 
-  fruits_volume: resources['fruits'].max_cap,
-  roots_volume: resources['roots'].max_cap,
-  fish_volume: resources['fish'].max_cap,
-  wildfowl_volume: resources['wildfowl'].max_cap,
+  fruits_volume: resources['fruits'].max_cap / 2,
+  roots_volume: resources['roots'].max_cap / 2,
+  fish_volume: resources['fish'].max_cap / 2,
+  wildfowl_volume: resources['wildfowl'].max_cap / 2,
 
-  wood_volume: resources['wood'].max_cap,
-  stone_volume: resources['stone'].max_cap,
-  iron_volume: resources['iron'].max_cap,
-  moai_volume: resources['moai'].max_cap,
+  wood_volume: resources['wood'].max_cap / 2,
+  stone_volume: resources['stone'].max_cap / 2,
+  iron_volume: resources['iron'].max_cap / 2,
+  moai_volume: resources['moai'].max_cap / 2,
 
   building_space: 42,
 
   hut: 0,
   house: 0,
+  keep: 0,
 
   garden: 0,
   field: 0,
@@ -80,6 +83,8 @@ const default_state = {
   mine: 0,
   ahu: 0,
 
+
+  keeper: 0,
 
   gardener: 0,
   fielder: 0,
@@ -116,6 +121,7 @@ class App extends Component {
     this.lockedTill = this.lockedTill.bind(this);
 
     this.isEnough  = this.isEnough.bind(this);
+    this.collect  = this.collect.bind(this);
     this.build  = this.build.bind(this);
     this.assignWorker = this.assignWorker.bind(this);
     this.detachWorker = this.detachWorker.bind(this);
@@ -181,18 +187,20 @@ class App extends Component {
     }
 
     _.each(professions, (profession, profession_key) => {
-      if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
-        let productivity = this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
-      //  console.log(productivity);
-      //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
-        for(let i=0; i<productivity; i++) {
-          let ecofactor = this.state[profession.resource + '_volume'] / resources[profession.resource].max_cap;
-          let top = Math.round(resources[profession.resource].difficulty * ecofactor);
-          let chance = Math.ceil(_.random(1, top));
-          console.log(ecofactor, top, chance);
-          if ( chance === 1 ) {
-            state[profession.resource]++; // = this.state[profession.resource] + 1;
-            state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
+      if (profession.resource) {
+        if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
+          let productivity = this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
+        //  console.log(productivity);
+        //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
+          for(let i=0; i<productivity; i++) {
+            let ecofactor = this.state[profession.resource + '_volume'] / resources[profession.resource].max_cap;
+            let top = Math.round(resources[profession.resource].difficulty * ecofactor);
+            let chance = Math.ceil(_.random(1, top));
+            console.log(ecofactor, top, chance);
+            if ( chance === 1 ) {
+              state[profession.resource]++; // = this.state[profession.resource] + 1;
+              state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
+            }
           }
         }
       }
@@ -200,7 +208,15 @@ class App extends Component {
 
     _.each(resources, (resource, resource_key) => {
       if (this.state[resource_key+'_volume'] < resource.max_cap) {
-        let new_counter = this.state[resource_key+'_volume'] + resource.regen;
+        let new_counter = 0;
+        if (resource.is_nature && this.state.keeper > 0) {
+          let productivity = this.state.keeper + Math.min(this.state.keeper, this.state.keep);
+          let regen = (resource.regen * productivity);
+          new_counter = this.state[resource_key+'_volume'] + regen;
+        }
+        else {
+          new_counter = this.state[resource_key+'_volume'] + resource.regen;
+        }
         state[resource_key+'_volume'] = new_counter > resource.max_cap ? resource.max_cap : new_counter;
       }
     });
@@ -243,6 +259,15 @@ class App extends Component {
     return enough;
   }
 
+  collect(resource_key) {
+    if (this.state[resource_key+'_volume'] > 1) {
+      let o = {};
+      o[resource_key] = this.state[resource_key] + 1;
+      o[resource_key+'_volume'] = this.state[resource_key+'_volume'] - 1;
+      this.setState(o);
+    }
+  }
+
   charge(building_key) {
     let building = buildings[building_key];
     let enough = true;
@@ -260,7 +285,8 @@ class App extends Component {
   }
 
   busy() {
-    return  this.state.gardener + this.state.fielder + this.state.fisherman + this.state.hunter +
+    return  this.state.keeper +
+            this.state.gardener + this.state.fielder + this.state.fisherman + this.state.hunter +
             this.state.woodcutter + this.state.mason + this.state.miner + this.state.builder;
   }
 
@@ -325,15 +351,9 @@ class App extends Component {
             <div className="container theme-showcase" role="main">
               <div>
                 <div>
-                  {make_collect_button('fruits', 'Collect Fruits', () => {
-                    this.setState({fruits: this.state.fruits + 1});
-                  }, 'text')}
-                  {make_collect_button('roots', 'Collect Roots', () => {
-                    this.setState({roots: this.state.roots + 1});
-                  }, 'text')}
-                  {make_collect_button('wood', 'Collect Wood', () => {
-                    this.setState({wood: this.state.wood + 1});
-                  }, 'text')}
+                  {make_collect_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
+                  {make_collect_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
+                  {make_collect_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
 
                   <span className="pull-right">{make_collect_button('refresh', 'New Game', this.resetGame, 'text', ' btn-xs btn-danger')}</span>
                 </div>
