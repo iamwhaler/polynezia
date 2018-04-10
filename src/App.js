@@ -7,7 +7,7 @@ var timerID = null;
 
 const resources = {
   'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'roots': {name: 'Roots', is_nature: true, locked_till: 'keep', difficulty: 1, max_cap: 10000, regen: 2},
+  'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 10000, regen: 2},
   'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 4},
   'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 3, max_cap: 10000, regen: 8},
   'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
@@ -17,6 +17,7 @@ const resources = {
 };
 
 const buildings = {
+  'bonfire': {name: 'Bonfire', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents.'},
   'hut': {name: 'Hut', cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
   'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
   'garden': {name: 'Garden', cost: {'fruits': 10}, locked_till: 'hut', text: 'Each garden accelerates the speed of one gardener.'},
@@ -25,7 +26,7 @@ const buildings = {
   'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Each pier accelerates the speed of one fisherman.'},
   'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each lodge accelerates the speed of one hunter.'},
   'sawmill': {name: 'Sawmill', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
-  'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'hut', text: 'Each quarry accelerates the speed of one mason.'},
+  'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'bonfire', text: 'Each quarry accelerates the speed of one mason.'},
   'mine': {name: 'Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Each mine accelerates the speed of one miner.'},
   'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one builder.'},
 };
@@ -46,7 +47,7 @@ const default_state = {
   population: 1,
 
 
-  fruits: 20,
+  fruits: 420,
   roots: 0,
   fish: 0,
   wildfowl: 0,
@@ -70,6 +71,7 @@ const default_state = {
 
   building_space: 42,
 
+  bonfire: 0,
   hut: 0,
   house: 0,
   keep: 0,
@@ -158,8 +160,8 @@ class App extends Component {
 
     state.tick++;
 
-    if (this.state.population < (this.state.hut*2) + (this.state.house*5)){
-      if ( _.random(1, Math.floor(10+(this.state.population/2))) === 1 ) {
+    if (this.state.bonfire > 0 && this.state.population < (this.state.hut*2) + (this.state.house*5)){
+      if ( _.random(1, Math.floor(10+(this.state.population/this.state.bonfire))) === 1 ) {
         state.population++;// ;this.setState({population: this.state.population + 1});
       }
     }
