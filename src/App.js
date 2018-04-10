@@ -8,8 +8,8 @@ var timerID = null;
 const resources = {
   'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
   'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 10000, regen: 2},
-  'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 4},
-  'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 3, max_cap: 10000, regen: 8},
+  'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 1.5, max_cap: 10000, regen: 3},
+  'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 4},
   'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
   'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 20, max_cap: 2000, regen: 0.1},
   'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
@@ -160,12 +160,14 @@ class App extends Component {
 
     state.tick++;
 
-    if (this.state.bonfire > 0 && this.state.population < (this.state.hut*2) + (this.state.house*5)){
-      if ( _.random(1, Math.floor(10+(this.state.population/this.state.bonfire))) === 1 ) {
+    // attract new people
+    if ((this.state.bonfire > 0 || this.state.moai > 0) && this.state.population < (this.state.hut*2) + (this.state.house*5)){
+      if ( _.random(1, Math.floor((10*this.state.population)/(1+this.state.bonfire+(10*this.state.moai)))) === 1 ) {
         state.population++;// ;this.setState({population: this.state.population + 1});
       }
     }
 
+    // feeding
     for(let i=0; i<this.state.population; i++) {
       let food = [];
       _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
@@ -190,6 +192,7 @@ class App extends Component {
       }
     }
 
+    // work
     _.each(professions, (profession, profession_key) => {
       if (profession.resource) {
         if (profession_key === 'miner') {
@@ -203,7 +206,7 @@ class App extends Component {
             let ecofactor = this.state[profession.resource + '_volume'] / resources[profession.resource].max_cap;
             let top = Math.round(resources[profession.resource].difficulty * ecofactor);
             let chance = Math.ceil(_.random(1, top));
-            console.log(ecofactor, top, chance);
+       //     console.log(ecofactor, top, chance);
             if ( chance === 1 ) {
               state[profession.resource]++; // = this.state[profession.resource] + 1;
               state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
@@ -213,12 +216,13 @@ class App extends Component {
       }
     });
 
+    // regeneration
     _.each(resources, (resource, resource_key) => {
       if (this.state[resource_key+'_volume'] < resource.max_cap) {
         let new_counter = 0;
         if (resource.is_nature && this.state.keeper > 0) {
           let productivity = this.state.keeper + Math.min(this.state.keeper, this.state.keep);
-          let regen = (resource.regen * productivity);
+          let regen = resource.regen + Math.floor(resource.regen * productivity / 5);
           new_counter = this.state[resource_key+'_volume'] + regen;
         }
         else {
@@ -228,6 +232,7 @@ class App extends Component {
       }
     });
 
+    // end game
     if (state.population === 0) {
       state.score = true;
       this.pauseGame();
@@ -286,7 +291,7 @@ class App extends Component {
   }
 
   built() {
-    return  this.state.hut + this.state.house + this.state.keep +
+    return  this.state.hut + this.state.house + this.state.bonfire + this.state.keep +
             this.state.garden + this.state.field + this.state.pier + this.state.lodge +
             this.state.sawmill + this.state.quarry + this.state.mine + this.state.ahu;
   }
