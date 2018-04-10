@@ -7,33 +7,33 @@ var timerID = null;
 
 const resources = {
   'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'roots': {name: 'Roots', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 3},
-  'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 3},
-  'wood': {name: 'Wood', is_nature: false, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
+  'roots': {name: 'Roots', is_nature: true, locked_till: 'keep', difficulty: 1, max_cap: 10000, regen: 2},
+  'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 4},
+  'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 3, max_cap: 10000, regen: 8},
+  'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
   'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 20, max_cap: 2000, regen: 0.1},
   'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
   'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 1000, max_cap: 42, regen: 0.0}
 };
 
 const buildings = {
-  'hut': {name: 'Hut', cost: {'wood': 100}, locked_till: true, text: 'Home for Two.'},
+  'hut': {name: 'Hut', cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
   'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
-  'keep': {name: 'Keep', cost: {'wood': 100}, locked_till: 'hut', text: 'Each nature keep increases the regeneration of the resources of living nature.'},
-  'garden': {name: 'Garden', cost: {'wood': 100}, locked_till: 'keep', text: 'Each garden accelerates the speed of one gardener.'},
+  'garden': {name: 'Garden', cost: {'fruits': 10}, locked_till: 'hut', text: 'Each garden accelerates the speed of one gardener.'},
+  'keep': {name: 'Keep', cost: {'wood': 100}, locked_till: 'garden', text: 'Each nature keep increases the regeneration of the resources of living nature.'},
   'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'keep', text: 'Each field accelerates the speed of one fielder.'},
   'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Each pier accelerates the speed of one fisherman.'},
-  'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10, locked_till: 'mine'}, text: 'Each lodge accelerates the speed of one hunter.'},
-  'sawmill': {name: 'Sawmill', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
+  'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each lodge accelerates the speed of one hunter.'},
+  'sawmill': {name: 'Sawmill', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
   'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'hut', text: 'Each quarry accelerates the speed of one mason.'},
   'mine': {name: 'Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Each mine accelerates the speed of one miner.'},
   'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one builder.'},
 };
 
 const professions = {
+  'gardener': {resource: 'fruits', home: 'garden', locked_till: 'garden'},
   'keeper': {resource: null, home: 'keep', locked_till: 'keep'},
-  'gardener': {resource: 'fruits', home: 'garden', locked_till: 'hut'},
-  'fielder': {resource: 'roots', home: 'field', locked_till: 'hut'},
+  'fielder': {resource: 'roots', home: 'field', locked_till: 'field'},
   'fisherman': {resource: 'fish', home: 'pier', locked_till: 'pier'},
   'hunter': {resource: 'wildfowl', home: 'lodge', locked_till: 'lodge'},
   'woodcutter': {resource: 'wood', home: 'sawmill', locked_till: 'hut'},
@@ -46,12 +46,13 @@ const default_state = {
   population: 1,
 
 
-  fruits: 420,
-  roots: 420,
+  fruits: 20,
+  roots: 0,
   fish: 0,
   wildfowl: 0,
+  human_meat: 0,
 
-  wood: 190,
+  wood: 90,
   stone: 0,
   iron: 0,
   moai: 0,
@@ -158,18 +159,18 @@ class App extends Component {
     state.tick++;
 
     if (this.state.population < (this.state.hut*2) + (this.state.house*5)){
-      if ( _.random(1, 5+this.state.population) === 1 ) {
+      if ( _.random(1, Math.floor(10+(this.state.population/2))) === 1 ) {
         state.population++;// ;this.setState({population: this.state.population + 1});
       }
     }
 
     for(let i=0; i<this.state.population; i++) {
       let food = [];
-      _.each(['fruits', 'roots', 'fish', 'wildfowl'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
+      _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
 
       if(food.length === 0) {
         state.population--;
-        state.wildfowl += 10;
+        state.human_meat += 10;
 
         let works = [];
         _.each(professions, (profession, profession_key) => {
@@ -189,6 +190,9 @@ class App extends Component {
 
     _.each(professions, (profession, profession_key) => {
       if (profession.resource) {
+        if (profession_key === 'miner') {
+          state['stone'] += this.state.mine;
+        }
         if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
           let productivity = this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
         //  console.log(productivity);
@@ -201,9 +205,6 @@ class App extends Component {
             if ( chance === 1 ) {
               state[profession.resource]++; // = this.state[profession.resource] + 1;
               state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
-              if (profession_key === 'miner') {
-                state['stone'] += this.state.mine;
-              }
             }
           }
         }
@@ -346,7 +347,7 @@ class App extends Component {
             <div className="container">
               <div>
                 <h1>Your nation has become extinct. </h1>
-                <h1>You have lived {this.state.tick} turns. </h1>
+                <h1>You have lived {this.state.tick} days. </h1>
                 <h1>Your legacy: {this.state.moai} moai.</h1>
                 {make_collect_button('refresh', 'New Game', this.resetGame, 'text')}
               </div>
@@ -356,7 +357,7 @@ class App extends Component {
               <div>
                 <div>
                   {make_collect_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
-                  {make_collect_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
+                  {this.lockedTill('keep') ? '' : make_collect_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
                   {make_collect_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
 
                   <span className="pull-right">{make_collect_button('refresh', 'New Game', this.resetGame, 'text', ' btn-xs btn-danger')}</span>
@@ -410,12 +411,14 @@ class App extends Component {
               <div className="flex-container-row">
 
                 <div className="flex-element">
-                  <h4 className="App-title">Resources</h4>
+                  <h4 className="App-title">Your Resources</h4>
                   <div className="datablock">
                     {_.keys(resources).map((resource_key) => {
                       return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
                         {resources[resource_key].name}: {this.state[resource_key]}</div>
                     })}
+                    {this.state.human_meat > 0 ? <div key='human_meat'>
+                      Human Meat: {this.state.human_meat}</div> : ''}
                   </div>
                 </div>
 
@@ -459,18 +462,17 @@ class App extends Component {
                 </div>
 
                 <div className="flex-element">
-                  <h4 className="App-title">Ecology</h4>
                   <div>
-                    Tick: {this.state.tick}
-
-                    <h3 className="App-title">Natural Resources</h3>
+                    <h4 className="App-title">Natural Resources</h4>
                     <div className="datablock">
+                      Day: {this.state.tick}
                       {_.keys(resources).map((resource_key) => {
                         return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
                           {resources[resource_key].name}: {Math.floor(this.state[resource_key + '_volume'])}</div>
                       })}
                     </div>
                   </div>
+
                 </div>
 
               </div>
