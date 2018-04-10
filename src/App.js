@@ -60,14 +60,14 @@ class App extends Component {
 
 
       fruits_volume: resources['fruits'].max_cap,
-      roots_volume: resources['fruits'].max_cap,
-      fish_volume: resources['fruits'].max_cap,
-      wildfowl_volume: resources['fruits'].max_cap,
+      roots_volume: resources['roots'].max_cap,
+      fish_volume: resources['fish'].max_cap,
+      wildfowl_volume: resources['wildfowl'].max_cap,
 
-      wood_volume: resources['fruits'].max_cap,
-      stone_volume: resources['fruits'].max_cap,
-      iron_volume: resources['fruits'].max_cap,
-      moai_volume: resources['fruits'].max_cap,
+      wood_volume: resources['wood'].max_cap,
+      stone_volume: resources['stone'].max_cap,
+      iron_volume: resources['iron'].max_cap,
+      moai_volume: resources['moai'].max_cap,
 
 
       hut: 0,
@@ -281,8 +281,8 @@ class App extends Component {
           <div>
             <div>
               {make_collect_button('fruits', 'Collect Fruits', () => { this.setState({fruits: this.state.fruits+1}); }, 'text')}
-              {make_collect_button('roots', 'Collect Roots', () => { this.setState({fruits: this.state.roots+1}); }, 'text')}
-              {make_collect_button('wood', 'Collect Wood', () => { this.setState({fruits: this.state.wood+1}); }, 'text')}
+              {make_collect_button('roots', 'Collect Roots', () => { this.setState({roots: this.state.roots+1}); }, 'text')}
+              {make_collect_button('wood', 'Collect Wood', () => { this.setState({wood: this.state.wood+1}); }, 'text')}
             </div>
           </div>
 
