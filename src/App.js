@@ -53,7 +53,7 @@ class App extends Component {
       fish: 0,
       wildfowl: 0,
 
-      wood: 10000,
+      wood: 100,
       stone: 0,
       iron: 0,
       moai: 0,
@@ -281,8 +281,8 @@ class App extends Component {
           <div>
             <div>
               {make_collect_button('fruits', 'Collect Fruits', () => { this.setState({fruits: this.state.fruits+1}); }, 'text')}
-              {make_collect_button('roots', 'Collect Roots', () => { this.setState({fruits: this.state.fruits+1}); }, 'text')}
-              {make_collect_button('wood', 'Collect Wood', () => { this.setState({fruits: this.state.fruits+1}); }, 'text')}
+              {make_collect_button('roots', 'Collect Roots', () => { this.setState({fruits: this.state.roots+1}); }, 'text')}
+              {make_collect_button('wood', 'Collect Wood', () => { this.setState({fruits: this.state.wood+1}); }, 'text')}
             </div>
           </div>
 
