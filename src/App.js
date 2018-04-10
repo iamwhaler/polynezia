@@ -51,7 +51,7 @@ const default_state = {
   fish: 0,
   wildfowl: 0,
 
-  wood: 19000,
+  wood: 190,
   stone: 0,
   iron: 0,
   moai: 0,
@@ -169,6 +169,7 @@ class App extends Component {
 
       if(food.length === 0) {
         state.population--;
+        state.wildfowl += 10;
 
         let works = [];
         _.each(professions, (profession, profession_key) => {
