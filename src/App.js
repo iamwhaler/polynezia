@@ -51,7 +51,7 @@ const default_state = {
   fish: 0,
   wildfowl: 0,
 
-  wood: 190,
+  wood: 19000,
   stone: 0,
   iron: 0,
   moai: 0,
@@ -200,6 +200,9 @@ class App extends Component {
             if ( chance === 1 ) {
               state[profession.resource]++; // = this.state[profession.resource] + 1;
               state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
+              if (profession_key === 'miner') {
+                state['stone'] += this.state.mine;
+              }
             }
           }
         }
@@ -279,7 +282,7 @@ class App extends Component {
   }
 
   built() {
-    return  this.state.hut + this.state.house +
+    return  this.state.hut + this.state.house + this.state.keep +
             this.state.garden + this.state.field + this.state.pier + this.state.lodge +
             this.state.sawmill + this.state.quarry + this.state.mine + this.state.ahu;
   }
@@ -341,7 +344,7 @@ class App extends Component {
             ?
             <div className="container">
               <div>
-                <h1>Your entire people are dead. </h1>
+                <h1>Your nation has become extinct. </h1>
                 <h1>You have lived {this.state.tick} turns. </h1>
                 <h1>Your legacy: {this.state.moai} moai.</h1>
                 {make_collect_button('refresh', 'New Game', this.resetGame, 'text')}
@@ -463,7 +466,7 @@ class App extends Component {
                     <div className="datablock">
                       {_.keys(resources).map((resource_key) => {
                         return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                          {resources[resource_key].name}: {this.state[resource_key + '_volume']}</div>
+                          {resources[resource_key].name}: {Math.floor(this.state[resource_key + '_volume'])}</div>
                       })}
                     </div>
                   </div>
