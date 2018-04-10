@@ -8,8 +8,8 @@ var timerID = null;
 const resources = {
   'fruits': {name: 'Fruits', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
   'roots': {name: 'Roots', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'fish': {name: 'Fish', locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 1},
-  'wildfowl': {name: 'Meat', locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 1},
+  'fish': {name: 'Fish', locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 3},
+  'wildfowl': {name: 'Meat', locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 3},
   'wood': {name: 'Wood', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
   'stone': {name: 'Stone', locked_till: 'quarry', difficulty: 10, max_cap: 1000, regen: 0.01},
   'iron': {name: 'Iron', locked_till: 'mine', difficulty: 100, max_cap: 100, regen: 0.001},
@@ -17,16 +17,16 @@ const resources = {
 };
 
 const buildings = {
-  'hut': {name: 'Build Hut', cost: {'wood': 100}, locked_till: true, text: 'Home for Two.'},
-  'house': {name: 'Build House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
-  'garden': {name: 'Build Garden', cost: {'wood': 100}, locked_till: 'hut', text: 'Each garden accelerates the speed of one gardener.'},
-  'field': {name: 'Build Field', cost: {'wood': 100}, locked_till: 'hut', text: 'Each field accelerates the speed of one fielder.'},
-  'pier': {name: 'Build Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Each pier accelerates the speed of one fisherman.'},
-  'lodge': {name: 'Build Lodge', cost: {'wood': 100, 'iron': 10, locked_till: 'mine'}, text: 'Each lodge accelerates the speed of one hunter.'},
-  'sawmill': {name: 'Build Sawmill', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
-  'quarry': {name: 'Build Quarry', cost: {'wood': 1000}, locked_till: 'hut', text: 'Each quarry accelerates the speed of one mason.'},
-  'mine': {name: 'Build Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Each mine accelerates the speed of one miner.'},
-  'ahu': {name: 'Build Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one builder.'},
+  'hut': {name: 'Hut', cost: {'wood': 100}, locked_till: true, text: 'Home for Two.'},
+  'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
+  'garden': {name: 'Garden', cost: {'wood': 100}, locked_till: 'hut', text: 'Each garden accelerates the speed of one gardener.'},
+  'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'hut', text: 'Each field accelerates the speed of one fielder.'},
+  'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Each pier accelerates the speed of one fisherman.'},
+  'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10, locked_till: 'mine'}, text: 'Each lodge accelerates the speed of one hunter.'},
+  'sawmill': {name: 'Sawmill', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
+  'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'hut', text: 'Each quarry accelerates the speed of one mason.'},
+  'mine': {name: 'Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Each mine accelerates the speed of one miner.'},
+  'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one builder.'},
 };
 
 const professions = {
@@ -44,8 +44,8 @@ const default_state = {
   population: 2,
 
 
-  fruits: 420,
-  roots: 420,
+  fruits: 100,
+  roots: 100,
   fish: 0,
   wildfowl: 0,
 
@@ -65,6 +65,7 @@ const default_state = {
   iron_volume: resources['iron'].max_cap,
   moai_volume: resources['moai'].max_cap,
 
+  building_space: 42,
 
   hut: 0,
   house: 0,
@@ -151,7 +152,7 @@ class App extends Component {
     state.tick++;
 
     if (this.state.population < (this.state.hut*2) + (this.state.house*5)){
-      if ( Math.ceil(_.random(1, Math.floor(100/(10+this.state.population)))) === 1 ) {
+      if ( _.random(1, 5+this.state.population) === 1 ) {
         state.population++;// ;this.setState({population: this.state.population + 1});
       }
     }
@@ -162,10 +163,20 @@ class App extends Component {
 
       if(food.length === 0) {
         state.population--;
+
+        let works = [];
+        _.each(professions, (profession, profession_key) => {
+          if (this.state[profession_key] > 0) {
+            works.push(profession_key);
+          }
+        });
+        state[_.sample(works)]--;
+
       }
       else {
-        let selected = [_.sample(food)];
-        state[selected]--;
+        if (_.random(1, 2) === 1) {
+          state[_.sample(food)]--;
+        }
       }
     }
 
@@ -194,7 +205,10 @@ class App extends Component {
       }
     });
 
-    if (state.population === 0) state.score = true;
+    if (state.population === 0) {
+      state.score = true;
+      this.pauseGame();
+    }
 
     this.setState(state);
 
@@ -203,6 +217,7 @@ class App extends Component {
 
   resetGame() {
     this.setState(default_state);
+    this.playGame();
   }
 
   lockedTill(factor) {
@@ -211,7 +226,7 @@ class App extends Component {
   }
 
   build(building_key) {
-    if (this.isEnough(building_key)) {
+    if (this.isEnough(building_key) && (this.state.building_space - this.built()) > 0) {
       this.charge(building_key);
       let o = {};
       o[building_key] = this.state[building_key] + 1;
@@ -220,6 +235,8 @@ class App extends Component {
   }
 
   isEnough(building_key) {
+    if (this.state.building_space - this.built() < 1) return false;
+
     let building = buildings[building_key];
     let enough = true;
     _.each(building.cost, (value, resource_key) => { if(this.state[resource_key] < value) enough = false; } );
@@ -234,6 +251,12 @@ class App extends Component {
       o[resource_key] = this.state[resource_key] - value;
       this.setState(o); } );
     return enough;
+  }
+
+  built() {
+    return  this.state.hut + this.state.house +
+            this.state.garden + this.state.field + this.state.pier + this.state.lodge +
+            this.state.sawmill + this.state.quarry + this.state.mine + this.state.ahu;
   }
 
   busy() {
@@ -260,9 +283,9 @@ class App extends Component {
 
   render() {
 
-    const make_collect_button = (stat, name, callback, text = '') =>
+    const make_collect_button = (stat, name, callback, text = '', style = 'btn-success') =>
           <span key = {stat+name} >
-            <button className={classNames('btn', 'btn-success')}
+            <button className={classNames('btn', style)}
                  title={text} onClick={callback}> {name} </button>
           </span>;
 
@@ -373,10 +396,24 @@ class App extends Component {
                 <div className="flex-element">
                   <h4 className="App-title">Buildings</h4>
                   <div className="datablock">
+                    <span className="badge"> {this.state.building_space - this.built()} </span> free building space
                     {_.keys(buildings).map((building_key) => {
                       return this.lockedTill(buildings[building_key].locked_till) ? '' : <div key={building_key}>
-                        {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost), buildings[building_key].locked_till)}
-                        <span className="badge"> {this.state[building_key]} </span>
+                        <span>
+                          <span className="badge"> {this.state[building_key]} </span>
+                          {make_buy_button(building_key, 'Build ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                        </span>
+                        {make_collect_button(building_key+'_del', 'del',
+                            () => {
+                              console.log(building_key);
+                              console.log(this.state[building_key]);
+                              if(this.state[building_key] < 1) return;
+                              let o = {};
+                              o[building_key] = this.state[building_key] - 1;
+                              this.setState(o);
+                            },
+                            'Destroy '+buildings[building_key].name,
+                            'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
                       </div>
                     })}
                   </div>
@@ -399,7 +436,6 @@ class App extends Component {
                   <h4 className="App-title">Ecology</h4>
                   <div>
                     Tick: {this.state.tick}
-
 
                     <h3 className="App-title">Natural Resources</h3>
                     <div className="datablock">
