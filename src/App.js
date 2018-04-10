@@ -48,12 +48,12 @@ class App extends Component {
       population: 2,
 
 
-      fruits: 100,
-      roots: 100,
+      fruits: 420,
+      roots: 420,
       fish: 0,
       wildfowl: 0,
 
-      wood: 100,
+      wood: 190,
       stone: 0,
       iron: 0,
       moai: 0,
