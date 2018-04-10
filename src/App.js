@@ -11,9 +11,9 @@ const resources = {
   'fish': {name: 'Fish', locked_till: 'pier', difficulty: 2, max_cap: 10000, regen: 3},
   'wildfowl': {name: 'Meat', locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 3},
   'wood': {name: 'Wood', locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-  'stone': {name: 'Stone', locked_till: 'quarry', difficulty: 10, max_cap: 1000, regen: 0.01},
-  'iron': {name: 'Iron', locked_till: 'mine', difficulty: 100, max_cap: 100, regen: 0.001},
-  'moai': {name: 'Moai', locked_till: 'ahu', difficulty: 1000, max_cap: 10, regen: 0.00001}
+  'stone': {name: 'Stone', locked_till: 'quarry', difficulty: 20, max_cap: 2000, regen: 0.01},
+  'iron': {name: 'Iron', locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.001},
+  'moai': {name: 'Moai', locked_till: 'ahu', difficulty: 1000, max_cap: 42, regen: 0.0}
 };
 
 const buildings = {
@@ -41,11 +41,11 @@ const professions = {
 };
 
 const default_state = {
-  population: 2,
+  population: 1,
 
 
-  fruits: 100,
-  roots: 100,
+  fruits: 420,
+  roots: 420,
   fish: 0,
   wildfowl: 0,
 
@@ -334,6 +334,8 @@ class App extends Component {
                   {make_collect_button('wood', 'Collect Wood', () => {
                     this.setState({wood: this.state.wood + 1});
                   }, 'text')}
+
+                  <span className="pull-right">{make_collect_button('refresh', 'New Game', this.resetGame, 'text', ' btn-xs btn-danger')}</span>
                 </div>
               </div>
 
