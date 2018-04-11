@@ -96,7 +96,7 @@ class App extends Component {
         }
       }
 
-      if (_.random(1, 5) === 1) {
+      if (_.random(1, 4) === 1) {
         state[selected_food]--;
       }
     }
@@ -113,6 +113,9 @@ class App extends Component {
         }
         if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
           let productivity = this.productivity(profession_key); // this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
+          if (this.state.human_meat > 0) {
+            productivity *= 2;
+          }
         //  console.log(productivity);
         //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
           for(let i=0; i<productivity; i++) {
@@ -122,12 +125,21 @@ class App extends Component {
             let chance = Math.ceil(_.random(1, top));
             console.log(ecofactor, difficulty, top, chance);
             if ( chance === 1 ) {
-              state[profession.resource]++;
-              state[profession.resource+'_volume']--;
-              if (this.state.tools > 0) {
-                if (profession.resource !== 'moai') { state[profession.resource]++; }
-                if (!resources[profession.resource].is_nature && _.random(1, 25 + this.state.forge) === 1) {
-                  state['tools']--;
+              if (profession.resource === 'moai') {
+                if (this.state.moai < this.state.ahu) {
+                  state[profession.resource]++;
+                  state[profession.resource + '_volume']--;
+                }
+              } else {
+                state[profession.resource]++;
+                state[profession.resource + '_volume']--;
+                if (this.state.tools > 0) {
+                  if (profession.resource !== 'moai') {
+                    state[profession.resource]++;
+                  }
+                  if (!resources[profession.resource].is_nature && _.random(1, 25 + this.state.forge) === 1) {
+                    state['tools']--;
+                  }
                 }
               }
             }
@@ -150,7 +162,7 @@ class App extends Component {
         if (profession_key === 'smith') {
           for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.iron < 1) continue;
-            if (_.random(1, 20) === 1) {
+            if (_.random(1, 50) === 1) {
               state['iron']--;
               state['tools']++;
             }

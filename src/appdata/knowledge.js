@@ -1,13 +1,13 @@
 
 export const resources = {
     'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-    'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 10000, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 1.5, max_cap: 10000, regen: 2},
-    'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 10000, regen: 2.5},
+    'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
+    'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 1.5, max_cap: 5000, regen: 2},
+    'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
     'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
-    'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 10, max_cap: 2500, regen: 0.1},
-    'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
+    'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 10, max_cap: 10000, regen: 0.1},
+    'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
     'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 10000, max_cap: 100, regen: 0.0}
 };
 
@@ -33,7 +33,7 @@ export const buildings = {
     'mine': {name: 'Mine', worker: 'miner', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
     'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Each forge accelerates the speed of one smith.'},
 
-    'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one moai builder. Moai will attracts new residents.'},
+    'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
 };
 
 export const professions = {
