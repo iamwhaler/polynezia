@@ -26,11 +26,11 @@
       <file leaf-file-name="App.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="128" column="60" selection-start-line="128" selection-start-column="60" selection-end-line="128" selection-end-column="60" />
+            <state relative-caret-position="270">
+              <caret line="127" column="76" selection-start-line="127" selection-start-column="76" selection-end-line="127" selection-end-column="76" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
-                <element signature="e#11700#13394#0" expanded="false" />
+                <element signature="e#11685#13379#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -248,7 +248,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="56863000" />
+    <option name="totallyTimeSpent" value="57686000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
@@ -314,24 +314,24 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>386</line>
+          <line>388</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>461</line>
+          <line>463</line>
           <properties />
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>511</line>
+          <line>513</line>
           <properties />
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>491</line>
+          <line>493</line>
           <properties />
           <option name="timeStamp" value="14" />
         </line-breakpoint>
@@ -379,7 +379,7 @@
           <caret line="426" column="159" selection-start-line="426" selection-start-column="159" selection-end-line="426" selection-end-column="159" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-            <element signature="e#11700#13394#0" expanded="false" />
+            <element signature="e#11685#13379#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -458,11 +458,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="128" column="60" selection-start-line="128" selection-start-column="60" selection-end-line="128" selection-end-column="60" />
+        <state relative-caret-position="270">
+          <caret line="127" column="76" selection-start-line="127" selection-start-column="76" selection-end-line="127" selection-end-column="76" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-            <element signature="e#11700#13394#0" expanded="false" />
+            <element signature="e#11685#13379#0" expanded="false" />
           </folding>
         </state>
       </provider>
