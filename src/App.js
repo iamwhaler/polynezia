@@ -28,7 +28,7 @@ const buildings = {
   'sawmill': {name: 'Sawmill', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
   'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
   'mine': {name: 'Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
-  'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one builder.'},
+  'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one moai builder. Moai will attracts new residents.'},
 };
 
 const professions = {
@@ -186,7 +186,7 @@ class App extends Component {
 
       }
       else {
-        if (_.random(1, 2) === 1) {
+        if (_.random(1, 10) === 1) {
           state[_.sample(food)]--;
         }
       }
@@ -197,12 +197,12 @@ class App extends Component {
       if (profession.resource) {
         if (profession_key === 'miner') {
           for (let i=0; i<Math.min(this.state.mine, this.state.miner); i++) {
-            if (Math.floor(_.random(1, 10)) === 1) {
+            if (_.random(1, 5) === 1) {
               state['stone']++;
             }
           }
         }
-        if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
+        if (this.state[profession_key] > 1 && this.state[profession.resource+'_volume'] > 0) {
           let productivity = this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
         //  console.log(productivity);
         //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
@@ -226,7 +226,7 @@ class App extends Component {
         let new_counter = 0;
         if (resource.is_nature && this.state.keeper > 0) {
           let productivity = this.state.keeper + Math.min(this.state.keeper, this.state.keep);
-          let regen = resource.regen + Math.floor(resource.regen * productivity / 5);
+          let regen = resource.regen + Math.floor(resource.regen * productivity / 10);
           new_counter = this.state[resource_key+'_volume'] + regen;
         }
         else {
