@@ -80,7 +80,7 @@ class App extends Component {
 
         if(food.length === 0) {
           state.population--;
-          state.human_meat += 10;
+          state.human_meat += 50;
 
           let works = [];
           _.each(professions, (profession, profession_key) => {
