@@ -369,11 +369,6 @@ class App extends Component {
                       return this.state[item_key] > 0 ? <div key={item_key}>
                         {items[item_key].name}: {this.state[item_key]}</div> : ''
                     })}
-
-
-
-                    {this.state.human_meat > 0 ? <div key='human_meat'>
-                      Human Meat: {this.state.human_meat}</div> : ''}
                   </div>
                 </div>
 
