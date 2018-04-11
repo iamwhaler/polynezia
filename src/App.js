@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import './App.css';
+import './tooltip.css';
 
 import {resources, items, buildings, professions} from './appdata/knowledge';
 import {default_state} from './appdata/default_state';
@@ -277,7 +278,7 @@ class App extends Component {
 
     const make_buy_button = (stat, name, text = '') =>
           <span key = {stat+name} >
-            <button className={classNames('btn', 'btn-success', (this.isEnough(stat) ? '' : 'disabled'))}
+            <button className={classNames('btn', 'titled', 'btn-success', (this.isEnough(stat) ? '' : 'disabled'))}
                  title={text} onClick={() => { this.build(stat); }}> {name} </button>
           </span>;
 
@@ -424,7 +425,7 @@ class App extends Component {
                             :
                             <div key={profession_key} className="filament">
                               <h4 className="slim">
-                                {make_arrows(profession_key, <span key={profession_key} className="label label-default" title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
+                                {make_arrows(profession_key, <span key={profession_key} className="label label-default titled" title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
                               </h4>
                             </div>
                       })}
