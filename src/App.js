@@ -125,7 +125,7 @@ class App extends Component {
             let chance = Math.ceil(_.random(1, top));
             console.log(ecofactor, difficulty, top, chance);
 
-            if (!resources[profession.resource].is_nature && _.random(1, 100 + this.state.forge) === 1) {
+            if (_.random(1, 100 + this.state.forge / (resources[profession.resource].is_nature ? 1 : 3)) === 1) {
               state['tools']--;
             }
 
@@ -137,7 +137,7 @@ class App extends Component {
                 }
               } else {
                 state[profession.resource]++;
-                
+
                 state[profession.resource + '_volume']--;  // (((
                 if (this.state.tools > 0) {
                   if (profession.resource !== 'moai' && _.random(1, 2) === 1) {

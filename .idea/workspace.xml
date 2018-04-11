@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bc9b1a44-cddc-427d-be39-c2dc1daba841" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/App.js" afterPath="$PROJECT_DIR$/src/App.js" />
     </list>
     <ignored path="polynezia.iws" />
@@ -27,11 +26,11 @@
       <file leaf-file-name="App.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="139" column="16" selection-start-line="139" selection-start-column="16" selection-end-line="139" selection-end-column="16" />
+            <state relative-caret-position="270">
+              <caret line="128" column="31" selection-start-line="128" selection-start-column="31" selection-end-line="128" selection-end-column="31" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
-                <element signature="e#11754#13448#0" expanded="false" />
+                <element signature="e#11746#13440#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -249,7 +248,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58329000" />
+    <option name="totallyTimeSpent" value="58496000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
@@ -380,7 +379,7 @@
           <caret line="426" column="159" selection-start-line="426" selection-start-column="159" selection-end-line="426" selection-end-column="159" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-            <element signature="e#11754#13448#0" expanded="false" />
+            <element signature="e#11746#13440#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -459,11 +458,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="139" column="16" selection-start-line="139" selection-start-column="16" selection-end-line="139" selection-end-column="16" />
+        <state relative-caret-position="270">
+          <caret line="128" column="31" selection-start-line="128" selection-start-column="31" selection-end-line="128" selection-end-column="31" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-            <element signature="e#11754#13448#0" expanded="false" />
+            <element signature="e#11746#13440#0" expanded="false" />
           </folding>
         </state>
       </provider>
