@@ -30,3 +30,4 @@ build
 .env
 npm-debug.log
 .idea
+.idea/workspace.xml

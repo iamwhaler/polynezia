@@ -111,7 +111,7 @@ class App extends Component {
           }
         }
         if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
-          let productivity = this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
+          let productivity = this.productivity(profession_key); // this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
         //  console.log(productivity);
         //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
           for(let i=0; i<productivity; i++) {
@@ -121,10 +121,13 @@ class App extends Component {
             let chance = Math.ceil(_.random(1, top));
             console.log(ecofactor, difficulty, top, chance);
             if ( chance === 1 ) {
-              state[profession.resource]++; // = this.state[profession.resource] + 1;
-              state[profession.resource+'_volume']--; // = this.state[profession.resource+'_volume'] - 1;
-              if (this.state.tools > 0 && _.random(1, 10) === 1) {
-                state['tools']--;
+              state[profession.resource]++;
+              state[profession.resource+'_volume']--;
+              if (this.state.tools > 0) {
+                if (profession.resource !== 'moai') { state[profession.resource]++; }
+                if (!resources[profession.resource].is_nature && _.random(1, 25 + this.state.forge) === 1) {
+                  state['tools']--;
+                }
               }
             }
           }
@@ -132,7 +135,7 @@ class App extends Component {
       }
       else {
         if (profession_key === 'cook') {
-          for (let i=0; i<Math.min(this.state.bonfire, this.state.cook); i++) {
+          for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.wood < 1) continue;
             let food = [];
             _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
@@ -144,9 +147,9 @@ class App extends Component {
           }
         }
         if (profession_key === 'smith') {
-          for (let i=0; i<Math.min(this.state.forge, this.state.smith); i++) {
+          for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.iron < 1) continue;
-            if (_.random(1, 10) === 1) {
+            if (_.random(1, 20) === 1) {
               state['iron']--;
               state['tools']++;
             }
@@ -180,6 +183,10 @@ class App extends Component {
     this.setState(state);
 
     localStorage.setItem("app_state", JSON.stringify(state));
+  }
+
+  productivity(profession_key) {
+    return this.state[profession_key] + Math.min(this.state[profession_key], this.state[professions[profession_key].home]);
   }
 
   resetGame() {
@@ -290,145 +297,158 @@ class App extends Component {
 
     return (
       <div className="App">
-        {this.state.score
-            ?
-            <div className="container">
-              <div>
-                <h1>Your nation has become extinct. </h1>
-                <h1>You have lived {this.state.tick} days. </h1>
-                <h1>Your legacy: {this.state.moai} moai.</h1>
-                {make_collect_button('refresh', 'New Game', this.resetGame, 'text')}
-              </div>
-            </div>
-            :
-            <div className="container theme-showcase" role="main">
-              <div>
+        <div className="background-image">
+        </div>
+        <div className="content">
+          {this.state.score
+              ?
+              <div className="container">
                 <div>
-                  {make_collect_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
-                  {this.lockedTill('field') ? '' : make_collect_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
-                  {make_collect_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
-
-                  <span className="pull-right">{make_collect_button('refresh', 'New Game', this.resetGame, 'text', ' btn-xs btn-danger')}</span>
+                  <h1>Your nation has become extinct. </h1>
+                  <h1>You have lived {this.state.tick} days. </h1>
+                  <h1>Your legacy: {this.state.moai} moai.</h1>
+                  {make_collect_button('refresh', 'New Game', this.resetGame, 'text')}
                 </div>
               </div>
-
-
-              { true ? "" :
-                  <span className="flex-element">
-            <span onClick={() => {
-              if (this.state.game_paused) {
-                this.playGame();
-              } else {
-                this.pauseGame();
-              }
-            }}>
-              <span className={classNames('glyphicon', (this.state.game_paused ? 'glyphicon-play' : 'glyphicon-pause'))}
-                    style={{width: 28, height: 28}}></span>
-            </span>
-
-                    {[1, 3].map((speed, index) => {
-                      return <span key={index}>
-                        {this.state.game_speed_multiplier === speed
-                            ? <button className="" style={{width: 42, height: 28}}><u>{{
-                          0: 'slow',
-                          1: 'fast',
-                          2: 'faster'
-                        }[index]}</u></button>
-                            : <button className="" style={{width: 42, height: 28}} onClick={() => {
-                          this.setGameSpeed(speed);
-                        }}>{{0: 'slow', 1: 'fast', 2: 'faster'}[index]}
-                        </button>}
-                    </span>
-                    })}
-
-                    <span onClick={() => {
-                      let i = 1;
-                      let n = 24;
-                      while (i <= n) {
-                        this.tick((i === n));
-                        i++;
-                      }
-                    }}>
-              <img src={"24-hours-icon.png"} alt={"Next Day"} title={"Next Day"}
-                   className="img" style={{width: 28, height: 28}}/>
-            </span>
-          </span>
-              }
-
-
-              <div className="flex-container-row">
-
-                <div className="flex-element">
-                  <h4 className="App-title">Your Resources</h4>
-                  <div className="datablock">
-                    {_.keys(resources).map((resource_key) => {
-                      return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                        {resources[resource_key].name}: {this.state[resource_key]}</div>
-                    })}
-                    {_.keys(items).map((item_key) => {
-                      return this.state[item_key] > 0 ? <div key={item_key}>
-                        {items[item_key].name}: {this.state[item_key]}</div> : ''
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex-element">
-                  <h4 className="App-title">Buildings</h4>
-                  <div className="datablock">
-                    <span className="badge"> {this.state.building_space - this.built()} </span> free building space
-                    {_.keys(buildings).map((building_key) => {
-                      return this.lockedTill(buildings[building_key].locked_till) ? '' : <div key={building_key}>
-                        <span>
-                          <span className="badge"> {this.state[building_key]} </span>
-                          {make_buy_button(building_key, '+1 ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
-                        </span>
-                        {make_collect_button(building_key+'_del', 'del',
-                            () => {
-                              console.log(building_key);
-                              console.log(this.state[building_key]);
-                              if (!window.confirm('Are you sure?')) return false;
-                              if(this.state[building_key] < 1) return;
-                              let o = {};
-                              o[building_key] = this.state[building_key] - 1;
-                              this.setState(o);
-                            },
-                            'Destroy '+buildings[building_key].name,
-                            'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
-                      </div>
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex-element">
-                  <h4 className="App-title">Tribe</h4>
-                  <div className="datablock">
-
-                    <div>Population: {this.state.population} / {(this.state.hut * 2) + (this.state.house * 5)}</div>
-                    <div><span className="badge"> {this.state.population - this.busy()}</span> free citizens</div>
-
-                    {_.keys(professions).map((profession_key) => {
-                      return this.lockedTill(professions[profession_key].locked_till) ? '' : make_arrows(profession_key, profession_key)
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex-element">
+              :
+              <div className="container theme-showcase" role="main">
+                <div>
                   <div>
-                    <h4 className="App-title">Natural Resources</h4>
+                    <span className="pull-left cheat">{make_collect_button('cheat', ' ', () => { this.setState({wood: 10000, stone: 1000, iron: 500, meals: 10000, tools: 100}); }, 'text', ' cheat')}</span>
+
+                    {make_collect_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
+                    {this.lockedTill('field') ? '' : make_collect_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
+                    {make_collect_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
+
+                    <span className="pull-right">{make_collect_button('refresh', 'New Game', this.resetGame, 'text', ' btn-xs btn-danger')}</span>
+                  </div>
+                </div>
+
+
+                { true ? "" :
+                    <span className="flex-element">
+              <span onClick={() => {
+                if (this.state.game_paused) {
+                  this.playGame();
+                } else {
+                  this.pauseGame();
+                }
+              }}>
+                <span className={classNames('glyphicon', (this.state.game_paused ? 'glyphicon-play' : 'glyphicon-pause'))}
+                      style={{width: 28, height: 28}}></span>
+              </span>
+
+                      {[1, 3].map((speed, index) => {
+                        return <span key={index}>
+                          {this.state.game_speed_multiplier === speed
+                              ? <button className="" style={{width: 42, height: 28}}><u>{{
+                            0: 'slow',
+                            1: 'fast',
+                            2: 'faster'
+                          }[index]}</u></button>
+                              : <button className="" style={{width: 42, height: 28}} onClick={() => {
+                            this.setGameSpeed(speed);
+                          }}>{{0: 'slow', 1: 'fast', 2: 'faster'}[index]}
+                          </button>}
+                      </span>
+                      })}
+
+                      <span onClick={() => {
+                        let i = 1;
+                        let n = 24;
+                        while (i <= n) {
+                          this.tick((i === n));
+                          i++;
+                        }
+                      }}>
+                <img src={"24-hours-icon.png"} alt={"Next Day"} title={"Next Day"}
+                     className="img" style={{width: 28, height: 28}}/>
+              </span>
+            </span>
+                }
+
+
+                <div className="flex-container-row">
+
+                  <div className="flex-element">
+                    <h4 className="App-title">Your Resources</h4>
                     <div className="datablock">
-                      Day: {this.state.tick}
                       {_.keys(resources).map((resource_key) => {
                         return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                          {resources[resource_key].name}: {Math.floor(this.state[resource_key + '_volume'])}</div>
+                          {resources[resource_key].name}: {this.state[resource_key]}</div>
+                      })}
+                      {_.keys(items).map((item_key) => {
+                        return this.state[item_key] > 0 ? <div key={item_key}>
+                          {items[item_key].name}: {this.state[item_key]}</div> : ''
                       })}
                     </div>
                   </div>
 
-                </div>
+                  <div className="flex-element">
+                    <h4 className="App-title">Buildings</h4>
+                    <div className="datablock">
+                      <span className="badge"> {this.state.building_space - this.built()} </span> free building space
+                      {_.keys(buildings).map((building_key) => {
+                        return this.lockedTill(buildings[building_key].locked_till) ? '' : <div key={building_key}>
+                          <span>
+                            <span className="badge"> {this.state[building_key]} </span>
+                            {make_buy_button(building_key, '+1 ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                          </span>
+                          {make_collect_button(building_key+'_del', 'del',
+                              () => {
+                                console.log(building_key);
+                                console.log(this.state[building_key]);
+                                if (!window.confirm('Are you sure?')) return false;
+                                if(this.state[building_key] < 1) return;
+                                let o = {};
+                                o[building_key] = this.state[building_key] - 1;
+                                this.setState(o);
+                              },
+                              'Destroy '+buildings[building_key].name,
+                              'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+                        </div>
+                      })}
+                    </div>
+                  </div>
 
+                  <div className="flex-element">
+                    <h4 className="App-title">Tribe</h4>
+                    <div className="datablock">
+
+                      <div>Population: {this.state.population} / {(this.state.hut * 2) + (this.state.house * 5)}</div>
+                      <div><span className="badge"> {this.state.population - this.busy()}</span> free citizens</div>
+
+                      {_.keys(professions).map((profession_key) => {
+                        return this.lockedTill(professions[profession_key].locked_till)
+                            ? ''
+                            :
+                            <div key={profession_key} className="filament">
+                              <h4 className="slim">
+                                {make_arrows(profession_key, <span key={profession_key} className="label label-default" title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
+                              </h4>
+                            </div>
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex-element">
+                    <div>
+                      <h4 className="App-title">Natural Resources</h4>
+                      <div className="datablock">
+                        Day: {this.state.tick}
+                        {_.keys(resources).map((resource_key) => {
+                          return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
+                            {resources[resource_key].name}: {Math.floor(this.state[resource_key + '_volume'])}</div>
+                        })}
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
               </div>
-            </div>
-        }
+          }
+        </div>
       </div>
     );
   }

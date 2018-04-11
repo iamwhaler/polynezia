@@ -8,7 +8,7 @@ export const resources = {
     'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 2, max_cap: 10000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 10, max_cap: 2500, regen: 0.1},
     'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
-    'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 1000, max_cap: 1, regen: 0.0}
+    'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 10000, max_cap: 100, regen: 0.0}
 };
 
 export const items = {
@@ -26,7 +26,7 @@ export const buildings = {
     'garden': {name: 'Garden', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
     'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'keep', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
     'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fist. Each pier accelerates the speed of one fisherman.'},
-    'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10}, locked_till: 'mine', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
+    'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
     'sawmill': {name: 'Sawmill', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
     'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
@@ -37,18 +37,18 @@ export const buildings = {
 };
 
 export const professions = {
-    'cook': {resource: null, home: 'bonfire', locked_till: 'bonfire'},
-    'keeper': {resource: null, home: 'keep', locked_till: 'keep'},
+    'cook': {name: 'Cook', resource: null, home: 'bonfire', locked_till: 'bonfire', text: 'The cook makes cooked food from raw, consuming wood at the bonfire.'},
+    'keeper': {name: 'Keeper', resource: null, home: 'keep', locked_till: 'keep', text: 'The keeper improves the regeneration of natural resources: fruits, roots, fish, animals and wood.'},
 
-    'gardener': {resource: 'fruits', home: 'garden', locked_till: 'garden'},
-    'fielder': {resource: 'roots', home: 'field', locked_till: 'field'},
-    'fisherman': {resource: 'fish', home: 'pier', locked_till: 'pier'},
-    'hunter': {resource: 'wildfowl', home: 'lodge', locked_till: 'lodge'},
+    'gardener': {name: 'Gardener', resource: 'fruits', home: 'garden', locked_till: 'garden', text: 'The gardener produces fruits. The garden will improve its work.'},
+    'fielder': {name: 'Fielder', resource: 'roots', home: 'field', locked_till: 'field', text: 'The fielder produces roots. The field will improve its work.'},
+    'fisherman': {name: 'Fisherman', resource: 'fish', home: 'pier', locked_till: 'pier', text: 'The fisherman produces fish. The pier will improve its work.'},
+    'hunter': {name: 'Hunter', resource: 'wildfowl', home: 'lodge', locked_till: 'lodge', text: 'The hunter produces meat. The lodge will improve its work.'},
 
-    'woodcutter': {resource: 'wood', home: 'sawmill', locked_till: 'hut'},
-    'mason': {resource: 'stone', home: 'quarry', locked_till: 'quarry'},
-    'miner': {resource: 'iron', home: 'mine', locked_till: 'mine'},
-    'smith': {resource: null, home: 'forge', locked_till: 'forge'},
+    'woodcutter': {name: 'Woodcutter', resource: 'wood', home: 'sawmill', locked_till: 'hut', text: 'The woodcutter produces fruits. The sawmill will improve its work.'},
+    'mason': {name: 'Mason', resource: 'stone', home: 'quarry', locked_till: 'quarry', text: 'The mason produces stone. The quarry will improve its work.'},
+    'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron. The mine will improve its work and add stone to extraction.'},
+    'smith': {name: 'Smith', resource: null, home: 'forge', locked_till: 'forge', text: 'The smith produces tools. The garden will improve its work.'},
 
-    'builder': {resource: 'moai', home: 'ahu', locked_till: 'ahu'}
+    'builder': {name: 'Builder', resource: 'moai', home: 'ahu', locked_till: 'ahu', text: 'Builders build the majestic statues Moai, the legacy of your civilization.'}
 };
