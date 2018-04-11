@@ -126,7 +126,7 @@ class App extends Component {
             console.log(ecofactor, difficulty, top, chance);
             if ( chance === 1 ) {
               if (profession.resource === 'moai') {
-                if (this.state.moai < this.state.ahu) {
+                if (this.state.moai < this.state.ahu || true) {
                   state[profession.resource]++;
                   state[profession.resource + '_volume']--;
                 }
