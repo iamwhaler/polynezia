@@ -34,6 +34,7 @@ export const default_state = {
     moai_volume: building_space,
 
     bonfire: 0,
+    lighthouse: 0,
     hut: 0,
     house: 0,
     keep: 0,
@@ -66,13 +67,14 @@ export const default_state = {
 
     builder: 0,
 
+    trader: false,
+    score: false,
+
 
     game_speed: 1000,
     game_speed_multiplier: 1,
     game_paused: true,
-    tick: 0,
-
-    score: false
+    tick: 0
 };
 
 export default {};

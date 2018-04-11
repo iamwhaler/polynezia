@@ -21,6 +21,7 @@ export const buildings = {
     'hut': {name: 'Hut', worker: null, cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
     'house': {name: 'House', worker: null, cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
     'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
+    'lighthouse': {name: 'Lighthouse', worker: null, cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse attracts traders.'},
     'keep': {name: 'Keep', worker: 'keeper', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
 
     'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},

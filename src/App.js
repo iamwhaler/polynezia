@@ -68,6 +68,30 @@ class App extends Component {
       }
     }
 
+
+    // attract trader
+    let chance = Math.floor(_.random(1, 1 + (100 / (1 + this.state.lighthouse))));
+    console.log(this.state.lighthouse, chance, this.state.trader);
+    if (this.state.lighthouse > 0 && !this.state.trader && chance === 1) {
+      const tradable = ['fruits', 'roots', 'fish', 'wildfowl', 'wood', 'stone', 'iron'];
+
+      let size = _.random(1, 3);
+      let resource1 = _.sample(tradable);
+      let resource2 = _.sample(tradable);
+
+      if (resource1 === resource2) {
+        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 5, 25, 50][size] * _.random(7, 13) * this.state.lighthouse / resources[resource1].difficulty));
+        state.trader = {type: 'gift', offer: {'resource1': resource1, 'count1': count1},
+          text: 'Traders arrived with gifts. Their gift is  '+count1+' '+resource1+'.'};
+      }
+      else {
+        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 250][size] * _.random(7, 13) * this.state.lighthouse / resources[resource1].difficulty));
+        let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 250][size] * _.random(7, 13) * this.state.lighthouse / resources[resource2].difficulty));
+        state.trader = {type: 'trade', offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
+          text: 'Trader arrival. They offer '+count1+' '+resource1+' for '+count2+' '+resource2+'.'};
+      }
+    }
+
     // feeding
     for(let i=0; i<this.state.population; i++) {
       let selected_food = null;
@@ -123,7 +147,7 @@ class App extends Component {
             let difficulty = this.state.tools > 0 ? resources[profession.resource].difficulty/10 : resources[profession.resource].difficulty;
             let top = 1 + Math.round(difficulty / ecofactor);
             let chance = Math.ceil(_.random(1, top));
-            console.log(ecofactor, difficulty, top, chance);
+          //  console.log(ecofactor, difficulty, top, chance);
 
             if (_.random(1, 100 + this.state.forge / (resources[profession.resource].is_nature ? 1 : 3)) === 1) {
               state['tools']--;
@@ -254,7 +278,7 @@ class App extends Component {
   }
 
   built() {
-    return  this.state.hut + this.state.house + this.state.bonfire + this.state.keep +
+    return  this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.keep +
             this.state.garden + this.state.field + this.state.pier + this.state.lodge +
             this.state.sawmill + this.state.quarry + this.state.mine + this.state.forge +
             this.state.ahu;
@@ -398,6 +422,39 @@ class App extends Component {
                           {items[item_key].name}: {this.state[item_key]}</div> : ''
                       })}
                     </div>
+
+                    <div className="fat">
+                      {this.state.trader !== false
+                          ?
+                          <div>
+                            {this.state.trader.text}
+                            {this.state.trader.type === 'gift'
+                                ?
+                                make_collect_button('take', 'Take',
+                                    () => {
+                                      console.log(this.state.trader);
+                                      let o = {};
+                                      o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                      o['trader'] = false;
+                                      this.setState(o);
+                                    })
+                                :
+                                <div>
+                                  {make_collect_button('trade', 'Trade',
+                                      () => {
+                                        if (this.state[this.state.trader.offer.resource2] < this.state.trader.offer.count2) return false;
+                                        let o = {};
+                                        o[this.state.trader.offer.resource2] = this.state[this.state.trader.offer.resource2] - this.state.trader.offer.count2;
+                                        o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                        o['trader'] = false;
+                                        this.setState(o);
+                                      })}
+                                  {make_collect_button('cancel', 'Cancel', () => { this.setState({trader: false}); }, '', 'btn-danger')}
+                                </div> }
+                          </div>
+                          : ""}
+                    </div>
+
                   </div>
 
 
