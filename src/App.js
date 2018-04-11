@@ -391,6 +391,7 @@ class App extends Component {
                             () => {
                               console.log(building_key);
                               console.log(this.state[building_key]);
+                              if (!window.confirm('Are you sure?')) return false;
                               if(this.state[building_key] < 1) return;
                               let o = {};
                               o[building_key] = this.state[building_key] - 1;

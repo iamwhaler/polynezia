@@ -19,7 +19,7 @@ export const items = {
 
 export const buildings = {
     'hut': {name: 'Hut', cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
-    'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'mine', text: 'Home for Five.'},
+    'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
     'bonfire': {name: 'Bonfire', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
     'keep': {name: 'Keep', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
 
