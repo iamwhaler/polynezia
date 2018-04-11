@@ -26,11 +26,11 @@
       <file leaf-file-name="App.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="228" column="84" selection-start-line="228" selection-start-column="84" selection-end-line="228" selection-end-column="84" />
+            <state relative-caret-position="525">
+              <caret line="72" column="30" selection-start-line="72" selection-start-column="30" selection-end-line="72" selection-end-column="30" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
-                <element signature="e#13265#14887#0" expanded="false" />
+                <element signature="e#13288#14910#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -249,12 +249,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1523330694737</updated>
-      <workItem from="1523330697988" duration="42863000" />
+      <workItem from="1523330697988" duration="43245000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="42863000" />
+    <option name="totallyTimeSpent" value="43245000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
@@ -296,12 +296,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>110</line>
+          <line>111</line>
           <properties />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/App.js</url>
-          <line>370</line>
+          <line>371</line>
           <properties />
           <option name="timeStamp" value="9" />
         </line-breakpoint>
@@ -345,11 +345,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="228" column="84" selection-start-line="228" selection-start-column="84" selection-end-line="228" selection-end-column="84" />
+        <state relative-caret-position="525">
+          <caret line="72" column="30" selection-start-line="72" selection-start-column="30" selection-end-line="72" selection-end-column="30" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-            <element signature="e#13265#14887#0" expanded="false" />
+            <element signature="e#13288#14910#0" expanded="false" />
           </folding>
         </state>
       </provider>

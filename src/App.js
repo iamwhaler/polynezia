@@ -13,7 +13,7 @@ const resources = {
   'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
   'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 10, max_cap: 2500, regen: 0.1},
   'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 500, regen: 0.01},
-  'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 1000, max_cap: 42, regen: 0.0}
+  'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 1000, max_cap: 1, regen: 0.0}
 };
 
 const buildings = {
@@ -43,6 +43,8 @@ const professions = {
   'builder': {resource: 'moai', home: 'ahu', locked_till: 'ahu'}
 };
 
+const building_space = 42;
+
 const default_state = {
   population: 1,
 
@@ -58,6 +60,7 @@ const default_state = {
   iron: 0,
   moai: 0,
 
+  building_space: building_space,
 
   fruits_volume: resources['fruits'].max_cap / 2,
   roots_volume: resources['roots'].max_cap / 2,
@@ -67,9 +70,7 @@ const default_state = {
   wood_volume: resources['wood'].max_cap / 2,
   stone_volume: resources['stone'].max_cap / 2,
   iron_volume: resources['iron'].max_cap / 2,
-  moai_volume: resources['moai'].max_cap / 2,
-
-  building_space: 42,
+  moai_volume: building_space,
 
   bonfire: 0,
   hut: 0,
