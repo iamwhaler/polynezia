@@ -18,22 +18,22 @@ export const items = {
 };
 
 export const buildings = {
-    'hut': {name: 'Hut', cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
-    'house': {name: 'House', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
-    'bonfire': {name: 'Bonfire', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'keep': {name: 'Keep', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
+    'hut': {name: 'Hut', worker: null, cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
+    'house': {name: 'House', worker: null, cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
+    'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
+    'keep': {name: 'Keep', worker: 'keeper', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
 
-    'garden': {name: 'Garden', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
-    'field': {name: 'Field', cost: {'wood': 100}, locked_till: 'keep', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
-    'pier': {name: 'Pier', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fist. Each pier accelerates the speed of one fisherman.'},
-    'lodge': {name: 'Lodge', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
+    'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
+    'field': {name: 'Field', worker: 'fielder', cost: {'wood': 100}, locked_till: 'keep', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
+    'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fist. Each pier accelerates the speed of one fisherman.'},
+    'lodge': {name: 'Lodge', worker: 'hunter', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
-    'sawmill': {name: 'Sawmill', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
-    'quarry': {name: 'Quarry', cost: {'wood': 1000}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
-    'mine': {name: 'Mine', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
-    'forge': {name: 'Forge', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Each forge accelerates the speed of one smith.'},
+    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
+    'quarry': {name: 'Quarry', worker: 'mason', cost: {'wood': 1000}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
+    'mine': {name: 'Mine', worker: 'miner', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
+    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Each forge accelerates the speed of one smith.'},
 
-    'ahu': {name: 'Ahu', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one moai builder. Moai will attracts new residents.'},
+    'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 1000}, locked_till: 'mine', text: 'Each Ahu accelerates the speed of one moai builder. Moai will attracts new residents.'},
 };
 
 export const professions = {

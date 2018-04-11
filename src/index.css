@@ -59,3 +59,14 @@ body {
   padding: 30px 100px;
   margin: 30px 100px;
 }
+
+.alignleft {
+  float: left;
+  align-content: left;
+  align: left;
+}
+.alignright {
+  float: right;
+  align-content: right;
+  align: right;
+}

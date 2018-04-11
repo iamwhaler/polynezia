@@ -278,16 +278,16 @@ class App extends Component {
 
     const make_buy_button = (stat, name, text = '') =>
           <span key = {stat+name} >
-            <button className={classNames('btn', 'titled', 'btn-success', (this.isEnough(stat) ? '' : 'disabled'))}
+            <button className={classNames('btn', 'titled', 'btn-success', 'btn-sm', (this.isEnough(stat) ? '' : 'disabled'))}
                  title={text} onClick={() => { this.build(stat); }}> {name} </button>
           </span>;
 
     const make_arrows = (stat, name) =>
         <div key = {stat+name}>
+          {name}
           <button onClick={() => {this.detachWorker(stat)}}> {'<'} </button>
           <span className="font-weight-bold badge" style={{width: '28px'}}> {this.state[stat]} </span>
           <button onClick={() => {this.assignWorker(stat)}}> {'>'} </button>
-          {name}
         </div>;
 
     const draw_cost = (cost) => {
@@ -368,7 +368,6 @@ class App extends Component {
             </span>
                 }
 
-
                 <div className="flex-container-row">
 
                   <div className="flex-element">
@@ -385,34 +384,100 @@ class App extends Component {
                     </div>
                   </div>
 
-                  <div className="flex-element">
+
+
+
+                  <div className="flex-element" style={{'flexGrow': 3}}>
+                    <h4 className="App-title">Civilisation</h4>
+                    <div className="flex-container-row">
+                      <div className="flex-element"><span className="badge"> {this.state.building_space - this.built()} </span> free building space </div>
+                      <div className="flex-element">Population: {this.state.population} / {(this.state.hut * 2) + (this.state.house * 5)}</div>
+                      <div className="flex-element"> free citizens <span className="badge"> {this.state.population - this.busy()}</span></div>
+                    </div>
+
+                    <div className="">
+                      {_.keys(buildings).map((building_key) => {
+                        let profession_key = buildings[building_key].worker;
+                      //  console.log(building_key, profession_key);
+
+                        return <div className="flex-container-row" key={building_key}>
+                          <div className="flex-element alignleft">
+                            {this.lockedTill(buildings[building_key].locked_till)
+                                ? ''
+                                :
+                                <div key={building_key}>
+                                  <span>
+                                    <span className="badge"> {this.state[building_key]} </span>
+                                    {make_buy_button(building_key, '+1 ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                                  </span>
+                                  {make_collect_button(building_key + '_del', 'del',
+                                      () => {
+                                        console.log(building_key);
+                                        console.log(this.state[building_key]);
+                                        if (!window.confirm('Are you sure?')) return false;
+                                        if (this.state[building_key] < 1) return;
+                                        let o = {};
+                                        o[building_key] = this.state[building_key] - 1;
+                                        this.setState(o);
+                                      },
+                                      'Destroy ' + buildings[building_key].name,
+                                      'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+                                </div>
+                            }
+                          </div>
+                          <div className="flex-element alignright">
+                            {profession_key === null ? '' :
+                              this.lockedTill(professions[profession_key].locked_till)
+                                ? ''
+                                :
+                                <div key={profession_key} className="filament">
+                                  <h4 className="slim">
+                                    {make_arrows(profession_key, <span key={profession_key}
+                                                                       className="label label-default titled"
+                                                                       title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
+                                  </h4>
+                                </div>
+
+                            }
+                          </div>
+                        </div>;
+                      })}
+
+                  </div>
+                  </div>
+
+
+                  <div className="flex-element hidden">
                     <h4 className="App-title">Buildings</h4>
                     <div className="datablock">
                       <span className="badge"> {this.state.building_space - this.built()} </span> free building space
                       {_.keys(buildings).map((building_key) => {
-                        return this.lockedTill(buildings[building_key].locked_till) ? '' : <div key={building_key}>
-                          <span>
-                            <span className="badge"> {this.state[building_key]} </span>
-                            {make_buy_button(building_key, '+1 ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
-                          </span>
-                          {make_collect_button(building_key+'_del', 'del',
-                              () => {
-                                console.log(building_key);
-                                console.log(this.state[building_key]);
-                                if (!window.confirm('Are you sure?')) return false;
-                                if(this.state[building_key] < 1) return;
-                                let o = {};
-                                o[building_key] = this.state[building_key] - 1;
-                                this.setState(o);
-                              },
-                              'Destroy '+buildings[building_key].name,
-                              'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
-                        </div>
+                        return this.lockedTill(buildings[building_key].locked_till)
+                            ? ''
+                            :
+                            <div key={building_key}>
+                              <span>
+                                <span className="badge"> {this.state[building_key]} </span>
+                                {make_buy_button(building_key, '+1 ' + buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                              </span>
+                              {make_collect_button(building_key+'_del', 'del',
+                                  () => {
+                                    console.log(building_key);
+                                    console.log(this.state[building_key]);
+                                    if (!window.confirm('Are you sure?')) return false;
+                                    if(this.state[building_key] < 1) return;
+                                    let o = {};
+                                    o[building_key] = this.state[building_key] - 1;
+                                    this.setState(o);
+                                  },
+                                  'Destroy '+buildings[building_key].name,
+                                  'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+                            </div>
                       })}
                     </div>
                   </div>
 
-                  <div className="flex-element">
+                  <div className="flex-element hidden">
                     <h4 className="App-title">Tribe</h4>
                     <div className="datablock">
 
