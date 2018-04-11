@@ -137,12 +137,14 @@ class App extends Component {
                 }
               } else {
                 state[profession.resource]++;
-                state[profession.resource + '_volume']--;
+                
+                state[profession.resource + '_volume']--;  // (((
                 if (this.state.tools > 0) {
-                  if (profession.resource !== 'moai') {
-                    state[profession.resource]++;
+                  if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
+                    state[profession.resource + '_volume']++; // (((
                   }
                 }
+
               }
             }
           }
