@@ -195,10 +195,11 @@ class App extends Component {
                   state[profession.resource]++;
                   state.volumes[profession.resource]--;
                 }
-              } else {
+              }
+              else {
                 state[profession.resource]++;
-
                 state.volumes[profession.resource]--;  // (((
+
                 if (this.state.iron_tools > 0) {
                   if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
                     state.volumes[profession.resource]++; // (((
@@ -292,7 +293,7 @@ class App extends Component {
   }
 
   productivity(profession_key) {
-    return this.state[profession_key] * Math.min(this.state[profession_key], this.state[professions[profession_key].home]);
+    return this.state[profession_key] * (1 + Math.min(this.state[profession_key], this.state[professions[profession_key].home]));
   }
 
   newGame() {
@@ -484,7 +485,7 @@ class App extends Component {
           </span>;
 
     const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
-          <span key = {stat+name} >
+          <span className="h4" key = {stat+name} >
             <span className="label label-default titled" title={text}> {name} </span>
             <button className={classNames('btn', 'titled', 'btn-success', 'btn-sm', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                     data-toggle="tooltip" data-placement="top" data-html="true"
