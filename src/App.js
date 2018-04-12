@@ -181,7 +181,7 @@ class App extends Component {
           //  console.log(ecofactor, difficulty, top, chance);
 
 
-            if (this.state.stone_tools > 0 && _.random(1, Math.floor((200 + (this.state.workshop*20)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+            if (this.state.stone_tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop*25)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
               state['stone_tools']--;
             }
             if (this.state.iron_tools > 0 && _.random(1, Math.floor((500 + (this.state.forge*100)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
@@ -292,7 +292,7 @@ class App extends Component {
   }
 
   productivity(profession_key) {
-    return this.state[profession_key] + Math.min(this.state[profession_key], this.state[professions[profession_key].home]);
+    return this.state[profession_key] * Math.min(this.state[profession_key], this.state[professions[profession_key].home]);
   }
 
   newGame() {

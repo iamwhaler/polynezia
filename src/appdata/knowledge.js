@@ -40,7 +40,7 @@ export const buildings = {
     'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 50, 'stone': 25, 'stone_tools': 10}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
     'canal': {name: 'Canal', worker: 'aquarius', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
 
-    'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
+    'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 25}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
     'field': {name: 'Field', worker: 'fielder', cost: {'wood': 25, 'meals': 25}, locked_till: 'canal', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
     'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
     'lodge': {name: 'Lodge', worker: 'hunter', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
