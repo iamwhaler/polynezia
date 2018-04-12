@@ -21,6 +21,7 @@ export const default_state = {
     tools: 0,
     human_meat: 0,
 
+
     building_space: building_space,
 
     fruits_volume: resources['fruits'].max_cap / 2,
@@ -32,6 +33,7 @@ export const default_state = {
     stone_volume: resources['stone'].max_cap / 2,
     iron_volume: resources['iron'].max_cap / 2,
     moai_volume: building_space,
+
 
     bonfire: 0,
     lighthouse: 0,
@@ -52,6 +54,7 @@ export const default_state = {
     ahu: 0,
 
 
+    sailor: 1,
     cook: 0,
     keeper: 0,
 
@@ -66,6 +69,17 @@ export const default_state = {
     smith: 0,
 
     builder: 0,
+
+
+    canoe: 1,
+    proa: 0,
+    catamaran: 0,
+
+
+    mission: false, // fishing, discovery
+    mission_timer: 0,
+    mission_long: 0,
+
 
     trader: false,
     score: false,

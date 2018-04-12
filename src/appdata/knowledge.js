@@ -2,7 +2,7 @@
 export const resources = {
     'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
     'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, locked_till: 'pier', difficulty: 1.5, max_cap: 5000, regen: 2},
+    'fish': {name: 'Fish', is_nature: true, locked_till: true, difficulty: 1.5, max_cap: 5000, regen: 2},
     'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
     'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
@@ -17,11 +17,17 @@ export const items = {
     'human_meat': {name: 'Human Meat'},
 };
 
+export const ships = {
+    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 500, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
+    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 2000, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'tools': 25}, text: 'Stable catamaran for long-distance research.'}
+};
+
 export const buildings = {
     'hut': {name: 'Hut', worker: null, cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
     'house': {name: 'House', worker: null, cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
     'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'lighthouse': {name: 'Lighthouse', worker: null, cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse attracts traders.'},
+    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse attracts traders.'},
     'keep': {name: 'Keep', worker: 'keeper', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
 
     'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
@@ -39,6 +45,7 @@ export const buildings = {
 
 export const professions = {
     'cook': {name: 'Cook', resource: null, home: 'bonfire', locked_till: 'bonfire', text: 'The cook makes cooked food from raw, consuming wood at the bonfire.'},
+    'sailor': {name: 'Sailor', resource: null, home: 'lighthouse', locked_till: true, text: 'To swim in the sea is the life of sailors.'},
     'keeper': {name: 'Keeper', resource: null, home: 'keep', locked_till: 'keep', text: 'The keeper improves the regeneration of natural resources: fruits, roots, fish, animals and wood.'},
 
     'gardener': {name: 'Gardener', resource: 'fruits', home: 'garden', locked_till: 'garden', text: 'The gardener produces fruits. The garden will improve its work.'},

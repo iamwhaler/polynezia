@@ -15,6 +15,12 @@
     padding: 5px 15px;
     position: absolute;
     z-index: 98;
+    max-width: 420px;
+    word-wrap: normal;
+}
+
+.titled-wrapper {
+    width: 200px;
 }
 
 .titled:hover:before{
