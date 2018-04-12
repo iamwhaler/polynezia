@@ -1,14 +1,14 @@
 
 export const resources = {
-    'fruits': {name: 'Fruits', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-    'roots': {name: 'Roots', is_nature: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, locked_till: true, difficulty: 1.5, max_cap: 5000, regen: 2},
-    'wildfowl': {name: 'Meat', is_nature: true, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
+    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
+    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
+    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: true, difficulty: 1.5, max_cap: 5000, regen: 2},
+    'wildfowl': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
-    'wood': {name: 'Wood', is_nature: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
-    'stone': {name: 'Stone', is_nature: false, locked_till: 'quarry', difficulty: 10, max_cap: 10000, regen: 0.1},
-    'iron': {name: 'Iron', is_nature: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
-    'moai': {name: 'Moai', is_nature: false, locked_till: 'ahu', difficulty: 10000, max_cap: 100, regen: 0.0}
+    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
+    'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 10000, regen: 0.1},
+    'iron': {name: 'Iron', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
+    'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 10000, max_cap: 100, regen: 0.0}
 };
 
 export const items = {
@@ -27,18 +27,18 @@ export const buildings = {
     'hut': {name: 'Hut', worker: null, cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
     'house': {name: 'House', worker: null, cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
     'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse attracts traders.'},
-    'keep': {name: 'Keep', worker: 'keeper', cost: {'wood': 100}, locked_till: 'garden', text: 'Increases living nature regeneration. Each field accelerates the speed of one keeper.'},
+    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
+    'canal': {name: 'Canal', worker: 'aquarius', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
 
     'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
-    'field': {name: 'Field', worker: 'fielder', cost: {'wood': 100}, locked_till: 'keep', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
-    'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fist. Each pier accelerates the speed of one fisherman.'},
+    'field': {name: 'Field', worker: 'fielder', cost: {'wood': 25, 'meals': 25}, locked_till: 'canal', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
+    'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
     'lodge': {name: 'Lodge', worker: 'hunter', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
-    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Each sawmill accelerates the speed of one woodcutter.'},
+    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
     'quarry': {name: 'Quarry', worker: 'mason', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
     'mine': {name: 'Mine', worker: 'miner', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
-    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Each forge accelerates the speed of one smith.'},
+    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Allows to make tools and build catamarans. Each forge accelerates the speed of one smith.'},
 
     'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
 };
@@ -46,7 +46,7 @@ export const buildings = {
 export const professions = {
     'cook': {name: 'Cook', resource: null, home: 'bonfire', locked_till: 'bonfire', text: 'The cook makes cooked food from raw, consuming wood at the bonfire.'},
     'sailor': {name: 'Sailor', resource: null, home: 'lighthouse', locked_till: true, text: 'To swim in the sea is the life of sailors.'},
-    'keeper': {name: 'Keeper', resource: null, home: 'keep', locked_till: 'keep', text: 'The keeper improves the regeneration of natural resources: fruits, roots, fish, animals and wood.'},
+    'aquarius': {name: 'Aquarius', resource: null, home: 'canal', locked_till: 'canal', text: 'The aquarius improves the regeneration of natural resources: fruits, roots and wood.'},
 
     'gardener': {name: 'Gardener', resource: 'fruits', home: 'garden', locked_till: 'garden', text: 'The gardener produces fruits. The garden will improve its work.'},
     'fielder': {name: 'Fielder', resource: 'roots', home: 'field', locked_till: 'field', text: 'The fielder produces roots. The field will improve its work.'},

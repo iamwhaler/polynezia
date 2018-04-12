@@ -12,7 +12,7 @@ export const default_state = {
     fish: 0,
     wildfowl: 0,
 
-    wood: 90,
+    wood: 80,
     stone: 0,
     iron: 0,
     moai: 0,
@@ -39,7 +39,7 @@ export const default_state = {
     lighthouse: 0,
     hut: 0,
     house: 0,
-    keep: 0,
+    canal: 0,
 
     garden: 0,
     field: 0,
@@ -56,7 +56,7 @@ export const default_state = {
 
     sailor: 1,
     cook: 0,
-    keeper: 0,
+    aquarius: 0,
 
     gardener: 0,
     fielder: 0,
@@ -83,6 +83,7 @@ export const default_state = {
 
     trader: false,
     score: false,
+    embarked: false,
 
 
     game_speed: 1000,
