@@ -103,6 +103,9 @@ export const default_state = {
     score: false,
     embarked: false,
 
+    legacy: 0,
+    heritage: 0,
+
 
     game_speed: 1000,
     game_speed_multiplier: 1,

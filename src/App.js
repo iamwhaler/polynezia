@@ -181,10 +181,10 @@ class App extends Component {
           //  console.log(ecofactor, difficulty, top, chance);
 
 
-            if (this.state.stone_tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop*25)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+            if (this.state.stone_tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop*50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
               state['stone_tools']--;
             }
-            if (this.state.iron_tools > 0 && _.random(1, Math.floor((500 + (this.state.forge*100)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
+            if (this.state.iron_tools > 0 && _.random(1, Math.floor((1000 + (this.state.forge*250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
               state['iron_tools']--;
             }
 
@@ -216,12 +216,18 @@ class App extends Component {
         if (profession_key === 'cook') {
           for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.wood < 1) continue;
-            let food = [];
-            _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
-            state[_.sample(food)]--;
-            state['meals'] += 2;
-            if (_.random(1, 10) === 1) {
-              state['wood']--;
+            if (_.random(1, 2) === 1) {
+              let food = [];
+              _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => {
+                if (this.state[food_type] > 0) {
+                  food.push(food_type);
+                }
+              });
+              state[_.sample(food)]--;
+              state['meals'] += 2;
+              if (_.random(1, 10) === 1) {
+                state['wood']--;
+              }
             }
           }
         }
@@ -293,40 +299,51 @@ class App extends Component {
   }
 
   productivity(profession_key) {
-    return this.state[profession_key] * (1 + Math.min(this.state[profession_key], this.state[professions[profession_key].home]));
+    return this.state[profession_key] * Math.max(1, Math.min(this.state[profession_key], this.state[professions[profession_key].home]));
   }
 
   newGame() {
+    if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
     let new_state = default_state;
 
     let morf = island_types.jungle.resources_rates;
 
     _.each(_.keys(morf), (res_key) => {
-      let cap = Math.floor(Math.floor(resources[res_key].max_cap * (morf[res_key]/100)));
+      let cap = Math.floor(resources[res_key].max_cap * (morf[res_key]/100));
       new_state.volumes[res_key] = Math.floor(_.random(cap*0.4, cap*0.6));
       new_state.caps[res_key] = cap;
     });
+
+    new_state.volumes['moai'] = 42;
+    new_state.caps['moai'] = 42;
 
     this.setState(new_state);
   }
 
   resetGame() {
     if (this.state.sailor < this.sailorsNeed()) return false;
-    if (!window.confirm('Are you ready to move to a new island? Your progress will be lost.')) return false;
+    if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources.')) return false;
 
     let state = this.state;
 
     let things = {};
 
-
-
     let island_type = _.sample(_.keys(island_types));
     things.island_type = island_type;
     things.population = this.sailorsNeed();
     things.sailor = this.sailorsNeed();
+
     things.canoe = state.canoe;
     things.proa = state.proa;
     things.catamaran = state.catamaran;
+
+    things.legacy = state.legacy;
+    things.heritage = state.heritage;
+    if (state.moai > 0) {
+      things.legacy++;
+      things.heritage += state.moai;
+    }
+
 
     let res = {
       'fruits': state.fruits,
@@ -348,13 +365,17 @@ class App extends Component {
 
     let new_state = default_state;
 
+    new_state.building_space += things.legacy;
+    new_state.volumes['moai'] = new_state.building_space;
+    new_state.caps['moai'] = new_state.building_space;
+
     _.each(_.keys(things), (key) => { new_state[key] = things[key]; });
     _.each(_.keys(res), (key) => { new_state[key] = res[key]; });
     let morf = island_types[island_type].resources_rates;
 
     _.each(_.keys(morf), (res_key) => {
-      let cap = Math.floor(_.random(0.7, 0.13) * Math.floor(resources[res_key].max_cap * (morf[res_key]/100)));
-      new_state.volumes[res_key] = Math.floor(_.random(cap/4, cap));
+      let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((things.heritage + morf[res_key])/100)));
+      new_state.volumes[res_key] = Math.floor(_.random(cap*0.4, cap*0.6));
       new_state.caps[res_key] = cap;
     });
 

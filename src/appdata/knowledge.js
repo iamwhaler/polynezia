@@ -1,10 +1,10 @@
 
 export const island_types = {
-    'swamp': {name: 'Swamp', resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50}, 'text': 'text'},
-    'jungle': {name: 'Jungle', resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75}, 'text': 'text'},
-    'tropical': {name: 'Tropical', resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100}, 'text': 'text'},
-    'plain': {name: 'Plain', resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150}, 'text': 'text'},
-    'mountain': {name: 'Mountain', resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200}, 'text': 'text'},
+    'swamp': {name: 'Swamp', resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
+    'jungle': {name: 'Jungle', resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75, 'iron': 100}, 'text': 'text'},
+    'tropical': {name: 'Tropical', resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100, 'iron': 100}, 'text': 'text'},
+    'plain': {name: 'Plain', resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150, 'iron': 100}, 'text': 'text'},
+    'mountain': {name: 'Mountain', resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200, 'iron': 100}, 'text': 'text'},
 };
 
 export const resources = {
@@ -16,7 +16,7 @@ export const resources = {
     'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 10000, regen: 0.1},
     'iron': {name: 'Iron', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
-    'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 10000, max_cap: 100, regen: 0.0}
+    'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 100000, max_cap: 100, regen: 0.0}
 };
 
 export const items = {
@@ -24,6 +24,8 @@ export const items = {
     'stone_tools': {name: 'Stone Tools'},
     'iron_tools': {name: 'Iron Tools'},
     'human_meat': {name: 'Human Meat'},
+    'legacy': {name: 'Legacy'},
+    'heritage': {name: 'Heritage'},
 };
 
 export const ships = {
