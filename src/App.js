@@ -456,7 +456,7 @@ class App extends Component {
                     {this.lockedTill('field') ? '' : make_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
                     {make_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
 
-                    <span className="pull-right">{make_button('refresh', 'New Game', this.resetGame, 'text', ' cheat')}</span>
+                    <span className="pull-right">{make_button('refresh', 'New Game', () => { this.setState(default_state);}, 'text', ' btn-xs btn-danger')}</span>
                   </div>
                 </div>
 
