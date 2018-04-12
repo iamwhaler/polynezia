@@ -73,7 +73,7 @@ class App extends Component {
     if (state.mission !== false) {
       if (state.mission_timer === 0) {
         if (state.mission === 'fishing') {
-          let reward = state.mission_long * state.shipsSum * _.random(7, 13);
+          let reward = state.mission_distance * this.shipsSum() * _.random(7, 13);
           alert(reward);
           this.fish += reward;
         }
@@ -169,14 +169,25 @@ class App extends Component {
         //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
           for(let i=0; i<productivity; i++) {
             let ecofactor = this.state.volumes[profession.resource] / this.state.caps[profession.resource];
-            let difficulty = this.state.tools > 0 ? resources[profession.resource].difficulty/10 : resources[profession.resource].difficulty;
+            let difficulty = resources[profession.resource].difficulty;
+            if (this.state.stone_tools > 0) {
+              difficulty /= 3;
+            }
+            if (this.state.iron_tools > 0) {
+              difficulty /= 10;
+            }
             let top = 1 + Math.round(difficulty / ecofactor);
             let chance = Math.ceil(_.random(1, top));
           //  console.log(ecofactor, difficulty, top, chance);
 
-            if (_.random(1, 100 + this.state.forge / (resources[profession.resource].is_nature ? 1 : 3)) === 1) {
-              state['tools']--;
+
+            if (this.state.stone_tools > 0 && _.random(1, Math.floor((200 + (this.state.workshop*20)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+              state['stone_tools']--;
             }
+            if (this.state.iron_tools > 0 && _.random(1, Math.floor((500 + (this.state.forge*100)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
+              state['iron_tools']--;
+            }
+
 
             if ( chance === 1 ) {
               if (profession.resource === 'moai') {
@@ -188,7 +199,7 @@ class App extends Component {
                 state[profession.resource]++;
 
                 state.volumes[profession.resource]--;  // (((
-                if (this.state.tools > 0) {
+                if (this.state.iron_tools > 0) {
                   if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
                     state.volumes[profession.resource]++; // (((
                   }
@@ -200,6 +211,7 @@ class App extends Component {
         }
       }
       else {
+
         if (profession_key === 'cook') {
           for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.wood < 1) continue;
@@ -212,15 +224,27 @@ class App extends Component {
             }
           }
         }
+
+        if (profession_key === 'master') {
+          for (let i=0; i<this.productivity(profession_key); i++) {
+            if (this.state.stone < 1) continue;
+            if (_.random(1, 20) === 1) {
+              state['stone']--;
+              state['stone_tools']++;
+            }
+          }
+        }
+
         if (profession_key === 'smith') {
           for (let i=0; i<this.productivity(profession_key); i++) {
             if (this.state.iron < 1) continue;
             if (_.random(1, 50) === 1) {
               state['iron']--;
-              state['tools']++;
+              state['iron_tools']++;
             }
           }
         }
+
       }
     });
 
@@ -260,6 +284,7 @@ class App extends Component {
     o.mission = type;
     o.mission_timer = len;
     o.mission_long = len;
+    o.mission_distance = this.state.lighthouse + 1;
 
     console.log(o);
     this.setState(o);
@@ -311,7 +336,8 @@ class App extends Component {
       'stone': state.stone,
       'iron': state.iron,
       'meals': state.meals,
-      'tools': state.tools,
+      'stone_tools': state.stone_tools,
+      'iron_tools': state.iron_tools,
     };
     let sum = _.sum(_.values(res));
     if (sum > this.fleetCapacity()) {
@@ -343,7 +369,7 @@ class App extends Component {
   }
 
   build(building_key, type = 'buildings', cost = false) {
-    if (this.isEnough(building_key, type, cost) && (this.state.building_space - this.built()) > 0) {
+    if (this.isEnough(building_key, type, cost) && (type !== 'buildings' || (this.state.building_space - this.built() > 0))) {
       if (!cost) {
         cost = buildings[building_key].cost;
       }
@@ -402,14 +428,14 @@ class App extends Component {
   built() {
     return  this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
             this.state.garden + this.state.field + this.state.pier + this.state.lodge +
-            this.state.sawmill + this.state.quarry + this.state.mine + this.state.forge +
+        this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
             this.state.ahu;
   }
 
   busy() {
     return  this.state.cook + this.state.aquarius +  this.state.sailor +
             this.state.gardener + this.state.fielder + this.state.fisherman + this.state.hunter +
-            this.state.woodcutter + this.state.mason + this.state.miner + this.state.smith +
+        this.state.mason + this.state.miner + this.state.master + this.state.woodcutter + this.state.smith +
             this.state.builder;
   }
 
@@ -498,7 +524,7 @@ class App extends Component {
               <div className="container theme-showcase" role="main">
                 <div>
                   <div>
-                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => { this.setState({wood: 10000, stone: 1000, iron: 500, meals: 10000, tools: 100}); }, 'text', ' cheat')}</span>
+                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => { this.setState({wood: 10000, stone: 1000, iron: 500, meals: 10000, iron_tools: 100}); }, 'text', ' cheat')}</span>
                     <span className={this.state.embarked === true ? '' : 'cheat'}>
                       {make_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
                       {this.lockedTill('field') ? '' : make_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}

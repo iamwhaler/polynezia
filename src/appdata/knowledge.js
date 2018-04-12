@@ -21,21 +21,23 @@ export const resources = {
 
 export const items = {
     'meals': {name: 'Cooked Meal'},
-    'tools': {name: 'Tools'},
+    'stone_tools': {name: 'Stone Tools'},
+    'iron_tools': {name: 'Iron Tools'},
     'human_meat': {name: 'Human Meat'},
 };
 
 export const ships = {
     'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 500, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
     'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 2000, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
-    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'tools': 25}, text: 'Stable catamaran for long-distance research.'}
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran for long-distance research.'}
 };
 
 export const buildings = {
     'hut': {name: 'Hut', worker: null, cost: {'wood': 50}, locked_till: true, text: 'Home for Two.'},
     'house': {name: 'House', worker: null, cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Home for Five.'},
+
     'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 100, 'stone': 50}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
+    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 50, 'stone': 25, 'stone_tools': 10}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
     'canal': {name: 'Canal', worker: 'aquarius', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
 
     'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 10}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
@@ -43,10 +45,12 @@ export const buildings = {
     'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
     'lodge': {name: 'Lodge', worker: 'hunter', cost: {'wood': 100, 'iron': 10}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
-    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
     'quarry': {name: 'Quarry', worker: 'mason', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
     'mine': {name: 'Mine', worker: 'miner', cost: {'wood': 1000, 'stone': 100}, locked_till: 'quarry', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
-    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50}, locked_till: 'mine', text: 'Allows to make tools and build catamarans. Each forge accelerates the speed of one smith.'},
+
+    'workshop': {name: 'Workshop', worker: 'master', cost: {'wood': 100, 'stone': 20}, locked_till: 'quarry', text: 'Allows to make stone tools. Each workshop accelerates the speed of one master.'},
+    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 250, 'iron': 10}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
+    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50, 'stone_tools': 25}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Each forge accelerates the speed of one smith.'},
 
     'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
 };
@@ -61,10 +65,12 @@ export const professions = {
     'fisherman': {name: 'Fisherman', resource: 'fish', home: 'pier', locked_till: 'pier', text: 'The fisherman produces fish. The pier will improve its work.'},
     'hunter': {name: 'Hunter', resource: 'wildfowl', home: 'lodge', locked_till: 'lodge', text: 'The hunter produces meat. The lodge will improve its work.'},
 
-    'woodcutter': {name: 'Woodcutter', resource: 'wood', home: 'sawmill', locked_till: 'hut', text: 'The woodcutter produces fruits. The sawmill will improve its work.'},
     'mason': {name: 'Mason', resource: 'stone', home: 'quarry', locked_till: 'quarry', text: 'The mason produces stone. The quarry will improve its work.'},
     'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron. The mine will improve its work and add stone to extraction.'},
-    'smith': {name: 'Smith', resource: null, home: 'forge', locked_till: 'forge', text: 'The smith produces tools. The garden will improve its work.'},
+
+    'master': {name: 'Master', resource: null, home: 'workshop', locked_till: 'workshop', text: 'The master produces stone tools. The workshop will improve its work.'},
+    'woodcutter': {name: 'Woodcutter', resource: 'wood', home: 'sawmill', locked_till: 'hut', text: 'The woodcutter produces fruits. The sawmill will improve its work.'},
+    'smith': {name: 'Smith', resource: null, home: 'forge', locked_till: 'forge', text: 'The smith produces iron tools. The forge will improve its work.'},
 
     'builder': {name: 'Builder', resource: 'moai', home: 'ahu', locked_till: 'ahu', text: 'Builders build the majestic statues Moai, the legacy of your civilization.'}
 };

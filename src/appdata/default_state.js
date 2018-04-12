@@ -18,7 +18,8 @@ export const default_state = {
     moai: 0,
 
     meals: 0,
-    tools: 0,
+    stone_tools: 0,
+    iron_tools: 0,
     human_meat: 0,
 
 
@@ -58,9 +59,11 @@ export const default_state = {
     pier: 0,
     lodge: 0,
 
-    sawmill: 0,
     quarry: 0,
     mine: 0,
+
+    workshop: 0,
+    sawmill: 0,
     forge: 0,
 
     ahu: 0,
@@ -75,9 +78,11 @@ export const default_state = {
     fisherman: 0,
     hunter: 0,
 
-    woodcutter: 0,
     mason: 0,
     miner: 0,
+
+    master: 0,
+    woodcutter: 0,
     smith: 0,
 
     builder: 0,
@@ -90,6 +95,7 @@ export const default_state = {
 
     mission: false, // fishing, discovery
     mission_timer: 0,
+    mission_distance: 0,
     mission_long: 0,
 
 
