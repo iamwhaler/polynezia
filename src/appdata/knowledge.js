@@ -1,8 +1,16 @@
 
+export const island_types = {
+    'swamp': {name: 'Swamp', resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50}, 'text': 'text'},
+    'jungle': {name: 'Jungle', resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75}, 'text': 'text'},
+    'tropical': {name: 'Tropical', resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100}, 'text': 'text'},
+    'plain': {name: 'Plain', resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150}, 'text': 'text'},
+    'mountain': {name: 'Mountain', resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200}, 'text': 'text'},
+};
+
 export const resources = {
     'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
     'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: true, difficulty: 1.5, max_cap: 5000, regen: 2},
+    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 1.5, max_cap: 5000, regen: 2},
     'wildfowl': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
     'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},

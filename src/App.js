@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import './App.css';
 import './tooltip.css';
 
-import {resources, items, ships, buildings, professions} from './appdata/knowledge';
+import {island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
 import {default_state} from './appdata/default_state';
 
 var timerID = null;
@@ -160,7 +160,7 @@ class App extends Component {
             }
           }
         }
-        if (this.state[profession_key] > 0 && this.state[profession.resource+'_volume'] > 0) {
+        if (this.state[profession_key] > 0 && this.state.volumes[profession.resource] > 0) {
           let productivity = this.productivity(profession_key); // this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
           if (this.state.human_meat > 0) {
             productivity *= 2;
@@ -168,7 +168,7 @@ class App extends Component {
         //  console.log(productivity);
         //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
           for(let i=0; i<productivity; i++) {
-            let ecofactor = this.state[profession.resource + '_volume'] / resources[profession.resource].max_cap;
+            let ecofactor = this.state.volumes[profession.resource] / this.state.caps[profession.resource];
             let difficulty = this.state.tools > 0 ? resources[profession.resource].difficulty/10 : resources[profession.resource].difficulty;
             let top = 1 + Math.round(difficulty / ecofactor);
             let chance = Math.ceil(_.random(1, top));
@@ -182,15 +182,15 @@ class App extends Component {
               if (profession.resource === 'moai') {
                 if (this.state.moai < this.state.ahu) {
                   state[profession.resource]++;
-                  state[profession.resource + '_volume']--;
+                  state.volumes[profession.resource]--;
                 }
               } else {
                 state[profession.resource]++;
 
-                state[profession.resource + '_volume']--;  // (((
+                state.volumes[profession.resource]--;  // (((
                 if (this.state.tools > 0) {
                   if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
-                    state[profession.resource + '_volume']++; // (((
+                    state.volumes[profession.resource]++; // (((
                   }
                 }
 
@@ -226,17 +226,17 @@ class App extends Component {
 
     // regeneration
     _.each(resources, (resource, resource_key) => {
-      if (this.state[resource_key+'_volume'] < resource.max_cap) {
+      if (this.state.volumes[resource_key] < this.state.caps[resource_key]) {
         let new_counter = 0;
         if (resource.vegetation && this.state.aquarius > 0) {
           let productivity = this.state.aquarius + Math.min(this.state.aquarius, this.state.canal);
           let regen = resource.regen + Math.floor(resource.regen * productivity / 10);
-          new_counter = this.state[resource_key+'_volume'] + regen;
+          new_counter = this.state.volumes[resource_key] + regen;
         }
         else {
-          new_counter = this.state[resource_key+'_volume'] + resource.regen;
+          new_counter = this.state.volumes[resource_key] + resource.regen;
         }
-        state[resource_key+'_volume'] = new_counter > resource.max_cap ? resource.max_cap : new_counter;
+        state.volumes[resource_key] = new_counter >this.state.caps[resource_key] ? this.state.caps[resource_key] : new_counter;
       }
     });
 
@@ -271,7 +271,17 @@ class App extends Component {
   }
 
   newGame() {
-    this.setState(default_state);
+    let new_state = default_state;
+
+    let morf = island_types.jungle.resources_rates;
+
+    _.each(_.keys(morf), (res_key) => {
+      let cap = Math.floor(Math.floor(resources[res_key].max_cap * (morf[res_key]/100)));
+      new_state.volumes[res_key] = Math.floor(_.random(cap*0.4, cap*0.6));
+      new_state.caps[res_key] = cap;
+    });
+
+    this.setState(new_state);
   }
 
   resetGame() {
@@ -282,6 +292,10 @@ class App extends Component {
 
     let things = {};
 
+
+
+    let island_type = _.sample(_.keys(island_types));
+    things.island_type = island_type;
     things.population = this.sailorsNeed();
     things.sailor = this.sailorsNeed();
     things.canoe = state.canoe;
@@ -309,6 +323,13 @@ class App extends Component {
 
     _.each(_.keys(things), (key) => { new_state[key] = things[key]; });
     _.each(_.keys(res), (key) => { new_state[key] = res[key]; });
+    let morf = island_types[island_type].resources_rates;
+
+    _.each(_.keys(morf), (res_key) => {
+      let cap = Math.floor(_.random(0.7, 0.13) * Math.floor(resources[res_key].max_cap * (morf[res_key]/100)));
+      new_state.volumes[res_key] = Math.floor(_.random(cap/4, cap));
+      new_state.caps[res_key] = cap;
+    });
 
     console.log(sum, res, things, new_state);
 
@@ -363,21 +384,19 @@ class App extends Component {
   }
 
   collect(resource_key) {
-    if (this.state[resource_key+'_volume'] > 1) {
-      let o = {};
+    if (this.state.volumes[resource_key] > 1) {
+      let o = {volumes: this.state.volumes};
       o[resource_key] = this.state[resource_key] + 1;
-      o[resource_key+'_volume'] = this.state[resource_key+'_volume'] - 1;
+      o.volumes[resource_key] = this.state.volumes[resource_key] - 1;
       this.setState(o);
     }
   }
 
   charge(cost) {
-    let enough = true;
-    _.each(cost, (value, resource_key) => {
-      let o = {};
-      o[resource_key] = this.state[resource_key] - value;
-      this.setState(o); } );
-    return enough;
+  _.each(cost, (value, resource_key) => {
+    let o = {};
+    o[resource_key] = this.state[resource_key] - value;
+    this.setState(o); } );
   }
 
   built() {
@@ -689,10 +708,10 @@ class App extends Component {
                     <div>
                       <h4 className="App-title">Natural Resources</h4>
                       <div className="datablock">
-                        Day: {this.state.tick}
+                        Day: {this.state.tick} on {island_types[this.state.island_type].name} island
                         {_.keys(resources).map((resource_key) => {
                           return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                            {resources[resource_key].name}: {Math.floor(this.state[resource_key + '_volume'])} / {resources[resource_key].max_cap} </div>
+                            {resources[resource_key].name}: {Math.floor(this.state.volumes[resource_key])} / {this.state.caps[resource_key]} </div>
                         })}
                       </div>
 
