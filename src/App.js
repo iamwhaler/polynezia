@@ -360,6 +360,7 @@ class App extends Component {
     let sum = _.sum(_.values(res));
     if (sum > this.fleetCapacity()) {
       let ratio = this.fleetCapacity() / sum;
+      console.log('ratio: '+ratio);
       _.each(_.keys(res), (key) => { things[key] = Math.floor(res[key] * ratio); });
     }
 
@@ -370,7 +371,6 @@ class App extends Component {
     new_state.caps['moai'] = new_state.building_space;
 
     _.each(_.keys(things), (key) => { new_state[key] = things[key]; });
-    _.each(_.keys(res), (key) => { new_state[key] = res[key]; });
     let morf = island_types[island_type].resources_rates;
 
     _.each(_.keys(morf), (res_key) => {
