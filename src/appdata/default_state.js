@@ -1,30 +1,28 @@
 
-import {resources} from '../appdata/knowledge';
-
-const building_space = 42;
+export const default_building_space = 42;
 
 export const default_state = {
     population: 1,
 
 
-    fruits: 420,
+    fruits: 0,
     roots: 0,
     fish: 0,
     wildfowl: 0,
 
-    wood: 80,
+    wood: 70,
     stone: 0,
     iron: 0,
     moai: 0,
 
-    meals: 0,
-    stone_tools: 0,
+    meals: 120,
+    stone_tools: 10,
     iron_tools: 0,
     human_meat: 0,
 
 
     island_type: 'tropical',
-    building_space: building_space,
+    building_space: default_building_space,
 
     caps: {
         fruits: 0,

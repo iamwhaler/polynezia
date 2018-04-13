@@ -5,7 +5,7 @@ import './App.css';
 import './tooltip.css';
 
 import {island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
-import {default_state} from './appdata/default_state';
+import {default_building_space, default_state} from './appdata/default_state';
 
 var timerID = null;
 
@@ -314,8 +314,8 @@ class App extends Component {
       new_state.caps[res_key] = cap;
     });
 
-    new_state.volumes['moai'] = 42;
-    new_state.caps['moai'] = 42;
+    new_state.volumes['moai'] = default_building_space;
+    new_state.caps['moai'] = default_building_space;
 
     this.setState(new_state);
   }
@@ -432,10 +432,12 @@ class App extends Component {
   }
 
   collect(resource_key) {
-    if (this.state.volumes[resource_key] > 1) {
+    let count = resource_key === 'wood' ? 1 : 10;
+
+    if (this.state.volumes[resource_key] > count) {
       let o = {volumes: this.state.volumes};
-      o[resource_key] = this.state[resource_key] + 1;
-      o.volumes[resource_key] = this.state.volumes[resource_key] - 1;
+      o[resource_key] = this.state[resource_key] + count;
+      o.volumes[resource_key] = this.state.volumes[resource_key] - count;
       this.setState(o);
     }
   }
