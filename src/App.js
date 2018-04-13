@@ -510,7 +510,7 @@ class App extends Component {
     const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
           <span className="h4" key = {stat+name} >
             <span className="label label-default titled" title={text}> {name} </span>
-            <button className={classNames('btn', 'titled', 'btn-success', 'btn-sm', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
+            <button className={classNames('btn', 'btn-success', 'btn-sm', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                     data-toggle="tooltip" data-placement="top" data-html="true"
                     title={text} onClick={() => { this.build(stat, type, cost); }}> +1 </button>
           </span>;
@@ -773,7 +773,7 @@ class App extends Component {
                               <div key={ship_key}>
                                 <span>
                                   <span className="badge"> {this.state[ship_key]} </span>
-                                  {make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Cost: ' + draw_cost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
+                                  {make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + draw_cost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
                                 </span>
                                 {make_button(ship_key + '_del', 'del',
                                     () => { this.ruin(ship_key, true); },

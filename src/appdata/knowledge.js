@@ -31,7 +31,7 @@ export const items = {
 export const ships = {
     'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 200, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
     'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 1000, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
-    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran for long-distance research.'}
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
 };
 
 export const buildings = {
