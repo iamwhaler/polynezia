@@ -170,23 +170,24 @@ class App extends Component {
     }
 
     // attract trader
-    let chance = Math.floor(_.random(1, 1 + (250 / (1 + this.state.lighthouse))));
+    let chance = Math.floor(_.random(1, 1 + (100 / (1 + this.state.lighthouse))));
     //console.log(this.state.lighthouse, chance, this.state.trader);
     if (this.state.lighthouse > 0 && !this.state.trader && chance === 1) {
-      const tradable = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron'];
+      const rates = {'fruits': 1, 'roots': 1, 'fish': 1, 'meat': 1, 'wood': 2, 'stone': 10, 'iron': 50, 'meals': 1.5, 'stone_tools': 15, 'iron_tools': 75};
+      const tradable = _.keys(rates);
 
       let size = _.random(1, 3);
       let resource1 = _.sample(tradable);
       let resource2 = _.sample(tradable);
 
       if (resource1 === resource2) {
-        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 5, 25, 50][size] * _.random(7, 13) * this.state.lighthouse / resources[resource1].difficulty));
+        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
         state.trader = {type: 'gift', offer: {'resource1': resource1, 'count1': count1},
           text: 'Traders arrived with gifts. Their gift is  '+count1+' '+resource1+'.'};
       }
       else {
-        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 250][size] * _.random(7, 13) * this.state.lighthouse / resources[resource1].difficulty));
-        let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 250][size] * _.random(7, 13) * this.state.lighthouse / resources[resource2].difficulty));
+        let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
+        let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource2]));
         state.trader = {type: 'trade', offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
           text: 'Trader arrival. They offer '+count1+' '+resource1+' for '+count2+' '+resource2+'.'};
       }
