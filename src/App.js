@@ -873,7 +873,8 @@ class App extends Component {
                       <div>
                         <div className="flex-container-row">
                           {_.keys(ships).map((ship_key) => {
-                            return this.lockedTill(ships[ship_key].locked_till) ? '' :
+                            return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
+                                ?
                               <div key={ship_key}>
                                 <span>
                                   <span className="badge"> {this.state[ship_key]} </span>
@@ -883,7 +884,8 @@ class App extends Component {
                                     () => { this.ruin(ship_key, true); },
                                     'Destroy ' + ships[ship_key].name,
                                     'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : ''))}
-                              </div>;
+                              </div>
+                                : '';
                           })}
                         </div>
                         <div>
