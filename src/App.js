@@ -744,8 +744,9 @@ class App extends Component {
                     <h4 className="App-title">Your Resources</h4>
                     <div className="datablock">
                       {_.keys(resources).map((resource_key) => {
-                        return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                          {resources[resource_key].name}: {this.state[resource_key]}</div>
+                        return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
+                            ? <div key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                            : ''
                       })}
                       {_.keys(items).map((item_key) => {
                         return this.state[item_key] > 0 ? <div key={item_key}>
