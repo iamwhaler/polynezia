@@ -74,7 +74,7 @@ class App extends Component {
     if (state.mission !== false) {
       if (state.mission_timer <= 0) {
         if (state.mission === 'fishing') {
-          let reward = _.random(1, state.mission_long) + Math.floor(state.mission_distance * this.sailorsNeed()
+          let reward = 10 + _.random(1, state.mission_long) + Math.floor(state.mission_distance * this.sailorsNeed()
                   * _.random(0.7, 1 + 0.1*state.canoe + 0.3*state.proa + 0.7*state.catamaran));
           alert(reward);
           state.fish += reward;
@@ -298,8 +298,9 @@ class App extends Component {
                   food.push(food_type);
                 }
               });
-              state[_.sample(food)]--;
-              state['meals'] += 2;
+              let selected = _.sample(food);
+              state[selected]--;
+              state['meals'] += (selected === 'human_meat' || !resources[selected].vegetation) ? 3 : 2;
               if (_.random(1, 10) === 1) {
                 state['wood']--;
               }
