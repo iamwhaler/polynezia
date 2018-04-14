@@ -8,28 +8,27 @@ export const default_state = {
     fruits: 0,
     roots: 0,
     fish: 0,
-    wildfowl: 0,
+    meat: 0,
 
-    wood: 70,
+    wood: 0,
     stone: 0,
     iron: 0,
     moai: 0,
 
-    meals: 120,
-    stone_tools: 10,
+    meals: 0,
+    stone_tools: 0,
     iron_tools: 0,
     human_meat: 0,
 
 
     island_type: 'tropical',
-  //  building_space: default_building_space,
     space: {shore: 0, fertile: 0, mountain: 0, wasteland: 100},
 
     caps: {
         fruits: 0,
         roots: 0,
         fish: 0,
-        wildfowl: 0,
+        meat: 0,
         wood: 0,
         stone: 0,
         iron: 0,
@@ -39,7 +38,7 @@ export const default_state = {
         fruits: 0,
         roots: 0,
         fish: 0,
-        wildfowl: 0,
+        meat: 0,
         wood: 0,
         stone: 0,
         iron: 0,
@@ -68,7 +67,7 @@ export const default_state = {
     ahu: 0,
 
 
-    sailor: 1,
+    sailor: 0,
     cook: 0,
     aquarius: 0,
 
@@ -87,7 +86,7 @@ export const default_state = {
     builder: 0,
 
 
-    canoe: 1,
+    canoe: 0,
     proa: 0,
     catamaran: 0,
 

@@ -1,17 +1,19 @@
 
+export const starter_pack = {wood: 35, meals: 110, stone_tools: 5, sailor: 1, canoe: 1};
+
 export const island_types = {
-    'swamp': {name: 'Swamp',        land_rates: {shore: 40, fertile: 30, mountain: 5}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
-    'jungle': {name: 'Jungle',      land_rates: {shore: 35, fertile: 40, mountain: 15}, wasteland: 10, resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75, 'iron': 100}, 'text': 'text'},
-    'tropical': {name: 'Tropical',  land_rates: {shore: 35, fertile: 30, mountain: 20}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100, 'iron': 100}, 'text': 'text'},
-    'plain': {name: 'Plain',        land_rates: {shore: 30, fertile: 20, mountain: 10}, wasteland: 30, resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150, 'iron': 100}, 'text': 'text'},
-    'mountain': {name: 'Mountain',  land_rates: {shore: 30, fertile: 10, mountain: 30}, wasteland: 30, resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200, 'iron': 100}, 'text': 'text'},
+    'swamp': {name: 'Swamp',        land_rates: {shore: 40, fertile: 30, mountain: 5}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'meat': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
+    'jungle': {name: 'Jungle',      land_rates: {shore: 35, fertile: 40, mountain: 15}, wasteland: 10, resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'meat': 100, 'wood': 200, 'stone': 75, 'iron': 100}, 'text': 'text'},
+    'tropical': {name: 'Tropical',  land_rates: {shore: 35, fertile: 30, mountain: 20}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'meat': 100, 'wood': 100, 'stone': 100, 'iron': 100}, 'text': 'text'},
+    'plain': {name: 'Plain',        land_rates: {shore: 30, fertile: 20, mountain: 10}, wasteland: 30, resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'meat': 150, 'wood': 75, 'stone': 150, 'iron': 100}, 'text': 'text'},
+    'mountain': {name: 'Mountain',  land_rates: {shore: 30, fertile: 10, mountain: 30}, wasteland: 30, resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'meat': 150, 'wood': 50, 'stone': 200, 'iron': 100}, 'text': 'text'},
 };
 
 export const resources = {
     'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
     'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 1, max_cap: 7500, regen: 1.5},
     'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 1.5, max_cap: 5000, regen: 2},
-    'wildfowl': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
+    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
     'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
@@ -29,9 +31,9 @@ export const items = {
 };
 
 export const ships = {
-    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 200, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
-    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 1000, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
-    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 5000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
+    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 150, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
+    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 500, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 2000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
 };
 
 export const buildings = {
@@ -65,7 +67,7 @@ export const professions = {
     'gardener': {name: 'Gardener', resource: 'fruits', home: 'garden', locked_till: 'garden', text: 'The gardener produces fruits. The garden will improve its work.'},
     'fielder': {name: 'Fielder', resource: 'roots', home: 'field', locked_till: 'field', text: 'The fielder produces roots. The field will improve its work.'},
     'fisherman': {name: 'Fisherman', resource: 'fish', home: 'pier', locked_till: 'pier', text: 'The fisherman produces fish. The pier will improve its work.'},
-    'hunter': {name: 'Hunter', resource: 'wildfowl', home: 'lodge', locked_till: 'lodge', text: 'The hunter produces meat. The lodge will improve its work.'},
+    'hunter': {name: 'Hunter', resource: 'meat', home: 'lodge', locked_till: 'lodge', text: 'The hunter produces meat. The lodge will improve its work.'},
 
     'mason': {name: 'Mason', resource: 'stone', home: 'quarry', locked_till: 'quarry', text: 'The mason produces stone. The quarry will improve its work.'},
     'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron. The mine will improve its work and add stone to extraction.'},

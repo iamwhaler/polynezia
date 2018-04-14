@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import './App.css';
 import './tooltip.css';
 
-import {island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
+import {starter_pack, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
 import {default_building_space, default_state} from './appdata/default_state';
 
 var timerID = null;
@@ -74,7 +74,8 @@ class App extends Component {
     if (state.mission !== false) {
       if (state.mission_timer <= 0) {
         if (state.mission === 'fishing') {
-          let reward = state.mission_long * this.sailorsNeed() * _.random(7, 13);
+          let reward = _.random(1, state.mission_long) + Math.floor(state.mission_distance * this.sailorsNeed()
+                  * _.random(0.7, 1 + 0.1*state.canoe + 0.3*state.proa + 0.7*state.catamaran));
           alert(reward);
           state.fish += reward;
         }
@@ -83,24 +84,29 @@ class App extends Component {
 
           switch (outcome) {
             case 1:
-              alert('You loose your fleet and crew.');
-              state.sailor -= this.sailorsNeed();
-              state.population -= this.sailorsNeed();
-              state.canoe = 0;
-              state.proa = 0;
-              state.catamaran = 0;
+              let tension = Math.ceil(state.mission_long*0.1);
+              let ships_los = {
+                canoe: _.random(tension, state.canoe),
+                proa: _.random(tension, state.proa),
+                catamaran: _.random(tension, state.catamaran)
+              };
+              let human_los = ships_los.canoe + ships_los.proa*2 + ships_los.catamaran*3;
+              alert('You loose your fleet: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.');
+              state.sailor -= human_los;
+              state.population -= human_los;
+                this.charge(ships_los);
             case 2:
               let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
               let new_resources = {
-                fruits: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
-                roots: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
-                fish: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
-                wildfowl: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
+                fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+                meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
 
-                wood: Math.ceil((_.random(0, res_reward) - 1) / 5),
-                stone: Math.ceil((_.random(0, res_reward) - 10) / 10),
-                iron: Math.ceil((_.random(0, res_reward) - 50) / 30),
-                moai: Math.ceil((_.random(0, res_reward) - 100) / 100)
+                wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
+                stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
+                iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
+                moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
               };
 
               console.log(new_resources);
@@ -126,9 +132,9 @@ class App extends Component {
             case 3:
               let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
               let new_ships = {
-                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 10),
-                proa:  Math.ceil((_.random(0, ships_reward) - 20) / 50),
-                catamaran:  Math.ceil((_.random(0, ships_reward) - 50) / 100)
+                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 20),
+                proa:  Math.ceil((_.random(0, ships_reward) - 25) / 50),
+                catamaran:  Math.ceil((_.random(0, ships_reward) - 50) / 250)
               };
 
               let reward_ships = {};
@@ -152,7 +158,7 @@ class App extends Component {
       }
       else {
         //  state.mission_timer--;
-        state.mission_timer -= 10;
+        state.mission_timer -= 20;
       }
     }
 
@@ -167,7 +173,7 @@ class App extends Component {
     let chance = Math.floor(_.random(1, 1 + (250 / (1 + this.state.lighthouse))));
     //console.log(this.state.lighthouse, chance, this.state.trader);
     if (this.state.lighthouse > 0 && !this.state.trader && chance === 1) {
-      const tradable = ['fruits', 'roots', 'fish', 'wildfowl', 'wood', 'stone', 'iron'];
+      const tradable = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron'];
 
       let size = _.random(1, 3);
       let resource1 = _.sample(tradable);
@@ -194,7 +200,7 @@ class App extends Component {
       }
       else {
         let food = [];
-        _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
+        _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => { if(this.state[food_type] > 0) { food.push(food_type); } });
 
         if(food.length === 0) {
           state.population--;
@@ -287,7 +293,7 @@ class App extends Component {
             if (this.state.wood < 1) continue;
             if (_.random(1, 2) === 1) {
               let food = [];
-              _.each(['fruits', 'roots', 'fish', 'wildfowl', 'human_meat'], (food_type) => {
+              _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => {
                 if (this.state[food_type] > 0) {
                   food.push(food_type);
                 }
@@ -373,7 +379,7 @@ class App extends Component {
 
   newGame() {
     if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
-    let new_state = default_state;
+    let new_state =  JSON.parse(JSON.stringify(default_state));
 
     new_state.volumes['moai'] = default_building_space;
     new_state.caps['moai'] = default_building_space;
@@ -390,6 +396,8 @@ class App extends Component {
       new_state.volumes[res_key] = Math.floor(_.random(cap*0.4, cap*0.6));
       new_state.caps[res_key] = cap;
     });
+
+    _.each(starter_pack, (item, key) => { new_state[key] = item; });
 
     this.setState(new_state);
   }
@@ -423,7 +431,7 @@ class App extends Component {
       'fruits': state.fruits,
       'roots': state.roots,
       'fish': state.fish,
-      'wildfowl': state.wildfowl,
+      'meat': state.meat,
       'wood': state.wood,
       'stone': state.stone,
       'iron': state.iron,
@@ -432,25 +440,24 @@ class App extends Component {
       'iron_tools': state.iron_tools,
     };
     let sum = _.sum(_.values(res));
-    if (sum > this.fleetCapacity()) {
-      let ratio = this.fleetCapacity() / sum;
+
+    let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
       console.log('ratio: '+ratio);
       _.each(_.keys(res), (key) => { things[key] = Math.floor(res[key] * ratio); });
-    }
 
-    let new_state = default_state;
+    let new_state =  JSON.parse(JSON.stringify(default_state));
 
-    new_state.building_space += things.legacy;
     new_state.volumes['moai'] = new_state.building_space;
     new_state.caps['moai'] = new_state.building_space;
 
     let resizer = island_types[island_type].land_rates;
     _.each(_.keys(resizer), (res_key) => {
-      new_state.space[res_key] = Math.floor(default_building_space * (resizer[res_key] / 100));
+      new_state.space[res_key] = Math.floor((default_building_space + things.legacy) * (resizer[res_key] / 100));
     });
     new_state.space.wasteland = default_building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
 
     _.each(_.keys(things), (key) => { new_state[key] = things[key]; });
+
     let morf = island_types[island_type].resources_rates;
 
     _.each(_.keys(morf), (res_key) => {
@@ -462,7 +469,6 @@ class App extends Component {
     console.log(sum, res, things, new_state);
 
     this.setState(new_state);
-    this.playGame();
   }
 
   lockedTill(factor) {
