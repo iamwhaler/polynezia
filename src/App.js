@@ -853,7 +853,7 @@ class App extends Component {
                     </div>
                         : <div>
                       <p className="h4">Your ship boarded on the inhabitant island. Fortunately, life is accelerating in this place, and you can survive there for a while. Praying Moai idol is the legacy of your people. Celebrate them and let your civilization
-                        grow<span onClick={() => { this.setState({wood: 500, stone: 100, iron: 50, meals: 1000, stone_tools: 10, population: 10}); }}>!</span></p>
+                        grow<span onClick={() => { this.setState({wood: 2000, stone: 200, iron: 50, meals: 1000, stone_tools: 100, population: 10}); }}>!</span></p>
                       {make_button('embark', 'Disembark', () => { this.setState({embarked: true}); this.playGame(); })}
                     </div>
                       }
