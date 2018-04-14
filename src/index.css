@@ -70,3 +70,9 @@ body {
   align-content: right;
   align: right;
 }
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}

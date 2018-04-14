@@ -25,6 +25,7 @@ class App extends Component {
     this.tick = this.tick.bind(this);
 
     this.lockedTill = this.lockedTill.bind(this);
+    this.drawCost = this.drawCost.bind(this);
 
     this.shipsSum  = this.shipsSum.bind(this);
     this.sailorsNeed  = this.sailorsNeed.bind(this);
@@ -71,19 +72,90 @@ class App extends Component {
 
     // fleeting
     if (state.mission !== false) {
-      if (state.mission_timer === 0) {
+      if (state.mission_timer <= 0) {
         if (state.mission === 'fishing') {
-          let reward = state.mission_distance * this.shipsSum() * _.random(7, 13);
+          let reward = state.mission_long * this.sailorsNeed() * _.random(7, 13);
           alert(reward);
           this.fish += reward;
         }
         if (state.mission === 'discovery') {
-          alert('You just alive.');
+          let outcome = _.random(1, 3);
+
+          switch (outcome) {
+            case 1:
+              alert('You loose your fleet and crew.');
+                break;
+                /*
+              state.sailor -= this.sailorsNeed();
+              state.population -= this.sailorsNeed();
+              state.canoe = 0;
+              state.proa = 0;
+              state.catamaran = 0;
+              break; */
+            case 2:
+              let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+              let new_resources = {
+                fruits: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
+                roots: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
+                fish: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
+                wildfowl: Math.ceil((_.random(0, res_reward) / 0.3) - 50),
+
+                wood: Math.ceil((_.random(0, res_reward) - 1) / 5),
+                stone: Math.ceil((_.random(0, res_reward) - 10) / 10),
+                iron: Math.ceil((_.random(0, res_reward) - 50) / 30),
+                moai: Math.ceil((_.random(0, res_reward) - 100) / 100)
+              };
+
+              console.log(new_resources);
+              _.each(new_resources, (count, resource) => { if (count < 1) delete new_resources[resource]; });
+
+              let achieved_resources = {};
+              let sum = _.sum(_.values(new_resources));
+              let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+              _.each(new_resources, (count, resource) => { if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio); });
+
+              _.each(achieved_resources, (count, resource) => { if (count < 1) delete achieved_resources[resource]; });
+
+              console.log(res_reward, sum, ratio, new_resources, achieved_resources);
+
+              if (!_.isEmpty(achieved_resources)) {
+                alert('You found another island and harvest it! Resources: '+this.drawCost(achieved_resources));
+                _.each(achieved_resources, (value, resource_key) => { state[resource_key] += value; } );
+              }
+              else {
+                alert('Nothing found.');
+              }
+              break;
+            case 3:
+              let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+              let new_ships = {
+                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 10),
+                proa:  Math.ceil((_.random(0, ships_reward) - 20) / 50),
+                catamaran:  Math.ceil((_.random(0, ships_reward) - 50) / 100)
+              };
+
+              let reward_ships = {};
+              _.each(new_ships, (count, ship) => { if (count > 0) reward_ships[ship] = count; });
+
+              console.log(ships_reward, new_ships, reward_ships);
+
+              if (!_.isEmpty(reward_ships)) {
+                alert('You found new ships! Ships: '+this.drawCost(reward_ships));
+                _.each(reward_ships, (value, resource_key) => { state[resource_key] += value; } );
+              }
+              else {
+                alert('Crew just alive.');
+              }
+              break;
+            default:
+              console.log('broken discovery outcome');
+          }
         }
         state.mission = false;
       }
       else {
-        state.mission_timer--;
+        //  state.mission_timer--;
+        state.mission_timer -= 10;
       }
     }
 
@@ -285,7 +357,7 @@ class App extends Component {
   startMission(type) {
     if (this.state.sailor < this.sailorsNeed()) return false;
 
-    let len = ((this.state.lighthouse + 1) * 100) / this.fleetSpeed();
+    let len = Math.floor(((this.state.lighthouse + 1) * 100) / this.fleetSpeed());
 
     let o = {};
     o.mission = type;
@@ -443,10 +515,21 @@ class App extends Component {
   }
 
   charge(cost) {
-  _.each(cost, (value, resource_key) => {
-    let o = {};
-    o[resource_key] = this.state[resource_key] - value;
-    this.setState(o); } );
+    console.log(cost);
+    _.each(cost, (value, resource_key) => {
+      let o = {};
+      o[resource_key] = this.state[resource_key] - value;
+      this.setState(o);
+    } );
+  }
+
+  gain(cost) {
+    console.log(cost);
+    _.each(cost, (value, resource_key) => {
+      let o = {};
+      o[resource_key] = this.state[resource_key] + value;
+      this.setState(o);
+    } );
   }
 
   built() {
@@ -498,6 +581,12 @@ class App extends Component {
     }
   }
 
+  drawCost(cost) {
+    let text = '';
+    _.each(cost, (value, resource) => { text += resource + ': ' + value + ' '; });
+    return text;
+  };
+
 
   render() {
 
@@ -509,10 +598,10 @@ class App extends Component {
 
     const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
           <span className="h4" key = {stat+name} >
-            <span className="label label-default titled" title={text}> {name} </span>
             <button className={classNames('btn', 'btn-success', 'btn-sm', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                     data-toggle="tooltip" data-placement="top" data-html="true"
                     title={text} onClick={() => { this.build(stat, type, cost); }}> +1 </button>
+            <span className="label label-default titled" title={text}> {name} </span>
           </span>;
 
     const make_arrows = (stat, name) =>
@@ -548,7 +637,7 @@ class App extends Component {
               <div className="container theme-showcase" role="main">
                 <div>
                   <div>
-                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => { this.setState({wood: 10000, stone: 1000, iron: 500, meals: 10000, iron_tools: 100}); }, 'text', ' cheat')}</span>
+                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => { this.setState({wood: 10000, stone: 1000, iron: 500, meals: 10000, stone_tools: 100, iron_tools: 100, population: 100}); }, 'text', ' cheat')}</span>
                     <span className={this.state.embarked === true ? '' : 'cheat'}>
                       {make_button('fruits', 'Collect Fruits', () => { this.collect('fruits'); }, 'text')}
                       {this.lockedTill('field') ? '' : make_button('roots', 'Collect Roots', () => { this.collect('roots'); }, 'text')}
@@ -657,7 +746,7 @@ class App extends Component {
                   <div className="flex-element" style={{'flexGrow': 3}}>
                     {this.state.embarked === true
                         ?
-                    <div >
+                    <div style={{'width': 360}}>
                       <h4 className="App-title">Civilisation</h4>
                       <div className="flex-container-row">
                         <div className="flex-element"><span className="badge"> {this.state.building_space - this.built()} </span> free building space </div>
@@ -670,24 +759,25 @@ class App extends Component {
                           let profession_key = buildings[building_key].worker;
                         //  console.log(building_key, profession_key);
 
-                          return <div className="flex-container-row" key={building_key}>
-                            <div className="flex-element alignleft">
+                          return <div className="clearfix" style={{'width': '100%'}} key={building_key}>
+                            <div className="alignleft">
                               {this.lockedTill(buildings[building_key].locked_till)
                                   ? ''
                                   :
                                   <span key={building_key}>
                                     <span>
                                       <span className="badge"> {this.state[building_key]} </span>
-                                      {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                                      {make_button(building_key + '_del', 'del',
+                                          () => { this.ruin(building_key, false); },
+                                          'Destroy ' + buildings[building_key].name,
+                                          'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+
+                                      {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
                                     </span>
-                                    {make_button(building_key + '_del', 'del',
-                                        () => { this.ruin(building_key, false); },
-                                        'Destroy ' + buildings[building_key].name,
-                                        'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
                                   </span>
                               }
                             </div>
-                            <div className="flex-element alignright">
+                            <div className="alignright">
                               {profession_key === null ? '' :
                                 this.lockedTill(professions[profession_key].locked_till)
                                   ? ''
@@ -724,7 +814,7 @@ class App extends Component {
                             <div key={building_key}>
                               <span>
                                 <span className="badge"> {this.state[building_key]} </span>
-                                {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + draw_cost(buildings[building_key].cost))}
+                                {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
                               </span>
                               {make_button(building_key+'_del', 'del', this.ruin,
                                   'Destroy '+buildings[building_key].name,
@@ -773,7 +863,7 @@ class App extends Component {
                               <div key={ship_key}>
                                 <span>
                                   <span className="badge"> {this.state[ship_key]} </span>
-                                  {make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + draw_cost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
+                                  {make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + this.drawCost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
                                 </span>
                                 {make_button(ship_key + '_del', 'del',
                                     () => { this.ruin(ship_key, true); },
