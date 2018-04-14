@@ -378,16 +378,21 @@ class App extends Component {
     if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
     let new_state = default_state;
 
-    let morf = island_types.jungle.resources_rates;
+    new_state.volumes['moai'] = default_building_space;
+    new_state.caps['moai'] = default_building_space;
 
+    let resizer = island_types.tropical.land_rates;
+    _.each(_.keys(resizer), (res_key) => {
+      new_state.space[res_key] = Math.floor(default_building_space * (resizer[res_key] / 100));
+    });
+    new_state.space.wasteland = default_building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
+
+    let morf = island_types.tropical.resources_rates;
     _.each(_.keys(morf), (res_key) => {
       let cap = Math.floor(resources[res_key].max_cap * (morf[res_key]/100));
       new_state.volumes[res_key] = Math.floor(_.random(cap*0.4, cap*0.6));
       new_state.caps[res_key] = cap;
     });
-
-    new_state.volumes['moai'] = default_building_space;
-    new_state.caps['moai'] = default_building_space;
 
     this.setState(new_state);
   }
@@ -442,6 +447,12 @@ class App extends Component {
     new_state.volumes['moai'] = new_state.building_space;
     new_state.caps['moai'] = new_state.building_space;
 
+    let resizer = island_types[island_type].land_rates;
+    _.each(_.keys(resizer), (res_key) => {
+      new_state.space[res_key] = Math.floor(default_building_space * (resizer[res_key] / 100));
+    });
+    new_state.space.wasteland = default_building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
+
     _.each(_.keys(things), (key) => { new_state[key] = things[key]; });
     let morf = island_types[island_type].resources_rates;
 
@@ -463,7 +474,7 @@ class App extends Component {
   }
 
   build(building_key, type = 'buildings', cost = false) {
-    if (this.isEnough(building_key, type, cost) && (type !== 'buildings' || (this.state.building_space - this.built() > 0))) {
+    if (this.isEnough(building_key, type, cost) && (type !== 'buildings' || this.spaceEnough(buildings[building_key].build_on))) {
       if (!cost) {
         cost = buildings[building_key].cost;
       }
@@ -491,7 +502,7 @@ class App extends Component {
 
   isEnough(building_key, type = 'buildings', cost = false) {
     if (type === 'buildings') {
-      if (this.state.building_space - this.built() < 1) return false;
+      if (!this.spaceEnough(buildings[building_key].build_on)) return false;
     }
 
     if (!cost) {
@@ -532,11 +543,53 @@ class App extends Component {
     } );
   }
 
-  built() {
-    return  this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
-            this.state.garden + this.state.field + this.state.pier + this.state.lodge +
+  sumSpace() {
+    return this.state.space.shore +  this.state.space.fertile +  this.state.space.mountain +  this.state.space.wasteland;
+  }
+
+  sumBuild() {
+    return this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
+        this.state.garden + this.state.field + this.state.pier + this.state.lodge +
         this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
-            this.state.ahu;
+        this.state.ahu;
+  }
+
+  spaceEnough(land_type = null) {
+    if (this.sumBuild() >= this.sumSpace()) {
+      return false;
+    }
+
+    if (!land_type || land_type === 'any') {
+      return this.sumBuild() < this.sumSpace();
+    }
+
+    switch (land_type) {
+      case 'shore':
+        return this.state.bonfire + this.state.lighthouse + this.state.pier < this.state.space.shore;
+      case 'fertile':
+        return this.state.canal + this.state.garden + this.state.field + this.state.lodge + this.state.sawmill < this.state.space.fertile;
+      case 'mountain':
+        return this.state.quarry + this.state.mine < this.state.space.mountain;
+      case 'wasteland':
+        return this.sumBuild() < this.sumSpace();
+      default:
+        console.log('wrong land type');
+    }
+
+  }
+
+  built(land_type = 'any') {
+    let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
+    model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
+    model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.lodge + this.state.sawmill;
+    model.mountain = this.state.quarry + this.state.mine;
+    model.wasteland = this.state.bonfire + this.state.lighthouse + this.state.pier;
+    model.any = this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
+        this.state.garden + this.state.field + this.state.pier + this.state.lodge +
+        this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
+        this.state.ahu;
+
+    return model[land_type];
   }
 
   busy() {
@@ -611,12 +664,6 @@ class App extends Component {
           <span className="font-weight-bold badge" style={{width: '28px'}}> {this.state[stat]} </span>
           <button onClick={() => {this.assignWorker(stat)}}> {'>'} </button>
         </div>;
-
-    const draw_cost = (cost) => {
-      let text = '';
-      _.each(cost, (value, resource) => { text += resource + ': ' + value + ' '; });
-      return text;
-    };
 
     return (
       <div className="App">
@@ -746,10 +793,18 @@ class App extends Component {
                   <div className="flex-element" style={{'flexGrow': 3}}>
                     {this.state.embarked === true
                         ?
-                    <div style={{'width': 360}}>
+                    <div style={{'width': 560}}>
                       <h4 className="App-title">Civilisation</h4>
                       <div className="flex-container-row">
-                        <div className="flex-element"><span className="badge"> {this.state.building_space - this.built()} </span> free building space </div>
+                        <div className="flex-element">
+                          <span className="badge bg-shore"> {this.state.space.shore - this.built('shore')} </span>
+                          <span className="badge bg-fertile"> {this.state.space.fertile - this.built('fertile')} </span>
+                          <span className="badge bg-mountain"> {this.state.space.mountain - this.built('mountain')} </span>
+                          <span className="badge bg-wasteland"> {this.state.space.wasteland - this.built('wasteland')} </span>
+                          =
+                          <span className="badge"> {this.sumSpace() - this.sumBuild()} </span>
+                          free space
+                        </div>
                         <div className="flex-element">Population: {this.state.population} / {(this.state.hut * 2) + (this.state.house * 5)}</div>
                         <div className="flex-element"> free citizens <span className="badge"> {this.state.population - this.busy()}</span></div>
                       </div>
@@ -766,7 +821,7 @@ class App extends Component {
                                   :
                                   <span key={building_key}>
                                     <span>
-                                      <span className="badge"> {this.state[building_key]} </span>
+                                      <span className={classNames('badge', 'bg-'+buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                       {make_button(building_key + '_del', 'del',
                                           () => { this.ruin(building_key, false); },
                                           'Destroy ' + buildings[building_key].name,
@@ -846,9 +901,10 @@ class App extends Component {
 
                   <div className="flex-element">
                     <div>
-                      <h4 className="App-title">Natural Resources</h4>
+                      <h4 className="App-title">Island Resources</h4>
                       <div className="datablock">
                         Day: {this.state.tick} on {island_types[this.state.island_type].name} island
+                        <div>Size: {this.sumSpace()} ({this.drawCost({shore: this.state.space.shore, fertile: this.state.space.fertile, mountain: this.state.space.mountain, wasteland: this.state.space.wasteland})})</div>
                         {_.keys(resources).map((resource_key) => {
                           return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
                             {resources[resource_key].name}: {Math.floor(this.state.volumes[resource_key])} / {this.state.caps[resource_key]} </div>

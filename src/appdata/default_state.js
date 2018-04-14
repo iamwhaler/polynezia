@@ -22,7 +22,8 @@ export const default_state = {
 
 
     island_type: 'tropical',
-    building_space: default_building_space,
+  //  building_space: default_building_space,
+    space: {shore: 0, fertile: 0, mountain: 0, wasteland: 100},
 
     caps: {
         fruits: 0,

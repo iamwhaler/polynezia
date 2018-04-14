@@ -1,10 +1,10 @@
 
 export const island_types = {
-    'swamp': {name: 'Swamp', resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
-    'jungle': {name: 'Jungle', resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75, 'iron': 100}, 'text': 'text'},
-    'tropical': {name: 'Tropical', resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100, 'iron': 100}, 'text': 'text'},
-    'plain': {name: 'Plain', resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150, 'iron': 100}, 'text': 'text'},
-    'mountain': {name: 'Mountain', resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200, 'iron': 100}, 'text': 'text'},
+    'swamp': {name: 'Swamp',        land_rates: {shore: 40, fertile: 30, mountain: 5}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'wildfowl': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
+    'jungle': {name: 'Jungle',      land_rates: {shore: 35, fertile: 40, mountain: 15}, wasteland: 10, resources_rates: {'fruits': 100, 'roots': 75, 'fish': 100, 'wildfowl': 100, 'wood': 200, 'stone': 75, 'iron': 100}, 'text': 'text'},
+    'tropical': {name: 'Tropical',  land_rates: {shore: 35, fertile: 30, mountain: 20}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 100, 'fish': 100, 'wildfowl': 100, 'wood': 100, 'stone': 100, 'iron': 100}, 'text': 'text'},
+    'plain': {name: 'Plain',        land_rates: {shore: 30, fertile: 20, mountain: 10}, wasteland: 30, resources_rates: {'fruits': 50, 'roots': 200, 'fish': 75, 'wildfowl': 150, 'wood': 75, 'stone': 150, 'iron': 100}, 'text': 'text'},
+    'mountain': {name: 'Mountain',  land_rates: {shore: 30, fertile: 10, mountain: 30}, wasteland: 30, resources_rates: {'fruits': 150, 'roots': 75, 'fish': 50, 'wildfowl': 150, 'wood': 50, 'stone': 200, 'iron': 100}, 'text': 'text'},
 };
 
 export const resources = {
@@ -35,26 +35,26 @@ export const ships = {
 };
 
 export const buildings = {
-    'hut': {name: 'Hut', worker: null, cost: {'wood': 25}, locked_till: true, text: 'Home for Two.'},
-    'house': {name: 'House', worker: null, cost: {'wood': 50, 'stone': 10, 'stone_tools': 10}, locked_till: 'workshop', text: 'Home for Five.'},
+    'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: true, text: 'Home for Two.'},
+    'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'stone_tools': 10}, locked_till: 'workshop', text: 'Home for Five.'},
 
-    'bonfire': {name: 'Bonfire', worker: 'cook', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'lighthouse': {name: 'Lighthouse', worker: 'sailor', cost: {'wood': 100, 'stone': 25, 'stone_tools': 10}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
-    'canal': {name: 'Canal', worker: 'aquarius', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
+    'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
+    'lighthouse': {name: 'Lighthouse', worker: 'sailor', build_on: 'shore', cost: {'wood': 100, 'stone': 25, 'stone_tools': 10}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
+    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
 
-    'garden': {name: 'Garden', worker: 'gardener', cost: {'fruits': 25}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
-    'field': {name: 'Field', worker: 'fielder', cost: {'wood': 50, 'meals': 50}, locked_till: 'canal', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
-    'pier': {name: 'Pier', worker: 'fisherman', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
-    'lodge': {name: 'Lodge', worker: 'hunter', cost: {'wood': 200, 'iron_tools': 25}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
+    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 25}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
+    'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 50, 'meals': 50}, locked_till: 'canal', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
+    'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
+    'lodge': {name: 'Lodge', worker: 'hunter', build_on: 'fertile', cost: {'wood': 200, 'iron_tools': 25}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
-    'quarry': {name: 'Quarry', worker: 'mason', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
-    'mine': {name: 'Mine', worker: 'miner', cost: {'wood': 1000, 'stone_tools': 25}, locked_till: 'workshop', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
+    'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
+    'mine': {name: 'Mine', worker: 'miner', build_on: 'mountain', cost: {'wood': 1000, 'stone_tools': 25}, locked_till: 'workshop', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
 
-    'workshop': {name: 'Workshop', worker: 'master', cost: {'wood': 150, 'stone': 50}, locked_till: 'quarry', text: 'Allows to make stone tools. Each workshop accelerates the speed of one master.'},
-    'sawmill': {name: 'Sawmill', worker: 'woodcutter', cost: {'wood': 100, 'iron': 25, 'stone_tools': 25}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
-    'forge': {name: 'Forge', worker: 'smith', cost: {'stone': 100, 'iron': 50, 'stone_tools': 50}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Each forge accelerates the speed of one smith.'},
+    'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 150, 'stone': 50}, locked_till: 'quarry', text: 'Allows to make stone tools. Each workshop accelerates the speed of one master.'},
+    'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 100, 'iron': 25, 'stone_tools': 25}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
+    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 100, 'iron': 50, 'stone_tools': 50}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Each forge accelerates the speed of one smith.'},
 
-    'ahu': {name: 'Ahu', worker: 'builder', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
+    'ahu': {name: 'Ahu', worker: 'builder', build_on: 'any', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
 };
 
 export const professions = {

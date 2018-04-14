@@ -1,3 +1,22 @@
+
+
+
+.bg-shore {
+ background-color: #444dc4;
+}
+.bg-fertile {
+ background-color: #1e8c32;
+}
+.bg-mountain {
+ background-color: #914324;
+}
+.bg-wasteland {
+ background-color: #c8cc5b;
+}
+
+
+
+
 .App {
   text-align: center;
 }
