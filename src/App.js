@@ -76,7 +76,7 @@ class App extends Component {
         if (state.mission === 'fishing') {
           let reward = state.mission_long * this.sailorsNeed() * _.random(7, 13);
           alert(reward);
-          this.fish += reward;
+          state.fish += reward;
         }
         if (state.mission === 'discovery') {
           let outcome = _.random(1, 3);
