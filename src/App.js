@@ -84,14 +84,11 @@ class App extends Component {
           switch (outcome) {
             case 1:
               alert('You loose your fleet and crew.');
-                break;
-                /*
               state.sailor -= this.sailorsNeed();
               state.population -= this.sailorsNeed();
               state.canoe = 0;
               state.proa = 0;
               state.catamaran = 0;
-              break; */
             case 2:
               let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
               let new_resources = {
