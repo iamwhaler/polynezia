@@ -793,7 +793,7 @@ class App extends Component {
                   <div className="flex-element" style={{'flexGrow': 3}}>
                     {this.state.embarked === true
                         ?
-                    <div style={{'width': 560}}>
+                    <div>
                       <h4 className="App-title">Civilisation</h4>
                       <div className="flex-container-row">
                         <div className="flex-element">
@@ -852,51 +852,11 @@ class App extends Component {
                       </div>
                     </div>
                         : <div>
-                      <p className="h4">Your ship boarded on the inhabitant island. Fortunately, life is accelerating in this place, and you can survive there for a while. Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow!</p>
+                      <p className="h4">Your ship boarded on the inhabitant island. Fortunately, life is accelerating in this place, and you can survive there for a while. Praying Moai idol is the legacy of your people. Celebrate them and let your civilization
+                        grow<span onClick={() => { this.setState({wood: 500, stone: 100, iron: 50, meals: 1000, stone_tools: 10, population: 10}); }}>!</span></p>
                       {make_button('embark', 'Disembark', () => { this.setState({embarked: true}); this.playGame(); })}
-                    </div> }
-                  </div>
-
-
-                  <div className="flex-element hidden">
-                    <h4 className="App-title">Buildings</h4>
-                    <div className="datablock">
-                      <span className="badge"> {this.state.building_space - this.built()} </span> free building space
-                      {_.keys(buildings).map((building_key) => {
-                        return this.lockedTill(buildings[building_key].locked_till)
-                            ? ''
-                            :
-                            <div key={building_key}>
-                              <span>
-                                <span className="badge"> {this.state[building_key]} </span>
-                                {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
-                              </span>
-                              {make_button(building_key+'_del', 'del', this.ruin,
-                                  'Destroy '+buildings[building_key].name,
-                                  'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
-                            </div>
-                      })}
                     </div>
-                  </div>
-
-                  <div className="flex-element hidden">
-                    <h4 className="App-title">Tribe</h4>
-                    <div className="datablock">
-
-                      <div>Population: {this.state.population} / {(this.state.hut * 2) + (this.state.house * 5)}</div>
-                      <div><span className="badge"> {this.state.population - this.busy()}</span> free citizens</div>
-
-                      {_.keys(professions).map((profession_key) => {
-                        return this.lockedTill(professions[profession_key].locked_till)
-                            ? ''
-                            :
-                            <div key={profession_key} className="filament">
-                              <h4 className="slim">
-                                {make_arrows(profession_key, <span key={profession_key} className="label label-default titled" title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
-                              </h4>
-                            </div>
-                      })}
-                    </div>
+                      }
                   </div>
 
                   <div className="flex-element">
