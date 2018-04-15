@@ -523,7 +523,7 @@ class App extends Component {
                 if (profession_key === 'cook') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
-                            if (_.random(1, 2) === 1) {
+                            if (_.random(1, 3) === 1) {
                                 state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'vegetables': 2, 'human_meat': 3}, 'meals');
                             }
                             return state;
