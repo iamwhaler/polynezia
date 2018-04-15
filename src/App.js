@@ -142,7 +142,7 @@ class App extends Component {
                         case 3:
                             let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
                             let new_ships = {
-                                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 20),
+                                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
                                 proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
                                 catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
                             };
@@ -188,14 +188,18 @@ class App extends Component {
         //console.log(this.state.lighthouse, chance, this.state.trader);
         if (this.state.lighthouse > 0 && !this.state.trader && chance === 1) {
             const rates = {
-                'fruits': 1,
-                'roots': 1,
-                'fish': 1,
-                'meat': 1,
-                'wood': 2,
+                'fruits': 1.5,
+                'roots': 1.5,
+                'fish': 2,
+                'meat': 2,
+                'wood': 5,
+                'turf': 5,
                 'stone': 10,
+                'obsidian': 25,
+                'wool': 25,
+                'skin': 25,
                 'iron': 50,
-                'meals': 1.5,
+                'meals': 1,
                 'tools': 15,
                 'instruments': 75
             };
@@ -205,7 +209,10 @@ class App extends Component {
             let resource1 = _.sample(tradable);
             let resource2 = _.sample(tradable);
 
-            if (resource1 === resource2) {
+            let nav_factor = Math.floor(100 - (this.navigation/100));
+            console.log(nav_factor);
+
+            if (resource1 === resource2 || _.random(1, nav_factor) === 1) {
                 let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
                 state.trader = {
                     type: 'gift', offer: {'resource1': resource1, 'count1': count1},
@@ -268,9 +275,7 @@ class App extends Component {
                 }
             });
             if (raw.length > 0) {
-                let selected = _.sample(raw);
-                console.log(selected);
-                return func(state, selected);
+                return func(state, _.sample(raw));
             }
             return state;
         };
@@ -397,8 +402,8 @@ class App extends Component {
                 }
 
                 if (profession_key === 'aquarius') {
-                    for (let i = 0; i < Math.min(this.state.canal, this.state.aquarius); i++) {
-                        if (_.random(1, 10 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        if (_.random(1, 25 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
                             state['turf']++;
                         }
                     }
@@ -884,9 +889,8 @@ class App extends Component {
                                                     return <div className="clearfix" style={{'width': '100%'}}
                                                                 key={building_key}>
                                                         <div className="alignleft">
-                                                            {this.lockedTill(buildings[building_key].locked_till)
-                                                                ? ''
-                                                                :
+                                                            { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
+                                                                ?
                                                                 <span key={building_key}>
                                                                     <span className="h4">
                                                                         <span
@@ -903,6 +907,7 @@ class App extends Component {
                                                                         title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}> {buildings[building_key].name} </span>
                                                                     </span>
                                                                 </span>
+                                                                : ''
                                                             }
                                                         </div>
                                                         <div className="alignright">
@@ -1028,10 +1033,10 @@ class App extends Component {
                                             <div>
                                                 {this.state.trader.type === 'gift'
                                                     ?
-                                                    <div className="panel panel-info">>
+                                                    <div className="panel panel-info">
                                                         <h4>Traders arrived with gifts.</h4>
                                                         <p>Their gift is <span
-                                                            className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>.
+                                                            className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
                                                         </p>
                                                         {make_button('take', 'Take',
                                                             () => {
@@ -1048,7 +1053,7 @@ class App extends Component {
                                                         <p>They offer <span
                                                             className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
                                                             for <span
-                                                                className="badge">{this.state.trader.offer.count2} {this.state.trader.offer.resource2}</span>.
+                                                                className="badge">{this.state.trader.offer.count2} {this.state.trader.offer.resource2}</span>
                                                         </p>
                                                         {make_button('trade', 'Trade',
                                                             () => {
