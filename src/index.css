@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto Condensed', sans-serif;
+  overflow: auto;
 }
 
 
@@ -75,4 +76,9 @@ body {
   content: "";
   clear: both;
   display: table;
+}
+
+div {
+  border: 1px;
+  border-style: solid;
 }

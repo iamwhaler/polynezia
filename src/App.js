@@ -731,10 +731,10 @@ class App extends Component {
             </div>;
 
         return (
-            <div className="App">
+            <div className="App clearfix">
                 <div className="background-image">
                 </div>
-                <div className="content">
+                <div className="content clearfix">
                     {this.state.score
                         ?
                         <div className="container">
@@ -746,7 +746,7 @@ class App extends Component {
                             </div>
                         </div>
                         :
-                        <div className="container theme-showcase" role="main">
+                        <div className="container clearfix theme-showcase" role="main">
                             <div>
                                 <div>
                                     <span className="pull-left cheat"> {make_button('cheat', ' ', () => {
@@ -781,7 +781,7 @@ class App extends Component {
                                 </div>
                             </div>
 
-                            <div className="flex-container-row">
+                            <div className="flex-container-row clearfix">
 
                                 { // Left Column
                                 }
@@ -902,11 +902,11 @@ class App extends Component {
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
                                         <div>
-                                            <div className="flex-container-row">
+                                            <div className="flex-container-column">
                                                 {_.keys(ships).map((ship_key) => {
                                                     return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
                                                         ?
-                                                        <div key={ship_key}>
+                                                        <div key={ship_key} className="flex-element">
                                                             <span className="h4">
                                                                 <span className="badge"> {this.state[ship_key]} </span>
                                                                 {make_button(ship_key + '_del', 'del',

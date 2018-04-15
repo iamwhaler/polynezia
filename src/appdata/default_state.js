@@ -1,4 +1,3 @@
-
 export const default_building_space = 42;
 
 export const default_state = {
