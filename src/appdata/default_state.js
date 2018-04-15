@@ -13,6 +13,7 @@ export const default_state = {
     iron: 0,
     moai: 0,
 
+    vegetables: 0,
     human_meat: 0,
     meals: 0,
     coal: 0,

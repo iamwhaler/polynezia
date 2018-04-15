@@ -11,9 +11,9 @@ export const island_types = {
 
 export const resources = {
     'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
-    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 1, max_cap: 8000, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 1.5, max_cap: 6000, regen: 2},
-    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 5000, regen: 2.5},
+    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 8000, regen: 1.5},
+    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 6000, regen: 2},
+    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 5000, regen: 2.5},
 
     'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 5000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
@@ -22,6 +22,7 @@ export const resources = {
 };
 
 export const items = {
+    'vegetables': {name: 'Vegetables'},
     'human_meat': {name: 'Human Meat'},
     'meals': {name: 'Cooked Meal'},
     'coal': {name: 'Coal'},

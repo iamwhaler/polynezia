@@ -76,7 +76,7 @@ class App extends Component {
         if (state.mission !== false) {
             if (state.mission_timer <= 0) {
                 if (state.mission === 'fishing') {
-                    let reward = this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
+                    let reward = 10 + this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
                     state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
                     state.fish += reward;
                 }
@@ -301,8 +301,16 @@ class App extends Component {
         _.each(professions, (profession, profession_key) => {
             if (profession.resource) {
 
+                if (profession_key === 'fielder') {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        if (_.random(1, 5) === 1) {
+                            state['vegetables']++;
+                        }
+                    }
+                }
+
                 if (profession_key === 'hunter') {
-                    for (let i = 0; i < Math.min(this.state.lodge, this.state.hunter); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50) === 1) {
                             state['skin']++;
                         }
@@ -310,7 +318,7 @@ class App extends Component {
                 }
 
                 if (profession_key === 'miner') {
-                    for (let i = 0; i < Math.min(this.state.mine, this.state.miner); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 10) === 1) {
                             state['stone']++;
                         }
@@ -321,7 +329,7 @@ class App extends Component {
                 }
 
                 if (profession_key === 'mason') {
-                    for (let i = 0; i < Math.min(this.state.quarry, this.state.mason); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 100 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
                             state['obsidian']++;
                         }
@@ -332,7 +340,7 @@ class App extends Component {
                 }
 
                 if (this.state[profession_key] > 0 && this.state.volumes[profession.resource] > 0) {
-                    let productivity = this.productivity(profession_key); // this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
+                    let productivity = this.productivity(profession_key);
                     if (this.state.human_meat > 0) {
                         productivity *= 2;
                     }
@@ -1003,7 +1011,7 @@ class App extends Component {
                                                     in {this.state.mission_timer} days.</div>
                                                     :
                                                     <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
-                                                        {this.lockedTill('pier') ? '' : make_button('fishing', 'Fishing', () => {
+                                                        {make_button('fishing', 'Fishing', () => {
                                                             this.startMission('fishing');
                                                         }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
                                                         {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
