@@ -1,5 +1,5 @@
 
-export const starter_pack = {wood: 35, meals: 74, tools: 1, sailor: 1, canoe: 1};
+export const starter_pack = {meals: 100, sailor: 1, canoe: 1};
 
 export const island_types = {
     'swamp': {name: 'Swamp',        land_rates: {shore: 40, fertile: 30, mountain: 5}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'meat': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
@@ -10,7 +10,7 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 1},
+    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: 'garden', difficulty: 1, max_cap: 10000, regen: 1},
     'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 8000, regen: 1.5},
     'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 6000, regen: 2},
     'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 5000, regen: 2.5},
@@ -44,10 +44,10 @@ export const ships = {
 };
 
 export const buildings = {
-    'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: true, text: 'Home for Two.'},
+    'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: 'bonfire', text: 'Home for Two.'},
     'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'tools': 10}, locked_till: 'workshop', text: 'Home for Five. Attracts new residents.'},
 
-    'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Accelerates speed of cook.'},
+    'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: true, text: 'Attracts new residents. Accelerates speed of cook.'},
     'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 25}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', cost: {'wood': 100, 'stone': 50, 'tools': 25}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 

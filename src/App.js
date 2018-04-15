@@ -15,6 +15,7 @@ class App extends Component {
 
         var app_state = JSON.parse(localStorage.getItem("app_state"));
         this.state = app_state ? app_state : default_state;
+        //this.setState(state);
 
         this.resetGame = this.resetGame.bind(this);
         this.newGame = this.newGame.bind(this);
@@ -40,6 +41,9 @@ class App extends Component {
 
         this.assignWorker = this.assignWorker.bind(this);
         this.detachWorker = this.detachWorker.bind(this);
+
+
+        if (!app_state) this.initGame('tropical', starter_pack, {});
     }
 
     componentDidMount() {
@@ -72,102 +76,227 @@ class App extends Component {
 
         state.tick++;
 
+        if (state.in_sea) {
+            if (state.tick > 30 && state.fish > 30) {
+                state.in_sea = false;
+                state.shore = true;
+            }
+        }
+
         // fleeting
         if (state.mission !== false) {
             if (state.mission_timer <= 0) {
-                if (state.mission === 'fishing') {
-                    let reward = 10 + this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
-                    state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
-                    state.fish += reward;
-                }
-                if (state.mission === 'discovery') {
-                    let outcome = _.random(1, 3);
 
-                    switch (outcome) {
-                        case 1:
-                            let tension = Math.ceil(state.mission_long * 0.1);
-                            let ships_los = {
-                                canoe: _.random(Math.min(tension, state.canoe), state.canoe),
-                                proa: _.random(Math.min(tension, state.proa), state.proa),
-                                catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
-                            };
-                            let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
-                            state.mission_text = '<p>You loose your fleet:</p> ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
-                            state.sailor -= human_los;
-                            state.population -= human_los;
-                            this.charge(ships_los);
-                            break;
-                        case 2:
-                            let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-                            let new_resources = {
-                                fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-                                meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+                switch (state.mission) {
+                    case 'fishing':
+                        let reward = 10 + this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
+                        state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
+                        state.fish += reward;
+                        break;
+                    case 'discovery':
+                        switch (_.random(1, 3)) {
+                            case 1:
+                                let tension = Math.ceil(state.mission_long * 0.1);
+                                let ships_los = {
+                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
+                                    proa: _.random(Math.min(tension, state.proa), state.proa),
+                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
+                                };
+                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
+                                state.mission_text = '<p>You loose your fleet:</p> ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
+                                state.sailor -= human_los;
+                                state.population -= human_los;
+                                this.charge(ships_los);
+                                break;
+                            case 2:
+                                let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+                                let new_resources = {
+                                    fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                                    roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                                    fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+                                    meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
 
-                                wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
-                                stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
-                                iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
-                                moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
-                            };
+                                    wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
+                                    stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
+                                    iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
+                                    moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
+                                };
 
-                            console.log(new_resources);
-                            _.each(new_resources, (count, resource) => {
-                                if (count < 1) delete new_resources[resource];
-                            });
-
-                            let achieved_resources = {};
-                            let sum = _.sum(_.values(new_resources));
-                            let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-                            _.each(new_resources, (count, resource) => {
-                                if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
-                            });
-
-                            _.each(achieved_resources, (count, resource) => {
-                                if (count < 1) delete achieved_resources[resource];
-                            });
-
-                            console.log(res_reward, sum, ratio, new_resources, achieved_resources);
-
-                            if (!_.isEmpty(achieved_resources)) {
-                                state.mission_text = '<p>You found another island and harvest it!</p> Resources: ' + this.drawCost(achieved_resources);
-                                _.each(achieved_resources, (value, resource_key) => {
-                                    state[resource_key] += value;
+                                console.log(new_resources);
+                                _.each(new_resources, (count, resource) => {
+                                    if (count < 1) delete new_resources[resource];
                                 });
-                            }
-                            else {
-                                state.mission_text = 'Nothing found.';
-                            }
-                            break;
-                        case 3:
-                            let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-                            let new_ships = {
-                                canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
-                                proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
-                                catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
-                            };
 
-                            let reward_ships = {};
-                            _.each(new_ships, (count, ship) => {
-                                if (count > 0) reward_ships[ship] = count;
-                            });
-
-                            console.log(ships_reward, new_ships, reward_ships);
-
-                            if (!_.isEmpty(reward_ships)) {
-                                state.mission_text = '<p>You found new ships!</p> Ships: ' + this.drawCost(reward_ships);
-                                _.each(reward_ships, (value, resource_key) => {
-                                    state[resource_key] += value;
+                                let achieved_resources = {};
+                                let sum = _.sum(_.values(new_resources));
+                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+                                _.each(new_resources, (count, resource) => {
+                                    if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
                                 });
+
+                                _.each(achieved_resources, (count, resource) => {
+                                    if (count < 1) delete achieved_resources[resource];
+                                });
+
+                                console.log(res_reward, sum, ratio, new_resources, achieved_resources);
+
+                                if (!_.isEmpty(achieved_resources)) {
+                                    state.mission_text = '<p>You found another island and harvest it!</p> Resources: ' + this.drawCost(achieved_resources);
+                                    _.each(achieved_resources, (value, resource_key) => {
+                                        state[resource_key] += value;
+                                    });
+                                }
+                                else {
+                                    state.mission_text = 'Nothing found.';
+                                }
+                                break;
+                            case 3:
+                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+                                let new_ships = {
+                                    canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
+                                    proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
+                                    catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
+                                };
+
+                                let reward_ships = {};
+                                _.each(new_ships, (count, ship) => {
+                                    if (count > 0) reward_ships[ship] = count;
+                                });
+
+                                console.log(ships_reward, new_ships, reward_ships);
+
+                                if (!_.isEmpty(reward_ships)) {
+                                    state.mission_text = '<p>You found new ships!</p> Ships: ' + this.drawCost(reward_ships);
+                                    _.each(reward_ships, (value, resource_key) => {
+                                        state[resource_key] += value;
+                                    });
+                                }
+                                else {
+                                    state.mission_text = 'Crew just alive.';
+                                }
+                                break;
+                            default:
+                                console.log('broken discovery outcome');
+                        }
+                        break;
+                    case 'robbery':
+                        switch (_.random(1, 3)) {
+                            case 1: {
+                                let ships_los = { canoe: state.canoe, proa: state.proa, catamaran: state.catamaran };
+                                let human_los = state.canoe + state.proa * 2 + state.catamaran * 3;
+                                state.sailor -= human_los;
+                                state.population -= human_los;
+                                let armor_loss = Math.min(state.armor, human_los);
+                                state.armor -= armor_loss;
+                                state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                                state = this.chargeState(state, ships_los);
                             }
-                            else {
-                                state.mission_text = 'Crew just alive.';
+                                break;
+                            case 2: {
+                                let tension = Math.ceil(state.mission_long * 0.1);
+                                let ships_los = {
+                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
+                                    proa: _.random(Math.min(tension, state.proa), state.proa),
+                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
+                                };
+                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
+                                state.sailor -= human_los;
+                                state.population -= human_los;
+                                let armor_loss = Math.min(state.armor, human_los);
+                                state.armor -= armor_loss;
+                                state.mission_text = 'your fleet retreated with losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                                state = this.chargeState(state, ships_los);
                             }
-                            break;
-                        default:
-                            console.log('broken discovery outcome');
-                    }
+                                break;
+                            case 3: {
+                                state.mission_text = 'You found another island and conquer it! ';
+
+                                let res_reward = (state.mission_distance + this.sailorsNeed() ) * _.random(7, 13);
+                                let new_resources = {
+                                    fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                                    roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+                                    fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+                                    meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+
+                                    wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
+                                    stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
+                                    iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
+                                    moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
+                                };
+
+                                console.log(new_resources);
+                                _.each(new_resources, (count, resource) => {
+                                    if (count < 1) delete new_resources[resource];
+                                });
+
+                                let achieved_resources = {};
+                                let sum = _.sum(_.values(new_resources));
+                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+                                _.each(new_resources, (count, resource) => {
+                                    if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
+                                });
+                                _.each(achieved_resources, (count, resource) => {
+                                    if (count < 1) delete achieved_resources[resource];
+                                });
+                                console.log(res_reward, sum, ratio, new_resources, achieved_resources);
+
+                                if (!_.isEmpty(achieved_resources)) {
+                                    state.mission_text += ' Resources: ' + this.drawCost(achieved_resources);
+                                    _.each(achieved_resources, (value, resource_key) => {
+                                        state[resource_key] += value;
+                                    });
+                                }
+                                else {
+                                    state.mission_text = ' ';
+                                }
+
+                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+                                let new_ships = {
+                                    canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
+                                    proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
+                                    catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
+                                };
+                                let reward_ships = {};
+                                _.each(new_ships, (count, ship) => {
+                                    if (count > 0) reward_ships[ship] = count;
+                                });
+                                console.log(ships_reward, new_ships, reward_ships);
+
+                                if (!_.isEmpty(reward_ships)) {
+                                    state.mission_text += ' Stolen ships: ' + this.drawCost(reward_ships);
+                                    _.each(reward_ships, (value, resource_key) => {
+                                        state[resource_key] += value;
+                                    });
+                                }
+                                else {
+                                    state.mission_text = ' ';
+                                }
+
+                                let tension = Math.ceil(state.mission_long * 0.1);
+                                let ships_los = {
+                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
+                                    proa: _.random(Math.min(tension, state.proa), state.proa),
+                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
+                                };
+                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
+
+                                state.sailor -= human_los;
+                                state.population -= human_los;
+                                let armor_loss = Math.min(state.armor, human_los);
+                                state.armor -= armor_loss;
+                                state = this.chargeState(state, ships_los);
+
+                                state.mission_text += ' Your losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                            }
+                                break;
+                            default:
+                                console.log('broken robbery outcome');
+                        }
+                        break;
+                    default:
+                        console.log('broken mission type');
                 }
+
                 state.mission = false;
             }
             else {
@@ -395,7 +524,7 @@ class App extends Component {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 2) === 1) {
-                                state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'human_meat': 3}, 'meals');
+                                state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'vegetables': 2, 'human_meat': 3}, 'meals');
                             }
                             return state;
                         });
@@ -508,33 +637,53 @@ class App extends Component {
         return this.state[profession_key] * Math.max(1, Math.min(this.state[profession_key], this.state[professions[profession_key].home]));
     }
 
-    newGame() {
-        if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
+    initGame(island_type, old_things = {}, old_resources = {}) {
+        console.log(island_type, old_things, old_resources);
+
+        let sum = _.sum(_.values(old_resources));
+
+        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+        console.log('ratio: ' + ratio);
+        _.each(_.keys(old_resources), (key) => {
+            old_things[key] = Math.floor(old_resources[key] * ratio);
+        });
+
         let new_state = JSON.parse(JSON.stringify(default_state));
 
-        new_state.volumes['moai'] = default_building_space;
-        new_state.caps['moai'] = default_building_space;
+        new_state.volumes['moai'] = new_state.building_space;
+        new_state.caps['moai'] = new_state.building_space;
 
-        let resizer = island_types.tropical.land_rates;
+        let resizer = island_types[island_type].land_rates;
         _.each(_.keys(resizer), (res_key) => {
-            new_state.space[res_key] = Math.floor(default_building_space * (resizer[res_key] / 100));
+            new_state.space[res_key] = Math.floor((default_building_space + old_things.legacy) * (resizer[res_key] / 100));
         });
         new_state.space.wasteland = default_building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
 
-        let morf = island_types.tropical.resources_rates;
+        _.each(_.keys(old_things), (key) => {
+            new_state[key] = old_things[key];
+        });
+
+        let morf = island_types[island_type].resources_rates;
+
         _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(resources[res_key].max_cap * (morf[res_key] / 100));
+            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((old_things.heritage + morf[res_key]) / 100)));
             new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
             new_state.caps[res_key] = cap;
         });
 
-        _.each(starter_pack, (item, key) => {
-            new_state[key] = item;
-        });
-
-        new_state.game_paused = false;
+        console.log(sum, old_resources, old_things, new_state);
 
         this.setState(new_state);
+    }
+
+    newGame() {
+        if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
+
+        let old_thisngs = starter_pack;
+        old_thisngs.legacy = 0;
+        old_thisngs.heritage = 0;
+
+        this.initGame('tropical', old_thisngs, {});
     }
 
     resetGame() {
@@ -554,13 +703,18 @@ class App extends Component {
         things.proa = state.proa;
         things.catamaran = state.catamaran;
 
+        things.firs_slide = false;
+        things.in_sea = true;
+        things.shore = false;
+        things.embarked = false;
+        things.score = false;
+
         things.legacy = state.legacy;
         things.heritage = state.heritage;
         if (state.moai > 0) {
             things.legacy++;
             things.heritage += state.moai;
         }
-
 
         let res = {
             'fruits': state.fruits,
@@ -570,44 +724,13 @@ class App extends Component {
             'wood': state.wood,
             'stone': state.stone,
             'iron': state.iron,
+            'vegetables': state.vegetables,
             'meals': state.meals,
             'tools': state.tools,
             'instruments': state.instruments,
         };
-        let sum = _.sum(_.values(res));
 
-        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-        console.log('ratio: ' + ratio);
-        _.each(_.keys(res), (key) => {
-            things[key] = Math.floor(res[key] * ratio);
-        });
-
-        let new_state = JSON.parse(JSON.stringify(default_state));
-
-        new_state.volumes['moai'] = new_state.building_space;
-        new_state.caps['moai'] = new_state.building_space;
-
-        let resizer = island_types[island_type].land_rates;
-        _.each(_.keys(resizer), (res_key) => {
-            new_state.space[res_key] = Math.floor((default_building_space + things.legacy) * (resizer[res_key] / 100));
-        });
-        new_state.space.wasteland = default_building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
-
-        _.each(_.keys(things), (key) => {
-            new_state[key] = things[key];
-        });
-
-        let morf = island_types[island_type].resources_rates;
-
-        _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((things.heritage + morf[res_key]) / 100)));
-            new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
-            new_state.caps[res_key] = cap;
-        });
-
-        console.log(sum, res, things, new_state);
-
-        this.setState(new_state);
+        this.initGame('tropical', things, res);
     }
 
     lockedTill(factor) {
@@ -630,8 +753,8 @@ class App extends Component {
     ruin(key, skip_firing = false) {
         console.log(key);
         console.log(this.state[key]);
-        if (!window.confirm('Are you sure?')) return false;
         if (this.state[key] < 1) return;
+        if (!window.confirm('Are you sure?')) return false;
         let o = {};
         o[key] = this.state[key] - 1;
 
@@ -676,6 +799,14 @@ class App extends Component {
             o[resource_key] = this.state[resource_key] - value;
         });
         this.setState(o);
+    }
+
+    chargeState(state, cost) {
+        console.log(cost);
+        _.each(cost, (value, resource_key) => {
+            state[resource_key] -= value;
+        });
+        return state;
     }
 
     gain(cost) {
@@ -812,9 +943,31 @@ class App extends Component {
                 }}> {'>'} </button>
             </div>;
 
+        let bg_style = '';
+        if (this.state.score) {
+            bg_style = 'url(/night.jpg)';
+        } else if (this.state.firs_slide) {
+            bg_style = 'url(/start.jpg)';
+        }
+        else if (this.state.in_sea) {
+            bg_style = 'url(/kayak.jpg)';
+        }
+        else if (this.state.shore) {
+            bg_style = 'url(/shore.jpg)';
+        }
+        else if (this.state.ahu > 0) {
+            bg_style = 'url(/moai.jpg)';
+        }
+        else if (this.state.embarked) {
+            bg_style = 'url(/'+this.state.island_type+'.jpg)';
+        }
+        else {
+            bg_style = 'url(/error.jpg)';
+        }
+
         return (
             <div className="App clearfix">
-                <div className="background-image">
+                <div className="background-image" style={{'backgroundImage': bg_style}}>
                 </div>
                 <div className="content clearfix">
                     {this.state.score
@@ -857,8 +1010,8 @@ class App extends Component {
                                     </span>
 
                                     <span className="pull-right">
-                                        {make_button('resetlement', 'Resetlement', this.resetGame,
-                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                                        {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
+                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
                                         {make_button('refresh', 'New Game', this.newGame, 'text', ' btn-xs btn-danger')}</span>
                                 </div>
                             </div>
@@ -867,8 +1020,24 @@ class App extends Component {
 
                                 { // Left Column
                                 }
-                                <div className="flex-element fat" style={{'flexGrow': 3}}>
-                                    {this.state.embarked === true
+                                <div className="flex-element fat panel panel-default" style={{'flexGrow': 3}}>
+                                    {this.state.firs_slide === true ? <div>
+                                        <p className="h4 fat">
+                                            The explosion of the volcano destroys your island and everything that was dear to you. Miraculously you managed to get to the canoe. It's time to sail
+                                            <span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>.</span></p>
+                                            <h2>{make_button('resettlement', 'Resettlement', () => { this.setState({firs_slide: false, in_sea: true, }); this.playGame(); },
+                                                'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}</h2>
+                                    </div> :
+                                     this.state.embarked === true
                                         ?
                                         <div>
                                             <h4 className="App-title">Civilisation</h4>
@@ -938,7 +1107,20 @@ class App extends Component {
                                                 })}
                                             </div>
                                         </div>
-                                        : <div>
+                                        : this.state.in_sea ? <div>
+                                        <p className="h4 fat">Your boat throws waves, but you hold the oar firmly. The last
+                                            in your tribe, you tirelessly row, in search of a new
+                                            haven. How not to die of hunger<span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>?</span></p>
+                                    </div>  : <div>
                                         <p className="h4 fat">Your ship boarded on the inhabitant island. Fortunately, life
                                             is accelerating in this place, and you can survive there for a while.
                                             Praying Moai idol is the legacy of your people. Celebrate them and let your
@@ -954,8 +1136,7 @@ class App extends Component {
                                                 });
                                             }}>!</span></p>
                                         {make_button('embark', 'Disembark', () => {
-                                            this.setState({embarked: true});
-                                            this.playGame();
+                                            this.setState({shore: false, embarked: true});
                                         })}
                                     </div>
                                     }
@@ -964,6 +1145,9 @@ class App extends Component {
 
                                 { // Right Column 1
                                 }
+
+
+                                {this.state.firs_slide === true ? '' :
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
@@ -975,13 +1159,13 @@ class App extends Component {
                                                         <div key={ship_key} className="flex-element">
                                                             <span className="h4">
                                                                 <span className="badge"> {this.state[ship_key]} </span>
-                                                                {make_button(ship_key + '_del', 'del',
+                                                                {this.state.embarked && !this.state.mission ? make_button(ship_key + '_del', 'del',
                                                                     () => {
                                                                         this.ruin(ship_key, true);
                                                                     },
                                                                     'Destroy ' + ships[ship_key].name,
-                                                                    'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : ''))}
-                                                                {this.lockedTill(ships[ship_key].locked_till)
+                                                                    'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : '')) : ''}
+                                                                {this.lockedTill(ships[ship_key].locked_till) || !this.state.embarked || this.state.mission
                                                                     ? ''
                                                                     : make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + this.drawCost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
 
@@ -999,11 +1183,11 @@ class App extends Component {
                                                 <div>
                                                     Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
                                                 </div>
-                                                <div className="">
+                                                {this.state.embarked ? <div className="">
                                                     {make_arrows('sailor', <span key='sailor'
                                                                                  className="label label-default titled"
                                                                                  title={professions.sailor.text}> {professions.sailor.name} </span>)}
-                                                </div>
+                                                </div> : ''}
                                             </div>
                                             <div>
                                                 {this.state.mission
@@ -1013,10 +1197,13 @@ class App extends Component {
                                                     <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
                                                         {make_button('fishing', 'Fishing', () => {
                                                             this.startMission('fishing');
-                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-info btn-sm disabled' : ' btn-info btn-sm')}
                                                         {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
                                                             this.startMission('discovery');
-                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-warning btn-sm disabled' : ' btn-warning btn-sm')}
+                                                        {this.lockedTill('lodge') ? '' : make_button('robbery', 'Robbery', () => {
+                                                            this.startMission('robbery');
+                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-danger btn-sm disabled' : ' btn-danger btn-sm')}
                                                     </div>
                                                 }
                                             </div>
@@ -1082,9 +1269,11 @@ class App extends Component {
                                         }
                                     </div>
                                 </div>
+                                }
 
                                 { // Right Column 2
                                 }
+                                {this.state.firs_slide === true ? '' :
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Your Resources</h4>
@@ -1102,7 +1291,14 @@ class App extends Component {
                                         </div>
                                     </div>
 
-                                    <div className="panel panel-info">
+                                    {this.state.in_sea ? <div className="panel panel-info">
+                                        <h4 className="App-title">High Seas</h4>
+                                        <div className="datablock">
+                                            Day: {this.state.tick} in sea
+                                        </div>
+                                    </div> : ''}
+
+                                    {this.state.embarked ? <div className="panel panel-info">
                                         <h4 className="App-title">Island Resources</h4>
                                         <div className="datablock">
                                             Day: {this.state.tick} on {island_types[this.state.island_type].name} island
@@ -1120,8 +1316,9 @@ class App extends Component {
                                                         / {this.state.caps[resource_key]} </div>
                                             })}
                                         </div>
-                                    </div>
+                                    </div> : ''}
                                 </div>
+                                }
                             </div>
                         </div>
                     }

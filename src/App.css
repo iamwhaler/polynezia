@@ -59,7 +59,7 @@
   z-index: 1;
 
   display: block;
-  background-image: url('/moai.jpg');
+  /*background-image: url('/moai.jpg');*/
   background-size: cover;
 
   height: 100vh;

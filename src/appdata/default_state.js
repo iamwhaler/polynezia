@@ -26,6 +26,12 @@ export const default_state = {
     armor: 0,
 
 
+    firs_slide: true,
+    in_sea: false,
+    shore: false,
+    embarked: false,
+    score: false,
+
     island_type: 'tropical',
     space: {shore: 0, fertile: 0, mountain: 0, wasteland: 100},
 
@@ -99,10 +105,8 @@ export const default_state = {
     mission_long: 0,
     mission_text: null,
 
-
     trader: false,
-    score: false,
-    embarked: false,
+
 
     legacy: 0,
     heritage: 0,
