@@ -34,8 +34,10 @@ class App extends Component {
 
         this.isEnough = this.isEnough.bind(this);
         this.collect = this.collect.bind(this);
+
         this.build = this.build.bind(this);
         this.ruin = this.ruin.bind(this);
+
         this.assignWorker = this.assignWorker.bind(this);
         this.detachWorker = this.detachWorker.bind(this);
     }
@@ -74,8 +76,7 @@ class App extends Component {
         if (state.mission !== false) {
             if (state.mission_timer <= 0) {
                 if (state.mission === 'fishing') {
-                    let reward = 10 + _.random(1, state.mission_long) + Math.floor(state.mission_distance * this.sailorsNeed()
-                            * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
+                    let reward = this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
                     state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
                     state.fish += reward;
                 }
@@ -254,21 +255,77 @@ class App extends Component {
                 }
             }
 
-            if (Math.floor(_.random(1, 2.5)) === 1) {
+            if (Math.floor(_.random(1, 3)) === 1) {
                 state[selected_food]--;
             }
         }
 
+        const chooser = (state, items, func) => {
+            let raw = [];
+            _.each(items, (item) => {
+                if (this.state[item] > 0) {
+                    raw.push(item);
+                }
+            });
+            if (raw.length > 0) {
+                let selected = _.sample(raw);
+                console.log(selected);
+                return func(state, selected);
+            }
+            return state;
+        };
+
+        const burner = (state, func) => {
+            return chooser(state, ['wood', 'coal', 'turf'], (state, selected) => {
+                if (_.random(1, 10) === 1) {
+                    state[selected]--;
+                }
+                return func(state);
+            } );
+        };
+
+        const transformer = (state, rates, production) => {
+            return chooser(state, _.keys(rates), (state, selected) => {
+                state[selected]--;
+                state[production] += rates[selected];
+                return state;
+            } );
+        };
+
         // work
         _.each(professions, (profession, profession_key) => {
             if (profession.resource) {
-                if (profession_key === 'miner') {
-                    for (let i = 0; i < Math.min(this.state.mine, this.state.miner); i++) {
-                        if (_.random(1, 5) === 1) {
-                            state['stone']++;
+
+                if (profession_key === 'hunter') {
+                    for (let i = 0; i < Math.min(this.state.lodge, this.state.hunter); i++) {
+                        if (_.random(1, 50) === 1) {
+                            state['skin']++;
                         }
                     }
                 }
+
+                if (profession_key === 'miner') {
+                    for (let i = 0; i < Math.min(this.state.mine, this.state.miner); i++) {
+                        if (_.random(1, 10) === 1) {
+                            state['stone']++;
+                        }
+                        if (_.random(1, 20) === 1) {
+                            state['coal']++;
+                        }
+                    }
+                }
+
+                if (profession_key === 'mason') {
+                    for (let i = 0; i < Math.min(this.state.quarry, this.state.mason); i++) {
+                        if (_.random(1, 100 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
+                            state['obsidian']++;
+                        }
+                        if (_.random(1, 25) === 1) {
+                            state['coal']++;
+                        }
+                    }
+                }
+
                 if (this.state[profession_key] > 0 && this.state.volumes[profession.resource] > 0) {
                     let productivity = this.productivity(profession_key); // this.state[profession_key] + Math.min(this.state[profession_key], this.state[profession.home]);
                     if (this.state.human_meat > 0) {
@@ -323,51 +380,68 @@ class App extends Component {
             else {
                 if (profession_key === 'cook') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (this.state.wood < 1) {
-                            continue;
+                        state = burner(state, (state) => {
+                            if (_.random(1, 2) === 1) {
+                                state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'human_meat': 3}, 'meals');
+                            }
+                            return state;
+                        });
+                    }
+                }
+
+                if (profession_key === 'navigator') {
+                    state.navigation = 1;
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        state = burner(state, (state) => { state.navigation++; return state; });
+                    }
+                }
+
+                if (profession_key === 'aquarius') {
+                    for (let i = 0; i < Math.min(this.state.canal, this.state.aquarius); i++) {
+                        if (_.random(1, 10 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
+                            state['turf']++;
                         }
-                        if (_.random(1, 2) === 1) {
-                            let food = [];
-                            _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => {
-                                if (this.state[food_type] > 0) {
-                                    food.push(food_type);
-                                }
-                            });
-                            if (food.length > 0) {
-                                let selected = _.sample(food);
-                                console.log(selected);
-                                state[selected]--;
-                                if (selected === 'human_meat') {
-                                    state['meals'] += 3;
-                                }
-                                else {
-                                    state['meals'] += resources[selected].vegetation ? 2 : 3;
-                                }
-                            }
-                            if (_.random(1, 10) === 1) {
-                                state['wood']--;
-                            }
+                    }
+                }
+
+                if (profession_key === 'herdsman') {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        if (_.random(1, 25) === 1) {
+                            state.meat += 10;
+                        }
+                        if (_.random(1, 50) === 1) {
+                            state.wool += 1;
                         }
                     }
                 }
 
                 if (profession_key === 'master') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (this.state.stone < 1) continue;
                         if (_.random(1, 20) === 1) {
-                            state['stone']--;
-                            state['tools']++;
+                            state = transformer(state, {'stone': 1}, 'tools');
                         }
                     }
                 }
 
                 if (profession_key === 'smith') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (this.state.iron < 1) continue;
-                        if (_.random(1, 50) === 1) {
-                            state['iron']--;
-                            state['instruments']++;
-                        }
+                        state = burner(state, (state) => {
+                            if (_.random(1, 50) === 1) {
+                                state = transformer(state, {'iron': 1, 'obsidian': 1}, 'instruments');
+                            }
+                            return state;
+                        });
+                    }
+                }
+
+                if (profession_key === 'armorer') {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        state = burner(state, (state) => {
+                            if (_.random(1, 50) === 1) {
+                                state = transformer(state, {'iron': 1, 'wool': 1, 'skin': 1}, 'armor');
+                            }
+                            return state;
+                        });
                     }
                 }
 
@@ -404,13 +478,13 @@ class App extends Component {
     startMission(type) {
         if (this.state.sailor < this.sailorsNeed()) return false;
 
-        let len = Math.floor(((this.state.lighthouse + 1) * 100) / this.fleetSpeed());
+        let len = Math.floor((this.state.navigation * 100) / this.fleetSpeed());
 
         let o = {};
         o.mission = type;
         o.mission_timer = len;
         o.mission_long = len;
-        o.mission_distance = this.state.lighthouse + 1;
+        o.mission_distance = this.state.navigation;
 
         console.log(o);
         this.setState(o);
@@ -605,10 +679,9 @@ class App extends Component {
     }
 
     sumBuild() {
-        return this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
-            this.state.garden + this.state.field + this.state.pier + this.state.lodge +
-            this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
-            this.state.ahu;
+        let busy = 0;
+        _.each(_.keys(buildings), (building_key) => { busy += this.state[building_key]; });
+        return busy;
     }
 
     spaceEnough(land_type = null) {
@@ -624,7 +697,7 @@ class App extends Component {
             case 'shore':
                 return this.state.bonfire + this.state.lighthouse + this.state.pier < this.state.space.shore;
             case 'fertile':
-                return this.state.canal + this.state.garden + this.state.field + this.state.lodge + this.state.sawmill < this.state.space.fertile;
+                return this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
                 return this.state.quarry + this.state.mine < this.state.space.mountain;
             case 'wasteland':
@@ -638,22 +711,18 @@ class App extends Component {
     built(land_type = 'any') {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
-        model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.lodge + this.state.sawmill;
+        model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
         model.mountain = this.state.quarry + this.state.mine;
-        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.workshop + this.state.forge), this.state.space.wasteland);
-        model.any = this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
-            this.state.garden + this.state.field + this.state.pier + this.state.lodge +
-            this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
-            this.state.ahu;
+        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
+        model.any = this.sumBuild();
 
         return model[land_type];
     }
 
     busy() {
-        return this.state.cook + this.state.aquarius + this.state.sailor +
-            this.state.gardener + this.state.fielder + this.state.fisherman + this.state.hunter +
-            this.state.mason + this.state.miner + this.state.master + this.state.woodcutter + this.state.smith +
-            this.state.builder;
+        let busy = 0;
+        _.each(_.keys(professions), (profession_key) => { busy += this.state[profession_key]; });
+        return busy;
     }
 
     shipsSum() {
@@ -785,7 +854,7 @@ class App extends Component {
 
                                 { // Left Column
                                 }
-                                <div className="flex-element" style={{'flexGrow': 3}}>
+                                <div className="flex-element fat" style={{'flexGrow': 3}}>
                                     {this.state.embarked === true
                                         ?
                                         <div>
@@ -857,7 +926,7 @@ class App extends Component {
                                             </div>
                                         </div>
                                         : <div>
-                                        <p className="h4">Your ship boarded on the inhabitant island. Fortunately, life
+                                        <p className="h4 fat">Your ship boarded on the inhabitant island. Fortunately, life
                                             is accelerating in this place, and you can survive there for a while.
                                             Praying Moai idol is the legacy of your people. Celebrate them and let your
                                             civilization
@@ -880,25 +949,9 @@ class App extends Component {
                                 </div>
 
 
-                                { // Right Column
+                                { // Right Column 1
                                 }
-                                <div className="flex-element panel panel-info">
-                                    <div className="panel panel-info">
-                                        <h4 className="App-title">Your Resources</h4>
-                                        <div className="datablock">
-                                            {_.keys(resources).map((resource_key) => {
-                                                return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                                                    ? <div
-                                                    key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
-                                                    : ''
-                                            })}
-                                            {_.keys(items).map((item_key) => {
-                                                return this.state[item_key] > 0 ? <div key={item_key}>
-                                                    {items[item_key].name}: {this.state[item_key]}</div> : ''
-                                            })}
-                                        </div>
-                                    </div>
-
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
                                         <div>
@@ -933,7 +986,7 @@ class App extends Component {
                                                 <div>
                                                     Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
                                                 </div>
-                                                <div className="hidden">
+                                                <div className="">
                                                     {make_arrows('sailor', <span key='sailor'
                                                                                  className="label label-default titled"
                                                                                  title={professions.sailor.text}> {professions.sailor.name} </span>)}
@@ -1014,6 +1067,26 @@ class App extends Component {
                                             </div>
                                             : ""
                                         }
+                                    </div>
+                                </div>
+
+                                { // Right Column 2
+                                }
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
+                                    <div className="panel panel-info">
+                                        <h4 className="App-title">Your Resources</h4>
+                                        <div className="datablock">
+                                            {_.keys(resources).map((resource_key) => {
+                                                return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
+                                                    ? <div
+                                                    key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                                                    : ''
+                                            })}
+                                            {_.keys(items).map((item_key) => {
+                                                return this.state[item_key] > 0 ? <div key={item_key}>
+                                                    {items[item_key].name}: {this.state[item_key]}</div> : ''
+                                            })}
+                                        </div>
                                     </div>
 
                                     <div className="panel panel-info">
