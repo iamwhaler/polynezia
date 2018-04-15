@@ -459,7 +459,7 @@ class App extends Component {
 
                 if (profession_key === 'mason') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 100 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
+                        if (_.random(1, 200 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
                             state['obsidian']++;
                         }
                         if (_.random(1, 25) === 1) {
@@ -540,7 +540,7 @@ class App extends Component {
 
                 if (profession_key === 'aquarius') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 25 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
+                        if (_.random(1, 50 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
                             state['turf']++;
                         }
                     }
@@ -548,10 +548,10 @@ class App extends Component {
 
                 if (profession_key === 'herdsman') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 25) === 1) {
+                        if (_.random(1, 50) === 1) {
                             state.meat += 10;
                         }
-                        if (_.random(1, 50) === 1) {
+                        if (_.random(1, 100) === 1) {
                             state.wool += 1;
                         }
                     }
