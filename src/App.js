@@ -1183,7 +1183,7 @@ class App extends Component {
                                                 <div>
                                                     Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
                                                 </div>
-                                                {this.state.embarked ? <div className="">
+                                                {(this.state.embarked && !this.state.mission) ? <div className="">
                                                     {make_arrows('sailor', <span key='sailor'
                                                                                  className="label label-default titled"
                                                                                  title={professions.sailor.text}> {professions.sailor.name} </span>)}
