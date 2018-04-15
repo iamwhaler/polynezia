@@ -79,6 +79,5 @@ body {
 }
 
 div {
-  border: 1px;
-  border-style: solid;
+/*  border: 1px solid; /*  for debug */ 
 }
