@@ -95,6 +95,7 @@ export const default_state = {
     mission_timer: 0,
     mission_distance: 0,
     mission_long: 0,
+    mission_text: null,
 
 
     trader: false,

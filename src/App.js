@@ -76,7 +76,7 @@ class App extends Component {
         if (state.mission === 'fishing') {
           let reward = 10 + _.random(1, state.mission_long) + Math.floor(state.mission_distance * this.sailorsNeed()
                   * _.random(0.7, 1 + 0.1*state.canoe + 0.3*state.proa + 0.7*state.catamaran));
-          alert(reward);
+          state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
           state.fish += reward;
         }
         if (state.mission === 'discovery') {
@@ -86,12 +86,12 @@ class App extends Component {
             case 1:
               let tension = Math.ceil(state.mission_long*0.1);
               let ships_los = {
-                canoe: _.random(tension, state.canoe),
-                proa: _.random(tension, state.proa),
-                catamaran: _.random(tension, state.catamaran)
+                canoe: _.random(Math.min(tension, state.canoe), state.canoe),
+                proa: _.random(Math.min(tension, state.proa), state.proa),
+                catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
               };
               let human_los = ships_los.canoe + ships_los.proa*2 + ships_los.catamaran*3;
-              alert('You loose your fleet: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.');
+              state.mission_text = '<p>You loose your fleet:</p> ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
               state.sailor -= human_los;
               state.population -= human_los;
               this.charge(ships_los);
@@ -123,11 +123,11 @@ class App extends Component {
               console.log(res_reward, sum, ratio, new_resources, achieved_resources);
 
               if (!_.isEmpty(achieved_resources)) {
-                alert('You found another island and harvest it! Resources: '+this.drawCost(achieved_resources));
+                state.mission_text = '<p>You found another island and harvest it!</p> Resources: '+this.drawCost(achieved_resources);
                 _.each(achieved_resources, (value, resource_key) => { state[resource_key] += value; } );
               }
               else {
-                alert('Nothing found.');
+                state.mission_text = 'Nothing found.';
               }
               break;
             case 3:
@@ -144,11 +144,11 @@ class App extends Component {
               console.log(ships_reward, new_ships, reward_ships);
 
               if (!_.isEmpty(reward_ships)) {
-                alert('You found new ships! Ships: '+this.drawCost(reward_ships));
+                state.mission_text = '<p>You found new ships!</p> Ships: '+this.drawCost(reward_ships);
                 _.each(reward_ships, (value, resource_key) => { state[resource_key] += value; } );
               }
               else {
-                alert('Crew just alive.');
+                state.mission_text = 'Crew just alive.';
               }
               break;
             default:
@@ -184,13 +184,15 @@ class App extends Component {
       if (resource1 === resource2) {
         let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
         state.trader = {type: 'gift', offer: {'resource1': resource1, 'count1': count1},
-          text: 'Traders arrived with gifts. Their gift is  '+count1+' '+resource1+'.'};
+        //  text: <p>Traders arrived with gifts. Their gift is <span className="badge">{count1} {resource1}</span>.</p>
+        };
       }
       else {
         let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
         let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource2]));
         state.trader = {type: 'trade', offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
-          text: 'Trader arrival. They offer '+count1+' '+resource1+' for '+count2+' '+resource2+'.'};
+        //  text: <p>Trader arrival. They offer <span className="badge">{count1} {resource1}</span> for <span className="badge">{count2} {resource2}</span>.</p>
+        };
       }
     }
 
@@ -222,7 +224,7 @@ class App extends Component {
         }
       }
 
-      if (_.random(1, 2) === 1) {
+      if (Math.floor(_.random(1, 2.5)) === 1) {
         state[selected_food]--;
       }
     }
@@ -414,7 +416,7 @@ class App extends Component {
 
   resetGame() {
     if (this.state.sailor < this.sailorsNeed()) return false;
-    if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources.')) return false;
+    if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources. New island will be bigger and rich if you built Moai.')) return false;
 
     let state = this.state;
 
@@ -539,12 +541,12 @@ class App extends Component {
   }
 
   charge(cost) {
-    console.log(cost);
-    _.each(cost, (value, resource_key) => {
+        console.log(cost);
       let o = {};
-      o[resource_key] = this.state[resource_key] - value;
+      _.each(cost, (value, resource_key) => {
+        o[resource_key] = this.state[resource_key] - value;
+      } );
       this.setState(o);
-    } );
   }
 
   gain(cost) {
@@ -626,8 +628,8 @@ class App extends Component {
 
   fleetSpeed() {
     if (this.state.catamaran) return ships.catamaran.speed;
-    if (this.state.proa) return ships.proa.speed;
     if (this.state.canoe) return ships.canoe.speed;
+    if (this.state.proa) return ships.proa.speed;
     return 0;
   }
 
@@ -664,10 +666,9 @@ class App extends Component {
 
     const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
           <span className="h4" key = {stat+name} >
-            <button className={classNames('btn', 'btn-success', 'btn-sm', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
+            <button className={classNames('btn', 'btn-success', 'btn-xs', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                     data-toggle="tooltip" data-placement="top" data-html="true"
                     title={text} onClick={() => { this.build(stat, type, cost); }}> +1 </button>
-            <span className="label label-default titled" title={text}> {name} </span>
           </span>;
 
     const make_arrows = (stat, name) =>
@@ -704,7 +705,10 @@ class App extends Component {
                       {make_button('wood', 'Collect Wood', () => { this.collect('wood'); }, 'text')}
                     </span>
 
-                      <span className="pull-right">{make_button('refresh', 'New Game', this.newGame, 'text', ' btn-xs btn-danger')}</span>
+                      <span className="pull-right">
+                          {make_button('resetlement', 'Resetlement', this.resetGame,
+                          'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                        {make_button('refresh', 'New Game', this.newGame, 'text', ' btn-xs btn-danger')}</span>
                   </div>
                 </div>
 
@@ -753,57 +757,8 @@ class App extends Component {
 
                 <div className="flex-container-row">
 
-                  <div className="flex-element">
-                    <h4 className="App-title">Your Resources</h4>
-                    <div className="datablock">
-                      {_.keys(resources).map((resource_key) => {
-                        return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                            ? <div key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
-                            : ''
-                      })}
-                      {_.keys(items).map((item_key) => {
-                        return this.state[item_key] > 0 ? <div key={item_key}>
-                          {items[item_key].name}: {this.state[item_key]}</div> : ''
-                      })}
-                    </div>
-
-                    <div className="fat">
-                      {this.state.trader !== false
-                          ?
-                          <div>
-                            {this.state.trader.text}
-                            {this.state.trader.type === 'gift'
-                                ?
-                                make_button('take', 'Take',
-                                    () => {
-                                      console.log(this.state.trader);
-                                      let o = {};
-                                      o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
-                                      o['trader'] = false;
-                                      this.setState(o);
-                                    })
-                                :
-                                <div>
-                                  {make_button('trade', 'Trade',
-                                      () => {
-                                        if (this.state[this.state.trader.offer.resource2] < this.state.trader.offer.count2) return false;
-                                        let o = {};
-                                        o[this.state.trader.offer.resource2] = this.state[this.state.trader.offer.resource2] - this.state.trader.offer.count2;
-                                        o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
-                                        o['trader'] = false;
-                                        this.setState(o);
-                                      })}
-                                  {make_button('cancel', 'Cancel', () => { this.setState({trader: false}); }, '', 'btn-danger')}
-                                </div> }
-                          </div>
-                          : ""}
-                    </div>
-
-                  </div>
-
-
-
-
+                    { // Left Column
+                    }
                   <div className="flex-element" style={{'flexGrow': 3}}>
                     {this.state.embarked === true
                         ?
@@ -834,7 +789,7 @@ class App extends Component {
                                   ? ''
                                   :
                                   <span key={building_key}>
-                                    <span>
+                                    <span className="h4">
                                       <span className={classNames('badge', 'bg-'+buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                       {make_button(building_key + '_del', 'del',
                                           () => { this.ruin(building_key, false); },
@@ -842,6 +797,7 @@ class App extends Component {
                                           'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
 
                                       {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
+                                        <span className="label label-default titled" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}> {buildings[building_key].name} </span>
                                     </span>
                                   </span>
                               }
@@ -873,65 +829,136 @@ class App extends Component {
                       }
                   </div>
 
-                  <div className="flex-element">
-                    <div>
-                      <h4 className="App-title">Island Resources</h4>
-                      <div className="datablock">
-                        Day: {this.state.tick} on {island_types[this.state.island_type].name} island
-                        <div>Size: {this.sumSpace()} ({this.drawCost({shore: this.state.space.shore, fertile: this.state.space.fertile, mountain: this.state.space.mountain, wasteland: this.state.space.wasteland})})</div>
-                        {_.keys(resources).map((resource_key) => {
-                          return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
-                            {resources[resource_key].name}: {Math.floor(this.state.volumes[resource_key])} / {this.state.caps[resource_key]} </div>
-                        })}
+
+                    { // Right Column
+                    }
+                  <div className="flex-element panel panel-info">
+                      <div className="panel panel-info">
+                          <h4 className="App-title">Your Resources</h4>
+                          <div className="datablock">
+                              {_.keys(resources).map((resource_key) => {
+                                  return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
+                                      ? <div key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                                      : ''
+                              })}
+                              {_.keys(items).map((item_key) => {
+                                  return this.state[item_key] > 0 ? <div key={item_key}>
+                                      {items[item_key].name}: {this.state[item_key]}</div> : ''
+                              })}
+                          </div>
                       </div>
 
-                      <h4 className="App-title">Fleet</h4>
-                      <div>
-                        <div className="flex-container-row">
-                          {_.keys(ships).map((ship_key) => {
-                            return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
-                                ?
-                              <div key={ship_key}>
-                                <span>
-                                  <span className="badge"> {this.state[ship_key]} </span>
-                                  {make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + this.drawCost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
-                                </span>
-                                {make_button(ship_key + '_del', 'del',
-                                    () => { this.ruin(ship_key, true); },
-                                    'Destroy ' + ships[ship_key].name,
-                                    'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : ''))}
-                              </div>
-                                : '';
-                          })}
-                        </div>
-                        <div>
-                          <span>
-                            Ships: {this.shipsSum()} Crew: {this.state.sailor} / {this.sailorsNeed()}
-                          </span>
-                          <div>
-                            Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
-                          </div>
-                          <div className="hidden">
-                          {make_arrows('sailor', <span key='sailor'
-                                                             className="label label-default titled"
-                                                             title={professions.sailor.text}> {professions.sailor.name} </span>)}
-                          </div>
-                        </div>
-                        {this.state.mission
-                            ? <div>Your fleet in {this.state.mission}. Return back in {this.state.mission_timer} days.</div>
-                            :
-                            <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
-                              {this.lockedTill('pier') ? '' : make_button('fishing', 'Fishing', () => {
-                                this.startMission('fishing');
-                              }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success disabled' : ' btn-success')}
-                              {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
-                                this.startMission('discovery');
-                              }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success disabled' : ' btn-success')}
-                              {false ? '' : make_button('resetlement', 'Resetlement', this.resetGame,
-                                  'text', this.state.sailor < this.sailorsNeed() ? ' btn-success disabled' : ' btn-success')}
+                      <div className="panel panel-info">
+                          <h4 className="App-title">Fleet</h4>
+                            <div>
+                            <div className="flex-container-row">
+                              {_.keys(ships).map((ship_key) => {
+                                return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
+                                    ?
+                                  <div key={ship_key}>
+                                    <span className="h4">
+                                      <span className="badge"> {this.state[ship_key]} </span>
+                                        {make_button(ship_key + '_del', 'del',
+                                            () => { this.ruin(ship_key, true); },
+                                            'Destroy ' + ships[ship_key].name,
+                                            'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : ''))}
+                                      {this.lockedTill(ships[ship_key].locked_till)
+                                          ? ''
+                                          : make_buy_button(ship_key, ships[ship_key].name, ships[ship_key].text + ' Crew: ' + ships[ship_key].crew + ' Speed: ' + ships[ship_key].speed + ' Capacity: ' + ships[ship_key].capacity + ' Cost: ' + this.drawCost(ships[ship_key].cost), 'ships', ships[ship_key].cost)}
+
+                                      <span className="label label-default titled" title={ships[ship_key].text + ' Cost: ' + this.drawCost(ships[ship_key].cost)}> {ships[ship_key].name} </span>
+                                    </span>
+                                  </div>
+                                    : '';
+                              })}
                             </div>
-                        }
+                            <div>
+                              <span>
+                                Ships: {this.shipsSum()} Crew: {this.state.sailor} / {this.sailorsNeed()}
+                              </span>
+                              <div>
+                                Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
+                              </div>
+                              <div className="hidden">
+                              {make_arrows('sailor', <span key='sailor'
+                                                                 className="label label-default titled"
+                                                                 title={professions.sailor.text}> {professions.sailor.name} </span>)}
+                              </div>
+                            </div>
+                            <div>
+                                {this.state.mission
+                                    ? <div>Your fleet in {this.state.mission}. Return back in {this.state.mission_timer} days.</div>
+                                    :
+                                    <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
+                                      {this.lockedTill('pier') ? '' : make_button('fishing', 'Fishing', () => {
+                                        this.startMission('fishing');
+                                      }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                                      {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
+                                        this.startMission('discovery');
+                                      }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm')}
+                                    </div>
+                                }
+                            </div>
+                            <div>
+                                {this.state.mission_text !== null
+                                    ?
+                                    <div>
+                                        {this.state.mission_text}
+                                        {make_button('ok', 'ok', () => { this.setState({'mission_text': null}); }, '', 'btn-info btn-xs')}
+                                    </div>
+                                    : ''
+                                }
+                            </div>
+                          </div>
                       </div>
+
+                      <div className="fat ">
+                          {this.state.trader !== false
+                              ?
+                              <div>
+                                  {this.state.trader.type === 'gift'
+                                      ?
+                                      <div className="panel panel-info">>
+                                          <h4>Traders arrived with gifts.</h4>
+                                          <p>Their gift is <span className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>.</p>
+                                          {make_button('take', 'Take',
+                                              () => {
+                                                  console.log(this.state.trader);
+                                                  let o = {};
+                                                  o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                                  o['trader'] = false;
+                                                  this.setState(o);
+                                              }, '', 'btn-success btn-sm')}
+                                      </div>
+                                      :
+                                      <div className="panel panel-info">
+                                          <h4>Traders arrived.</h4>
+                                          <p>They offer <span className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span> for <span className="badge">{this.state.trader.offer.count2} {this.state.trader.offer.resource2}</span>.</p>
+                                          {make_button('trade', 'Trade',
+                                              () => {
+                                                  if (this.state[this.state.trader.offer.resource2] < this.state.trader.offer.count2) return false;
+                                                  let o = {};
+                                                  o[this.state.trader.offer.resource2] = this.state[this.state.trader.offer.resource2] - this.state.trader.offer.count2;
+                                                  o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                                  o['trader'] = false;
+                                                  this.setState(o);
+                                              }, '', 'btn-success btn-sm')}
+                                          {make_button('cancel', 'Cancel', () => { this.setState({trader: false}); }, '', 'btn-danger btn-sm')}
+                                      </div> }
+                              </div>
+                              : ""}
+                      </div>
+
+                      <div className="panel panel-info">
+                          <h4 className="App-title">Island Resources</h4>
+                          <div className="datablock">
+                              Day: {this.state.tick} on {island_types[this.state.island_type].name} island
+                              <div>Size: {this.sumSpace()} ({this.drawCost({shore: this.state.space.shore, fertile: this.state.space.fertile, mountain: this.state.space.mountain, wasteland: this.state.space.wasteland})})</div>
+                              {_.keys(resources).map((resource_key) => {
+                                  return this.lockedTill(resources[resource_key].locked_till) ? '' : <div key={resource_key}>
+                                      {resources[resource_key].name}: {Math.floor(this.state.volumes[resource_key])} / {this.state.caps[resource_key]} </div>
+                              })}
+                          </div>
                     </div>
 
                   </div>

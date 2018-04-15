@@ -15,7 +15,7 @@ export const resources = {
     'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 1.5, max_cap: 5000, regen: 2},
     'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 2, max_cap: 2500, regen: 2.5},
 
-    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
+    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 5000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
     'iron': {name: 'Iron', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
     'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 100000, max_cap: 100, regen: 0.0}
@@ -31,8 +31,8 @@ export const items = {
 };
 
 export const ships = {
-    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 100, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
-    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 300, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
+    'canoe': {name: 'Canoe',         crew: 1, speed: 8, capacity: 100, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
+    'proa': {name: 'Proa',           crew: 2, speed: 10, capacity: 300, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
     'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 1000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
 };
 
