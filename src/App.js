@@ -6,6 +6,7 @@ import './tooltip.css';
 
 import {starter_pack, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
 import {default_building_space, default_state} from './appdata/default_state';
+import {Machine} from './appdata/Machine';
 
 var timerID = null;
 
@@ -70,551 +71,11 @@ class App extends Component {
     }
 
     tick() {
-        let state = this.state;
-
         console.log('tick');
+        let new_state = Machine.tick(this.state, this);
 
-        state.tick++;
-
-        if (state.in_sea) {
-            if (state.tick > 30 && state.fish > 30) {
-                state.in_sea = false;
-                state.shore = true;
-            }
-        }
-
-        // fleeting
-        if (state.mission !== false) {
-            if (state.mission_timer <= 0) {
-
-                switch (state.mission) {
-                    case 'fishing':
-                        let reward = 10 + this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
-                        state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
-                        state.fish += reward;
-                        break;
-                    case 'discovery':
-                        switch (_.random(1, 3)) {
-                            case 1:
-                                let tension = Math.ceil(state.mission_long * 0.1);
-                                let ships_los = {
-                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
-                                    proa: _.random(Math.min(tension, state.proa), state.proa),
-                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
-                                };
-                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
-                                state.mission_text = '<p>You loose your fleet:</p> ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
-                                state.sailor -= human_los;
-                                state.population -= human_los;
-                                this.charge(ships_los);
-                                break;
-                            case 2:
-                                let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-                                let new_resources = {
-                                    fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                    roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                    fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-                                    meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-
-                                    wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
-                                    stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
-                                    iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
-                                    moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
-                                };
-
-                                console.log(new_resources);
-                                _.each(new_resources, (count, resource) => {
-                                    if (count < 1) delete new_resources[resource];
-                                });
-
-                                let achieved_resources = {};
-                                let sum = _.sum(_.values(new_resources));
-                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-                                _.each(new_resources, (count, resource) => {
-                                    if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
-                                });
-
-                                _.each(achieved_resources, (count, resource) => {
-                                    if (count < 1) delete achieved_resources[resource];
-                                });
-
-                                console.log(res_reward, sum, ratio, new_resources, achieved_resources);
-
-                                if (!_.isEmpty(achieved_resources)) {
-                                    state.mission_text = '<p>You found another island and harvest it!</p> Resources: ' + this.drawCost(achieved_resources);
-                                    _.each(achieved_resources, (value, resource_key) => {
-                                        state[resource_key] += value;
-                                    });
-                                }
-                                else {
-                                    state.mission_text = 'Nothing found.';
-                                }
-                                break;
-                            case 3:
-                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-                                let new_ships = {
-                                    canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
-                                    proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
-                                    catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
-                                };
-
-                                let reward_ships = {};
-                                _.each(new_ships, (count, ship) => {
-                                    if (count > 0) reward_ships[ship] = count;
-                                });
-
-                                console.log(ships_reward, new_ships, reward_ships);
-
-                                if (!_.isEmpty(reward_ships)) {
-                                    state.mission_text = '<p>You found new ships!</p> Ships: ' + this.drawCost(reward_ships);
-                                    _.each(reward_ships, (value, resource_key) => {
-                                        state[resource_key] += value;
-                                    });
-                                }
-                                else {
-                                    state.mission_text = 'Crew just alive.';
-                                }
-                                break;
-                            default:
-                                console.log('broken discovery outcome');
-                        }
-                        break;
-                    case 'robbery':
-                        switch (_.random(1, 3)) {
-                            case 1: {
-                                let ships_los = { canoe: state.canoe, proa: state.proa, catamaran: state.catamaran };
-                                let human_los = state.canoe + state.proa * 2 + state.catamaran * 3;
-                                state.sailor -= human_los;
-                                state.population -= human_los;
-                                let armor_loss = Math.min(state.armor, human_los);
-                                state.armor -= armor_loss;
-                                state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
-                                state = this.chargeState(state, ships_los);
-                            }
-                                break;
-                            case 2: {
-                                let tension = Math.ceil(state.mission_long * 0.1);
-                                let ships_los = {
-                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
-                                    proa: _.random(Math.min(tension, state.proa), state.proa),
-                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
-                                };
-                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
-                                state.sailor -= human_los;
-                                state.population -= human_los;
-                                let armor_loss = Math.min(state.armor, human_los);
-                                state.armor -= armor_loss;
-                                state.mission_text = 'your fleet retreated with losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
-                                state = this.chargeState(state, ships_los);
-                            }
-                                break;
-                            case 3: {
-                                state.mission_text = 'You found another island and conquer it! ';
-
-                                let res_reward = (state.mission_distance + this.sailorsNeed() ) * _.random(7, 13);
-                                let new_resources = {
-                                    fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                    roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-                                    fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-                                    meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-
-                                    wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
-                                    stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
-                                    iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
-                                    moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
-                                };
-
-                                console.log(new_resources);
-                                _.each(new_resources, (count, resource) => {
-                                    if (count < 1) delete new_resources[resource];
-                                });
-
-                                let achieved_resources = {};
-                                let sum = _.sum(_.values(new_resources));
-                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-                                _.each(new_resources, (count, resource) => {
-                                    if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
-                                });
-                                _.each(achieved_resources, (count, resource) => {
-                                    if (count < 1) delete achieved_resources[resource];
-                                });
-                                console.log(res_reward, sum, ratio, new_resources, achieved_resources);
-
-                                if (!_.isEmpty(achieved_resources)) {
-                                    state.mission_text += ' Resources: ' + this.drawCost(achieved_resources);
-                                    _.each(achieved_resources, (value, resource_key) => {
-                                        state[resource_key] += value;
-                                    });
-                                }
-                                else {
-                                    state.mission_text = ' ';
-                                }
-
-                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-                                let new_ships = {
-                                    canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
-                                    proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
-                                    catamaran: Math.ceil((_.random(0, ships_reward) - 50) / 250)
-                                };
-                                let reward_ships = {};
-                                _.each(new_ships, (count, ship) => {
-                                    if (count > 0) reward_ships[ship] = count;
-                                });
-                                console.log(ships_reward, new_ships, reward_ships);
-
-                                if (!_.isEmpty(reward_ships)) {
-                                    state.mission_text += ' Stolen ships: ' + this.drawCost(reward_ships);
-                                    _.each(reward_ships, (value, resource_key) => {
-                                        state[resource_key] += value;
-                                    });
-                                }
-                                else {
-                                    state.mission_text = ' ';
-                                }
-
-                                let tension = Math.ceil(state.mission_long * 0.1);
-                                let ships_los = {
-                                    canoe: _.random(Math.min(tension, state.canoe), state.canoe),
-                                    proa: _.random(Math.min(tension, state.proa), state.proa),
-                                    catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
-                                };
-                                let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
-
-                                state.sailor -= human_los;
-                                state.population -= human_los;
-                                let armor_loss = Math.min(state.armor, human_los);
-                                state.armor -= armor_loss;
-                                state = this.chargeState(state, ships_los);
-
-                                state.mission_text += ' Your losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
-                            }
-                                break;
-                            default:
-                                console.log('broken robbery outcome');
-                        }
-                        break;
-                    default:
-                        console.log('broken mission type');
-                }
-
-                state.mission = false;
-            }
-            else {
-                state.mission_timer--;
-                //state.mission_timer -= 10;
-            }
-        }
-
-        // attract new people
-        if ((this.state.bonfire > 0 || this.state.house > 0 || this.state.moai > 0) && this.state.population < (this.state.hut * 2) + (this.state.house * 4)) {
-            if (_.random(1, Math.floor((10 * this.state.population) / (1 + this.state.bonfire + (2 * this.state.house) + (10 * this.state.moai)))) === 1) {
-                state.population++;// ;this.setState({population: this.state.population + 1});
-            }
-        }
-
-        // attract trader
-        let chance = Math.floor(_.random(1, 1 + (100 / (1 + this.state.lighthouse))));
-        //console.log(this.state.lighthouse, chance, this.state.trader);
-        if (this.state.lighthouse > 0 && !this.state.trader && chance === 1) {
-            const rates = {
-                'fruits': 1.5,
-                'roots': 1.5,
-                'fish': 2,
-                'meat': 2,
-                'wood': 5,
-                'turf': 5,
-                'stone': 10,
-                'obsidian': 25,
-                'wool': 25,
-                'skin': 25,
-                'iron': 50,
-                'meals': 1,
-                'tools': 15,
-                'instruments': 75
-            };
-            const tradable = _.keys(rates);
-
-            let size = _.random(1, 3);
-            let resource1 = _.sample(tradable);
-            let resource2 = _.sample(tradable);
-
-            let nav_factor = Math.floor(100 - (this.navigation/100));
-            console.log(nav_factor);
-
-            if (resource1 === resource2 || _.random(1, nav_factor) === 1) {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
-                state.trader = {
-                    type: 'gift', offer: {'resource1': resource1, 'count1': count1},
-                    //  text: <p>Traders arrived with gifts. Their gift is <span className="badge">{count1} {resource1}</span>.</p>
-                };
-            }
-            else {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource1]));
-                let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * this.state.lighthouse / rates[resource2]));
-                state.trader = {
-                    type: 'trade',
-                    offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
-                    //  text: <p>Trader arrival. They offer <span className="badge">{count1} {resource1}</span> for <span className="badge">{count2} {resource2}</span>.</p>
-                };
-            }
-        }
-
-        // feeding
-        for (let i = 0; i < this.state.population; i++) {
-            let selected_food = null;
-            if (this.state.meals > 1) {
-                selected_food = "meals";
-            }
-            else {
-                let food = [];
-                _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => {
-                    if (this.state[food_type] > 0) {
-                        food.push(food_type);
-                    }
-                });
-
-                if (food.length === 0) {
-                    state.population--;
-                    state.human_meat += 50;
-
-                    let works = [];
-                    _.each(professions, (profession, profession_key) => {
-                        if (this.state[profession_key] > 0) {
-                            works.push(profession_key);
-                        }
-                    });
-                    state[_.sample(works)]--;
-                    continue;
-                }
-                else {
-                    selected_food = _.sample(food);
-                }
-            }
-
-            if (Math.floor(_.random(1, 3)) === 1) {
-                state[selected_food]--;
-            }
-        }
-
-        const chooser = (state, items, func) => {
-            let raw = [];
-            _.each(items, (item) => {
-                if (this.state[item] > 0) {
-                    raw.push(item);
-                }
-            });
-            if (raw.length > 0) {
-                return func(state, _.sample(raw));
-            }
-            return state;
-        };
-
-        const burner = (state, func) => {
-            return chooser(state, ['wood', 'coal', 'turf'], (state, selected) => {
-                if (_.random(1, 10) === 1) {
-                    state[selected]--;
-                }
-                return func(state);
-            } );
-        };
-
-        const transformer = (state, rates, production) => {
-            return chooser(state, _.keys(rates), (state, selected) => {
-                state[selected]--;
-                state[production] += rates[selected];
-                return state;
-            } );
-        };
-
-        // work
-        _.each(professions, (profession, profession_key) => {
-            if (profession.resource) {
-
-                if (profession_key === 'fielder') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 5) === 1) {
-                            state['vegetables']++;
-                        }
-                    }
-                }
-
-                if (profession_key === 'hunter') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 50) === 1) {
-                            state['skin']++;
-                        }
-                    }
-                }
-
-                if (profession_key === 'miner') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 10) === 1) {
-                            state['stone']++;
-                        }
-                        if (_.random(1, 20) === 1) {
-                            state['coal']++;
-                        }
-                    }
-                }
-
-                if (profession_key === 'mason') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 250 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
-                            state['obsidian']++;
-                        }
-                        if (_.random(1, 50) === 1) {
-                            state['coal']++;
-                        }
-                    }
-                }
-
-                if (this.state[profession_key] > 0 && this.state.volumes[profession.resource] > 0) {
-                    let productivity = this.productivity(profession_key);
-                    if (this.state.human_meat > 0) {
-                        productivity *= 2;
-                    }
-                    //  console.log(productivity);
-                    //  console.log(this.state[profession_key], profession.home, this.state[profession.home]);
-                    for (let i = 0; i < productivity; i++) {
-                        let ecofactor = this.state.volumes[profession.resource] / this.state.caps[profession.resource];
-                        let difficulty = resources[profession.resource].difficulty;
-                        if (this.state.tools > 0) {
-                            difficulty /= 3;
-                        }
-                        if (this.state.instruments > 0) {
-                            difficulty /= 10;
-                        }
-                        let top = 1 + Math.round(difficulty / ecofactor);
-                        let chance = Math.ceil(_.random(1, top));
-                        //  console.log(ecofactor, difficulty, top, chance);
-
-
-                        if (this.state.tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
-                            state['tools']--;
-                        }
-                        if (this.state.instruments > 0 && _.random(1, Math.floor((1000 + (this.state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
-                            state['instruments']--;
-                        }
-
-
-                        if (chance === 1) {
-                            if (profession.resource === 'moai') {
-                                if (this.state.moai < this.state.ahu) {
-                                    state[profession.resource]++;
-                                    state.volumes[profession.resource]--;
-                                }
-                            }
-                            else {
-                                state[profession.resource]++;
-                                state.volumes[profession.resource]--;  // (((
-
-                                if (this.state.instruments > 0) {
-                                    if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
-                                        state.volumes[profession.resource]++; // (((
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                if (profession_key === 'cook') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        state = burner(state, (state) => {
-                            if (_.random(1, 3) === 1) {
-                                state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'vegetables': 2, 'human_meat': 3}, 'meals');
-                            }
-                            return state;
-                        });
-                    }
-                }
-
-                if (profession_key === 'navigator') {
-                    state.navigation = 1;
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        state = burner(state, (state) => { state.navigation++; return state; });
-                    }
-                }
-
-                if (profession_key === 'aquarius') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 100 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
-                            state['turf']++;
-                        }
-                    }
-                }
-
-                if (profession_key === 'herdsman') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 50) === 1) {
-                            state.meat += 10;
-                        }
-                        if (_.random(1, 100) === 1) {
-                            state.wool += 1;
-                        }
-                    }
-                }
-
-                if (profession_key === 'master') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 20) === 1) {
-                            state = transformer(state, {'stone': 1}, 'tools');
-                        }
-                    }
-                }
-
-                if (profession_key === 'smith') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        state = burner(state, (state) => {
-                            if (_.random(1, 50) === 1) {
-                                state = transformer(state, {'iron': 1, 'obsidian': 1}, 'instruments');
-                            }
-                            return state;
-                        });
-                    }
-                }
-
-                if (profession_key === 'armorer') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        state = burner(state, (state) => {
-                            if (_.random(1, 50) === 1) {
-                                state = transformer(state, {'iron': 1, 'wool': 1, 'skin': 1}, 'armor');
-                            }
-                            return state;
-                        });
-                    }
-                }
-
-            }
-        });
-
-        // regeneration
-        _.each(resources, (resource, resource_key) => {
-            if (this.state.volumes[resource_key] < this.state.caps[resource_key]) {
-                let new_counter = 0;
-                if (resource.vegetation && this.state.aquarius > 0) {
-                    let productivity = this.state.aquarius + Math.min(this.state.aquarius, this.state.canal);
-                    let regen = resource.regen + Math.floor(resource.regen * productivity / 10);
-                    new_counter = this.state.volumes[resource_key] + regen;
-                }
-                else {
-                    new_counter = this.state.volumes[resource_key] + resource.regen;
-                }
-                state.volumes[resource_key] = new_counter > this.state.caps[resource_key] ? this.state.caps[resource_key] : new_counter;
-            }
-        });
-
-        // end game
-        if (state.population === 0) {
-            state.score = true;
-            this.pauseGame();
-        }
-
-        this.setState(state);
-
-        localStorage.setItem("app_state", JSON.stringify(state));
+        this.setState(new_state);
+        localStorage.setItem("app_state", JSON.stringify(new_state));
     }
 
     startMission(type) {
@@ -813,11 +274,20 @@ class App extends Component {
 
     gain(cost) {
         console.log(cost);
+        let o = {};
         _.each(cost, (value, resource_key) => {
-            let o = {};
             o[resource_key] = this.state[resource_key] + value;
-            this.setState(o);
         });
+        this.setState(o);
+    }
+
+    gainState(state, cost) {
+        console.log(cost);
+        let o = {};
+        _.each(cost, (value, resource_key) => {
+            o[resource_key] = state[resource_key] + value;
+        });
+        return state;
     }
 
     sumSpace() {
@@ -979,7 +449,7 @@ class App extends Component {
                                 <h1>Your nation has become extinct. </h1>
                                 <h1>You have lived {this.state.tick} days. </h1>
                                 <h1>Your legacy: {this.state.moai} moai.</h1>
-                                {make_button('refresh', 'New Game', this.newGame, 'text')}
+                                {make_button('refresh', 'New Game', this.newGame, '')}
                             </div>
                         </div>
                         :
@@ -996,7 +466,8 @@ class App extends Component {
                                             meals: 10000,
                                             tools: 100,
                                             instruments: 100,
-                                            population: 100
+                                            population: 100,
+                                            tick: 100,
                                             });
                                         }, 'text', ' cheat')}
                                     </span>
@@ -1016,7 +487,7 @@ class App extends Component {
                                     <span className="pull-right">
                                         {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
                                             'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
-                                        {make_button('refresh', 'New Game', this.newGame, 'text', ' btn-xs btn-danger')}</span>
+                                        {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
                                 </div>
                             </div>
 
@@ -1072,8 +543,8 @@ class App extends Component {
                                                         <div className="alignleft">
                                                             { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
                                                                 ?
-                                                                <span key={building_key}>
-                                                                    <span className="h4">
+                                                                <span className="fat h2" key={building_key}>
+                                                                    <span className="">
                                                                         <span
                                                                         className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
@@ -1084,8 +555,17 @@ class App extends Component {
                                                                             'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
 
                                                                         {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
+
                                                                         <span className="label label-default titled"
-                                                                        title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}> {buildings[building_key].name} </span>
+                                                                              style={{
+                                                                                  height: '80px',
+                                                                                  backgroundImage: 'url(/buildings/'+building_key+'.jpg)',
+                                                                                  backgroundRepeat: 'no-repeat',
+                                                                                  backgroundPosition: 'center center'
+                                                                              }}
+                                                                            title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
+                                                                            <span>{buildings[building_key].name}</span>
+                                                                        </span>
                                                                     </span>
                                                                 </span>
                                                                 : ''

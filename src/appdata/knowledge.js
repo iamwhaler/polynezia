@@ -51,14 +51,14 @@ export const buildings = {
     'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 25}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', cost: {'wood': 200, 'stone': 500, 'tools': 100}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
-    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 50}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of gardener.'},
-    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100, 'tools': 25}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
-    'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 100, 'meals': 100}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
+    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 100}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of gardener.'},
+    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 200, 'tools': 25}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
+    'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 200, 'meals': 100}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
     'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile', cost: {'wood': 200, 'meals': 200, 'stone': 50}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
     'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 500, 'iron': 100, 'tools': 50}, locked_till: 'mine', text: 'Allows to build proa boats. Accelerates speed of woodcutter.'},
     'lodge': {name: 'Lodge', worker: 'hunter', build_on: 'fertile', cost: {'wood': 600, 'stone': 200, 'instruments': 100}, locked_till: 'forge', text: 'Provide hunt. Accelerates speed of hunter.'},
 
-    'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Accelerates speed of mason.'},
+    'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain', cost: {'wood': 500}, locked_till: 'hut', text: 'Provide stone. Accelerates speed of mason.'},
     'mine': {name: 'Mine', worker: 'miner', build_on: 'mountain', cost: {'wood': 1000, 'stone': 100, 'tools': 25}, locked_till: 'workshop', text: 'Provide iron and stone. Accelerates speed of miner.'},
 
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 200, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
