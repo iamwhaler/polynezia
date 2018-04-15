@@ -1,5 +1,5 @@
 
-export const starter_pack = {wood: 35, meals: 110, stone_tools: 5, sailor: 1, canoe: 1};
+export const starter_pack = {wood: 35, meals: 74, stone_tools: 1, sailor: 1, canoe: 1};
 
 export const island_types = {
     'swamp': {name: 'Swamp',        land_rates: {shore: 40, fertile: 30, mountain: 5}, wasteland: 25, resources_rates: {'fruits': 100, 'roots': 150, 'fish': 200, 'meat': 50, 'wood': 150, 'stone': 50, 'iron': 100}, 'text': 'text'},
@@ -31,32 +31,32 @@ export const items = {
 };
 
 export const ships = {
-    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 150, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
-    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 500, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
-    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 2000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
+    'canoe': {name: 'Canoe',         crew: 1, speed: 10, capacity: 100, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
+    'proa': {name: 'Proa',           crew: 2, speed: 8, capacity: 300, locked_till: 'sawmill', cost: {'wood': 250, 'iron': 10}, text: 'Reliable fast boat.'},
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 1000, locked_till: 'forge', cost: {'wood': 500, 'iron_tools': 25}, text: 'Stable catamaran.'}
 };
 
 export const buildings = {
     'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: true, text: 'Home for Two.'},
-    'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'stone_tools': 10}, locked_till: 'workshop', text: 'Home for Five.'},
+    'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'stone_tools': 10}, locked_till: 'workshop', text: 'Home for Five. Attracts new residents.'},
 
     'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: 'hut', text: 'Attracts new residents. Each bonfire accelerates the speed of one cook.'},
-    'lighthouse': {name: 'Lighthouse', worker: 'sailor', build_on: 'shore', cost: {'wood': 100, 'stone': 25, 'stone_tools': 10}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
-    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
+    'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 25}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
+    'lighthouse': {name: 'Lighthouse', worker: 'sailor', build_on: 'shore', cost: {'wood': 100, 'stone': 50, 'stone_tools': 25}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
-    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 25}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
+    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 50}, locked_till: 'hut', text: 'Provide fruits. Each garden accelerates the speed of one gardener.'},
+    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100}, locked_till: 'garden', text: 'Each canal accelerates the speed of one aquarius.'},
     'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 50, 'meals': 50}, locked_till: 'canal', text: 'Provide roots. Each field accelerates the speed of one fielder.'},
-    'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 10}, locked_till: 'quarry', text: 'Provide fishing. Each pier accelerates the speed of one fisherman.'},
-    'lodge': {name: 'Lodge', worker: 'hunter', build_on: 'fertile', cost: {'wood': 200, 'iron_tools': 25}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
+    'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 200, 'iron': 50, 'stone_tools': 25}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
+    'lodge': {name: 'Lodge', worker: 'hunter', build_on: 'fertile', cost: {'wood': 250, 'stone': 100, 'iron_tools': 50}, locked_till: 'forge', text: 'Provide hunt. Each lodge accelerates the speed of one hunter.'},
 
     'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain', cost: {'wood': 500}, locked_till: 'bonfire', text: 'Provide stone. Each quarry accelerates the speed of one mason.'},
     'mine': {name: 'Mine', worker: 'miner', build_on: 'mountain', cost: {'wood': 1000, 'stone_tools': 25}, locked_till: 'workshop', text: 'Provide iron and stone. Each mine accelerates the speed of one miner.'},
 
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 150, 'stone': 50}, locked_till: 'quarry', text: 'Allows to make stone tools. Each workshop accelerates the speed of one master.'},
-    'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 100, 'iron': 25, 'stone_tools': 25}, locked_till: 'mine', text: 'Allows to build proa boats. Each sawmill accelerates the speed of one woodcutter.'},
-    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 100, 'iron': 50, 'stone_tools': 50}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Each forge accelerates the speed of one smith.'},
+    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 200, 'iron': 100, 'stone_tools': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Each forge accelerates the speed of one smith.'},
 
-    'ahu': {name: 'Ahu', worker: 'builder', build_on: 'any', cost: {'stone': 100}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
+    'ahu': {name: 'Ahu', worker: 'builder', build_on: 'any', cost: {'stone': 1000}, locked_till: 'quarry', text: 'Each Ahu allow to build Moai and accelerates the speed of one builder. Moai will attracts new residents.'},
 };
 
 export const professions = {

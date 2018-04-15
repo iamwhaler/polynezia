@@ -94,7 +94,8 @@ class App extends Component {
               alert('You loose your fleet: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.');
               state.sailor -= human_los;
               state.population -= human_los;
-                this.charge(ships_los);
+              this.charge(ships_los);
+              break;
             case 2:
               let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
               let new_resources = {
@@ -163,8 +164,8 @@ class App extends Component {
     }
 
     // attract new people
-    if ((this.state.bonfire > 0 || this.state.moai > 0) && this.state.population < (this.state.hut*2) + (this.state.house*5)){
-      if ( _.random(1, Math.floor((10*this.state.population)/(1+this.state.bonfire+(10*this.state.moai)))) === 1 ) {
+    if ((this.state.bonfire > 0 || this.state.house > 0 || this.state.moai > 0) && this.state.population < (this.state.hut*2) + (this.state.house*5)){
+      if ( _.random(1, Math.floor((10*this.state.population)/(1+this.state.bonfire+(2*this.state.house)+(10*this.state.moai)))) === 1 ) {
         state.population++;// ;this.setState({population: this.state.population + 1});
       }
     }
@@ -221,7 +222,7 @@ class App extends Component {
         }
       }
 
-      if (_.random(1, 3) === 1) {
+      if (_.random(1, 2) === 1) {
         state[selected_food]--;
       }
     }
@@ -301,7 +302,12 @@ class App extends Component {
               });
               let selected = _.sample(food);
               state[selected]--;
-              state['meals'] += (selected === 'human_meat' || !resources[selected].vegetation) ? 3 : 2;
+                if (selected === 'human_meat' ) {
+                    state['meals'] += 3;
+                }
+                else {
+                    state['meals'] += resources[selected].vegetation ? 2 : 3;
+                }
               if (_.random(1, 10) === 1) {
                 state['wood']--;
               }
@@ -588,7 +594,7 @@ class App extends Component {
     model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
     model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.lodge + this.state.sawmill;
     model.mountain = this.state.quarry + this.state.mine;
-    model.wasteland = this.state.bonfire + this.state.lighthouse + this.state.pier;
+    model.wasteland = Math.min((this.state.hut + this.state.house + this.state.workshop + this.state.forge), this.state.space.wasteland);
     model.any = this.state.hut + this.state.house + this.state.bonfire + this.state.lighthouse + this.state.canal +
         this.state.garden + this.state.field + this.state.pier + this.state.lodge +
         this.state.quarry + this.state.mine + this.state.workshop + this.state.sawmill + this.state.forge +
