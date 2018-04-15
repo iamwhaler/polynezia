@@ -10,12 +10,12 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: 'garden', difficulty: 1, max_cap: 10000, regen: 1},
-    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 8000, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 6000, regen: 2},
-    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 5000, regen: 2.5},
+    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: 'garden', difficulty: 1, max_cap: 7000, regen: 1},
+    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 6000, regen: 1.5},
+    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 5000, regen: 2},
+    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 4000, regen: 2.5},
 
-    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 10000, regen: 2},
+    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: true, difficulty: 1, max_cap: 8000, regen: 2},
     'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
     'iron': {name: 'Iron', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
     'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 100000, max_cap: 100, regen: 0.0}
@@ -62,8 +62,8 @@ export const buildings = {
     'mine': {name: 'Mine', worker: 'miner', build_on: 'mountain', cost: {'wood': 1000, 'stone': 100, 'tools': 25}, locked_till: 'workshop', text: 'Provide iron and stone. Accelerates speed of miner.'},
 
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 200, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
-    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 200, 'iron': 100, 'tools': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
-    'armory': {name: 'Armory', worker: 'armorer', build_on: 'any', cost: {'wood': 500, 'stone': 200, 'iron': 100, 'tools': 100, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make armors from iron, wool or skin. Accelerates speed of armorer.'},
+    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 250, 'iron': 100, 'tools': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
+    'armory': {name: 'Armory', worker: 'armorer', build_on: 'any', cost: {'wood': 500, 'stone': 250, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make armors from iron, wool or skin. Accelerates speed of armorer.'},
 
     'ahu': {name: 'Ahu', worker: 'builder', build_on: 'any', cost: {'stone': 1000}, locked_till: 'quarry', text: 'Each Ahu allow to build one Moai. Accelerates speed of builder. Moai will attracts new residents.'},
 };
