@@ -306,7 +306,7 @@ class App extends Component {
         }
 
         // attract new people
-        if ((this.state.bonfire > 0 || this.state.house > 0 || this.state.moai > 0) && this.state.population < (this.state.hut * 2) + (this.state.house * 5)) {
+        if ((this.state.bonfire > 0 || this.state.house > 0 || this.state.moai > 0) && this.state.population < (this.state.hut * 2) + (this.state.house * 4)) {
             if (_.random(1, Math.floor((10 * this.state.population) / (1 + this.state.bonfire + (2 * this.state.house) + (10 * this.state.moai)))) === 1) {
                 state.population++;// ;this.setState({population: this.state.population + 1});
             }
@@ -459,10 +459,10 @@ class App extends Component {
 
                 if (profession_key === 'mason') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 200 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
+                        if (_.random(1, 250 * this.state.island_type === 'mountain' ? 1 : 5) === 1) {
                             state['obsidian']++;
                         }
-                        if (_.random(1, 25) === 1) {
+                        if (_.random(1, 50) === 1) {
                             state['coal']++;
                         }
                     }
@@ -540,7 +540,7 @@ class App extends Component {
 
                 if (profession_key === 'aquarius') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 50 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
+                        if (_.random(1, 100 * this.state.island_type === 'swamp' ? 1 : 5) === 1) {
                             state['turf']++;
                         }
                     }

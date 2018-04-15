@@ -45,14 +45,14 @@ export const ships = {
 
 export const buildings = {
     'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: 'bonfire', text: 'Home for Two.'},
-    'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'tools': 10}, locked_till: 'workshop', text: 'Home for Five. Attracts new residents.'},
+    'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 10, 'tools': 10}, locked_till: 'workshop', text: 'Home for Four. Attracts new residents.'},
 
     'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: true, text: 'Attracts new residents. Accelerates speed of cook.'},
     'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 25}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', cost: {'wood': 100, 'stone': 50, 'tools': 25}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
     'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 50}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of gardener.'},
-    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
+    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 100, 'tools': 10}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
     'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 50, 'meals': 50}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
     'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile', cost: {'wood': 100, 'stone': 25}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
     'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 200, 'iron': 50, 'tools': 25}, locked_till: 'mine', text: 'Allows to build proa boats. Accelerates speed of woodcutter.'},
