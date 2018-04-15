@@ -561,7 +561,8 @@ class App extends Component {
                                                                                   height: '80px',
                                                                                   backgroundImage: 'url(/buildings/'+building_key+'.jpg)',
                                                                                   backgroundRepeat: 'no-repeat',
-                                                                                  backgroundPosition: 'center center'
+                                                                                  backgroundPosition: 'center center',
+                                                                                  backgroundSize: '100%'
                                                                               }}
                                                                             title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
