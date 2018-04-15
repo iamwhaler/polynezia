@@ -289,10 +289,9 @@ class App extends Component {
         }
       }
       else {
-
         if (profession_key === 'cook') {
           for (let i=0; i<this.productivity(profession_key); i++) {
-            if (this.state.wood < 1) continue;
+            if (this.state.wood < 1) { continue; }
             if (_.random(1, 2) === 1) {
               let food = [];
               _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => {
@@ -300,17 +299,20 @@ class App extends Component {
                   food.push(food_type);
                 }
               });
-              let selected = _.sample(food);
-              state[selected]--;
-                if (selected === 'human_meat' ) {
-                    state['meals'] += 3;
+                if (food.length > 0) {
+                    let selected = _.sample(food);
+                    console.log(selected);
+                    state[selected]--;
+                    if (selected === 'human_meat' ) {
+                        state['meals'] += 3;
+                    }
+                    else {
+                        state['meals'] += resources[selected].vegetation ? 2 : 3;
+                    }
                 }
-                else {
-                    state['meals'] += resources[selected].vegetation ? 2 : 3;
+                if (_.random(1, 10) === 1) {
+                    state['wood']--;
                 }
-              if (_.random(1, 10) === 1) {
-                state['wood']--;
-              }
             }
           }
         }
