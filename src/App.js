@@ -171,8 +171,8 @@ class App extends Component {
                 state.mission = false;
             }
             else {
-                //  state.mission_timer--;
-                state.mission_timer -= 20;
+                state.mission_timer--;
+                //state.mission_timer -= 10;
             }
         }
 
