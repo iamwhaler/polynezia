@@ -633,8 +633,10 @@ class App extends Component {
 
     }
 
-    productivity(profession_key) {
-        return this.state[profession_key] * Math.max(1, Math.min(this.state[profession_key], this.state[professions[profession_key].home]));
+    productivity(prof_key) {
+        return this.state[prof_key] *
+            Math.max(1,
+                Math.min(this.state[prof_key], this.state[professions[prof_key].home] - this.state.moai));
     }
 
     initGame(island_type, old_things = {}, old_resources = {}) {
@@ -989,6 +991,8 @@ class App extends Component {
                                             wood: 10000,
                                             stone: 1000,
                                             iron: 500,
+                                            fruits: 10000,
+                                            fish: 10000,
                                             meals: 10000,
                                             tools: 100,
                                             instruments: 100,
