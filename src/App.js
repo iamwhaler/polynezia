@@ -195,8 +195,8 @@ class App extends Component {
                 'stone': 10,
                 'iron': 50,
                 'meals': 1.5,
-                'stone_tools': 15,
-                'iron_tools': 75
+                'tools': 15,
+                'instruments': 75
             };
             const tradable = _.keys(rates);
 
@@ -279,10 +279,10 @@ class App extends Component {
                     for (let i = 0; i < productivity; i++) {
                         let ecofactor = this.state.volumes[profession.resource] / this.state.caps[profession.resource];
                         let difficulty = resources[profession.resource].difficulty;
-                        if (this.state.stone_tools > 0) {
+                        if (this.state.tools > 0) {
                             difficulty /= 3;
                         }
-                        if (this.state.iron_tools > 0) {
+                        if (this.state.instruments > 0) {
                             difficulty /= 10;
                         }
                         let top = 1 + Math.round(difficulty / ecofactor);
@@ -290,11 +290,11 @@ class App extends Component {
                         //  console.log(ecofactor, difficulty, top, chance);
 
 
-                        if (this.state.stone_tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
-                            state['stone_tools']--;
+                        if (this.state.tools > 0 && _.random(1, Math.floor((250 + (this.state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+                            state['tools']--;
                         }
-                        if (this.state.iron_tools > 0 && _.random(1, Math.floor((1000 + (this.state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
-                            state['iron_tools']--;
+                        if (this.state.instruments > 0 && _.random(1, Math.floor((1000 + (this.state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
+                            state['instruments']--;
                         }
 
 
@@ -309,7 +309,7 @@ class App extends Component {
                                 state[profession.resource]++;
                                 state.volumes[profession.resource]--;  // (((
 
-                                if (this.state.iron_tools > 0) {
+                                if (this.state.instruments > 0) {
                                     if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
                                         state.volumes[profession.resource]++; // (((
                                     }
@@ -356,7 +356,7 @@ class App extends Component {
                         if (this.state.stone < 1) continue;
                         if (_.random(1, 20) === 1) {
                             state['stone']--;
-                            state['stone_tools']++;
+                            state['tools']++;
                         }
                     }
                 }
@@ -366,7 +366,7 @@ class App extends Component {
                         if (this.state.iron < 1) continue;
                         if (_.random(1, 50) === 1) {
                             state['iron']--;
-                            state['iron_tools']++;
+                            state['instruments']++;
                         }
                     }
                 }
@@ -484,8 +484,8 @@ class App extends Component {
             'stone': state.stone,
             'iron': state.iron,
             'meals': state.meals,
-            'stone_tools': state.stone_tools,
-            'iron_tools': state.iron_tools,
+            'tools': state.tools,
+            'instruments': state.instruments,
         };
         let sum = _.sum(_.values(res));
 
@@ -755,8 +755,8 @@ class App extends Component {
                                             stone: 1000,
                                             iron: 500,
                                             meals: 10000,
-                                            stone_tools: 100,
-                                            iron_tools: 100,
+                                            tools: 100,
+                                            instruments: 100,
                                             population: 100
                                             });
                                         }, 'text', ' cheat')}
@@ -867,7 +867,7 @@ class App extends Component {
                                                     stone: 200,
                                                     iron: 50,
                                                     meals: 1000,
-                                                    stone_tools: 100,
+                                                    tools: 100,
                                                     population: 10
                                                 });
                                             }}>!</span></p>

@@ -15,8 +15,8 @@ export const default_state = {
     moai: 0,
 
     meals: 0,
-    stone_tools: 0,
-    iron_tools: 0,
+    tools: 0,
+    instruments: 0,
     human_meat: 0,
 
 
