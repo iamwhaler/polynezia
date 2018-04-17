@@ -15,7 +15,7 @@ export const default_state = {
 
     vegetables: 0,
     human_meat: 0,
-    meals: 0,
+    meals: 10,
     coal: 0,
     turf: 0,
     obsidian: 0,
@@ -25,12 +25,21 @@ export const default_state = {
     instruments: 0,
     armor: 0,
 
+    storyline: true,
+    storyline_name: 'travel',
+    storyline_step: 'start',
+
+
+    environment: 'start',
 
     firs_slide: true,
     in_sea: false,
     shore: false,
     embarked: false,
     score: false,
+
+    luck: 0,
+    sea_search: 0,
 
     island_type: 'tropical',
     space: {shore: 0, fertile: 0, mountain: 0, wasteland: 100},

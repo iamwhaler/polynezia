@@ -7,6 +7,20 @@ export const Machine = {
     tick: (state, app) => {
         state.tick++;
 
+        // storyline
+        if (state.storyline){
+            if (state.splash_counter > 0) state.splash_counter--;
+         //   console.log(state.storyline, app.getStep(), app.getStep().on_tick);
+            if (app.getStep().on_tick) state = app.getStep().on_tick(state, app);
+        }
+
+        /*
+        if (state.firs_slide) {
+            if (state.fruits > 10 + _.random(1, 10) || state.wood > 20 + _.random(1, 10) || state.tools > 3 + _.random(1, 3)) {
+
+            }
+        }
+
         // searching new island
         if (state.in_sea) {
             if (state.tick > 30 && state.fish > 30) {
@@ -14,6 +28,7 @@ export const Machine = {
                 state.shore = true;
             }
         }
+         */
 
         // fleeting
         if (state.mission !== false) {
@@ -541,6 +556,7 @@ export const Machine = {
         // end game
         if (state.population === 0) {
             state.score = true;
+            state.environment = 'end';
             app.pauseGame();
         }
 

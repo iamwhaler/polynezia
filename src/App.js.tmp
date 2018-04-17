@@ -5,7 +5,7 @@ import './App.css';
 import './tooltip.css';
 
 import {starter_pack, start_island, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
-import {storylines, storylineStart} from './appdata/storylines';
+import {storylines} from './appdata/storylines';
 import {default_building_space, default_state} from './appdata/default_state';
 import {Machine} from './appdata/Machine';
 
@@ -51,13 +51,13 @@ class App extends Component {
         } else {
             this.state = default_state;
             this.state = this.initGame(start_island, starter_pack, {});
-            this.state = storylineStart(this.state, this, 'prologue');
         }
 
     }
 
     componentDidMount() {
         this.playGame();
+        this.storylineStart('travel');
     }
 
     playGame() {
@@ -157,7 +157,7 @@ class App extends Component {
         old_things.legacy = 0;
         old_things.heritage = 0;
 
-        this.setState(storylineStart(this.initGame(start_island, old_things, {}), this, 'prologue'));
+        this.setState(this.initGame(start_island, old_things, {}));
 
         this.playGame();
     }
@@ -206,7 +206,7 @@ class App extends Component {
             'instruments': state.instruments,
         };
 
-        this.setState(storylineStart(this.initGame(island_types[island_type], things, res), this, 'travel'));
+        this.setState(this.initGame(island_types[island_type], things, res));
 
         this.playGame();
     }
@@ -215,6 +215,17 @@ class App extends Component {
         return step
             ? storylines[this.state.storyline_name].story[step]
             : storylines[this.state.storyline_name].story[this.state.storyline_step];
+    }
+
+
+    storylineStart(storyline_key) {
+        let storyline = storylines[storyline_key];
+        console.log(storyline_key, storyline);
+
+        this.setState({'storyline_name': storyline_key, 'storyline_step': 'start'});
+        if (storyline.init) {
+            this.setState(storyline.init(this.state, this));
+        }
     }
 
 
@@ -443,7 +454,6 @@ class App extends Component {
                 }}> {'>'} </button>
             </div>;
 
-        /*
         let bg_style = '';
         if (this.state.score) {
             bg_style = 'url(/night.jpg)';
@@ -465,11 +475,6 @@ class App extends Component {
         else {
             bg_style = 'url(/error.jpg)';
         }
-        */
-
-        let bg_style = this.state.environment === 'embarked'
-            ? 'url(/environments/'+this.state.island_type+'.jpg)'
-            : 'url(/environments/'+this.state.environment+'.jpg)';
 
         return (
             <div className="App clearfix">
@@ -487,28 +492,30 @@ class App extends Component {
                             </div>
                         </div>
                         :
-                        <div className="container theme-showcase" role="main">
-                            <div className="flex-container-row clearfix">
-                                <span className="pull-left flex-element cheat"> {make_button('cheat', ' ', () => {
-                                    this.setState({
-                                        wood: 10000,
-                                        stone: 1000,
-                                        iron: 500,
-                                        fruits: 10000,
-                                        fish: 10000,
-                                        meals: 10000,
-                                        tools: 100,
-                                        instruments: 100,
-                                        population: 100,
-                                        tick: 100,
-                                        });
-                                    }, 'text', ' cheat')}
-                                </span>
+                        <div className="container clearfix theme-showcase" role="main">
+                            <div>
+                                <div>
+                                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => {
+                                        this.setState({
+                                            wood: 10000,
+                                            stone: 1000,
+                                            iron: 500,
+                                            fruits: 10000,
+                                            fish: 10000,
+                                            meals: 10000,
+                                            tools: 100,
+                                            instruments: 100,
+                                            population: 100,
+                                            tick: 100,
+                                            });
+                                        }, 'text', ' cheat')}
+                                    </span>
 
-                                <span className="pull-right flex-element">
-                                    {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
-                                        'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
-                                    {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
+                                    <span className="pull-right">
+                                        {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
+                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
+                                        {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
+                                </div>
                             </div>
 
                             <div className="flex-container-row clearfix">
@@ -529,7 +536,22 @@ class App extends Component {
                                         : ''
                                     }
 
-                                    {this.state.embarked === true
+
+                                    {this.state.firs_slide === true ? <div>
+                                        <p className="h4 fat">
+                                            The explosion of the volcano destroys your island and everything that was dear to you. Miraculously you managed to get to the canoe. It's time to sail
+                                            <span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>.</span></p>
+                                    </div> :
+                                     this.state.embarked === true
                                         ?
                                         <div>
                                             <h4 className="App-title">Civilisation</h4>
@@ -611,8 +633,81 @@ class App extends Component {
 
 
                                         </div>
-                                        : ''
+                                        : this.state.in_sea ? <div>
+                                        <p className="h4 fat">Your boat throws waves, but you hold the oar firmly. The last
+                                            in your tribe, you tirelessly row, in search of a new
+                                            haven. How not to die of hunger<span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>?</span></p>
+                                    </div>  : <div>
+                                        <p className="h4 fat">Your ship boarded on the inhabitant island. Fortunately, life
+                                            is accelerating in this place, and you can survive there for a while.
+                                            Praying Moai idol is the legacy of your people. Celebrate them and let your
+                                            civilization
+                                            grow<span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>!</span></p>
+                                        {make_button('embark', 'Disembark', () => {
+                                            this.setState({shore: false, embarked: true});
+                                        })}
+                                    </div>
                                     }
+
+                                    <div>
+
+
+                                        {this.state.firs_slide ?
+                                            <span>
+                                                {make_button('haste', 'Haste!', () => {
+                                                    this.setState({luck: this.state.luck + 10});
+                                                }, 'text', 'btn-info')}
+                                                {make_button('meals', 'Grab Meals', () => {
+                                                    this.collect('meals');
+                                                }, 'text', 'btn-warning')}
+                                                {make_button('tools', 'Looking Tools', () => {
+                                                    this.collect('tools');
+                                                }, 'text', 'btn-danger')}
+                                            </span> : ''}
+
+                                        {this.state.in_sea ?
+                                            <span>
+                                                {make_button('looking', 'Rowing', () => {
+                                                    this.setState({luck: this.state.luck + 1, sea_search: this.state.sea_search - 1});
+                                                }, 'text', 'btn-info')}
+                                                {make_button('fish', 'Fishing', () => {
+                                                    this.collect('fish');
+                                                }, 'text', 'btn-success')}
+                                            </span> : ''}
+
+                                        {this.state.embarked ?
+                                            <span>
+                                        {make_button('fruits', 'Collect Fruits', () => {
+                                            this.collect('fruits');
+                                        }, 'text')}
+                                                {this.lockedTill('field') ? '' : make_button('roots', 'Collect Roots', () => {
+                                                    this.collect('roots');
+                                                }, 'text')}
+                                                {make_button('wood', 'Collect Wood', () => {
+                                                    this.collect('wood');
+                                                }, 'text')}
+                                        </span> : ''}
+
+                                    </div>
+
                                 </div>
 
 
