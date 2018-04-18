@@ -6,6 +6,7 @@ import {resources, professions} from './/knowledge';
 export const Machine = {
     tick: (state, app) => {
         state.tick++;
+        state.storm_loss = '';
 
         // storyline
         if (state.storyline){

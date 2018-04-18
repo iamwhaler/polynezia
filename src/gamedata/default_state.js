@@ -17,6 +17,10 @@ const default_state = {
     shore: false,
     score: false,
 
+    storm_loss: '',
+    fishing_tools: 0,
+    storm_set: 0,
+
     luck: 0,
     sea_search: 0,
 
@@ -48,7 +52,7 @@ const default_state = {
     fruits: 0,
     roots: 0,
     fish: 0,
-    meat: 420,
+    meat: 0,
     wood: 0,
     stone: 0,
     iron: 0,

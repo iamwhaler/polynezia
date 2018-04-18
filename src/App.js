@@ -602,10 +602,10 @@ class App extends Component {
                                             <h4 className="App-title">Civilisation</h4>
                                             <div className="flex-container-row">
                                                 <div className="flex-element">
-                                                    <span title="Shore" className="badge bg-shore"> {this.state.space.shore - this.built('shore')} </span>
-                                                    <span title="Fertile land" className="badge bg-fertile"> {this.state.space.fertile - this.built('fertile')} </span>
-                                                    <span title="Mountain" className="badge bg-mountain"> {this.state.space.mountain - this.built('mountain')} </span>
-                                                    <span title="Wasteland" className="badge bg-wasteland"> {this.state.space.wasteland - this.built('wasteland')} </span>
+                                                    <span title="Shore" className="badge bg-shore titled"> {this.state.space.shore - this.built('shore')} </span>
+                                                    <span title="Fertile land" className="badge bg-fertile titled"> {this.state.space.fertile - this.built('fertile')} </span>
+                                                    <span title="Mountain" className="badge bg-mountain titled"> {this.state.space.mountain - this.built('mountain')} </span>
+                                                    <span title="Wasteland" className="badge bg-wasteland titled"> {this.state.space.wasteland - this.built('wasteland')} </span>
                                                     =
                                                     <span title="Free Space" className="badge"> {this.sumSpace() - this.sumBuild()} </span>
                                                     free space
@@ -813,17 +813,19 @@ class App extends Component {
                                         <div className="datablock">
                                             {_.keys(resources).map((resource_key) => {
                                                 return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                                                    ? <div className={resources[resource_key].style} title={resources[resource_key].text}
+                                                    ? <div className={classNames('titled', resources[resource_key].style)} title={resources[resource_key].text}
                                                         key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
                                                     : ''
                                             })}
                                             {_.keys(items).map((item_key) => {
                                                 return this.state[item_key] > 0
-                                                    ? <div className={items[item_key].style} title={items[item_key].text}
+                                                    ? <div className={classNames('titled', items[item_key].style)} title={items[item_key].text}
                                                            key={item_key}> {items[item_key].name}: {this.state[item_key]}</div> : ''
                                             })}
                                         </div>
                                     </div>
+
+                                    <p>{this.state.storm_loss}</p>
 
                                     {this.state.in_sea ? <div className="panel panel-info">
                                         <h4 className="App-title">High Seas</h4>
