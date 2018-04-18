@@ -50,6 +50,8 @@ export const items = {
     'heritage': {name: 'Heritage'},
 };
 
+export const goods = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron', 'vegetables', 'coal', 'turf', 'obsidian', 'wool', 'skin', 'meals', 'tools', 'instruments', 'weapon', 'armor'];
+
 export const ships = {
     'canoe': {name: 'Canoe',         crew: 1, speed: 8, capacity: 100, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
     'proa': {name: 'Proa',           crew: 2, speed: 10, capacity: 300, locked_till: 'sawmill', cost: {'wood': 250, 'tools': 25}, text: 'Reliable fast boat.'},

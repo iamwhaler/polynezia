@@ -46,6 +46,15 @@ const collect = (state, app, resource_key) => {
 };
 
 
+const storm = (state, app, strategy = 'normal', gear = false) => {
+    let modifer = 2 + {'safe': 1, 'normal': 3, 'fast': 5}[strategy] + gear ? 0 : 3;
+
+
+
+    return state;
+};
+
+
 export const prologue = {
     init: (state, app) => {
         state.environment = 'start';
@@ -87,7 +96,8 @@ export const prologue = {
 export const first_travel = {
     init: (state, app) => {
         state.firs_slide = false;
-        state.trip_duration = Math.floor(50  / app.fleetSpeed());
+        state.trip_long = Math.floor(50  / app.fleetSpeed());
+        state.trip_duration = state.trip_long;
         state.weather = 40; // 0 - storm, 100 - sun
         console.log({'state.trip_duration': state.trip_duration, 'state.weather': state.weather});
         return state;
@@ -104,19 +114,18 @@ export const first_travel = {
             'on_tick': null,
             'actions': [
                 {'text': 'Swim Slowly', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'storm'); }},
-                {'text': 'Row Fast', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'selector'); }},
+                {'text': 'Row Fast', style: 'btn-info', 'on_click': (state, app) => { state.trip_duration--; state.weather--; return storylineStep(state, app, 'selector'); }},
             ]
         },
         'selector': {
             'text': ``,
             'on_enter': (state, app) => {
-            //    console.log('storyline enter '+state.storyline_step);
                 if (state.trip_duration <= 0) {
                     return storylineStep(state, app, 'end');
                 }
                 else {
                     state.trip_duration--;
-                    return storylineStep(state, app, _.random(1, 100) > state.weather ? 'storm' : 'calm');
+                    return storylineStep(state, app, _.random(1, 100) > state.weather ? 'storm' :  _.random(1, 3) === 1 ? 'rainy' :  'calm');
                 }
             },
             'on_tick': null,
@@ -131,26 +140,54 @@ export const first_travel = {
             },
             'on_tick': null,
             'actions': [
-                {'text': 'Fishing', style: 'btn-info', 'on_click': (state, app) => { state.weather -= 5; return storylineStep(state, app, 'fishing'); }},
+                {'text': 'Fishing', style: 'btn-info', 'on_click': (state, app) => { state.trip_duration++; state.weather -= 5; return storylineStep(state, app, 'fishing'); }},
                 {'text': 'Swim Slowly', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'swim_slowly'); }},
-                {'text': 'Row Fast', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'row_fast'); }},
+                {'text': 'Row Fast', style: 'btn-info', 'on_click': (state, app) => { state.trip_duration--; state.weather--; return storylineStep(state, app, 'row_fast'); }},
             ]
         },
         'fishing': {
             'text': `Your fleet is fishing.`,
             'on_enter': (state, app) => {
-             //   console.log('storyline enter '+state.storyline_step);
                 state.splash_counter = Math.floor((20+(state.navigation * 20)) / app.fleetSpeed());
                 return state;
             },
             'on_tick': (state, app) => {
-            //    console.log('fishing splash ', state.splash_counter);
-
                 if (state.splash_counter <= 0) {
                     state = storylineStep(state, app, 'selector');
                 }
                 else {
-                    state.fish += state.fishing_tools ? 2 : 1 * app.getFleetPower();
+                    state.fish += state.fishing_tools ? 3 : 2 * app.getFleetPower();
+                }
+                return state;
+            },
+            'actions': []
+        },
+        'rainy': {
+            'text': `Light rain like a looming storm. However, fishing under this best.`,
+            'on_enter': (state, app) => {
+                state.environment = 'rain_in_sea';
+                state.in_sea = true;
+                return state;
+            },
+            'on_tick': null,
+            'actions': [
+                {'text': 'Fishing', style: 'btn-info', 'on_click': (state, app) => { state.weather -= 10; return storylineStep(state, app, 'rainy_fishing'); }},
+                {'text': 'Swim Away', style: 'btn-info', 'on_click': (state, app) => { state.weather += 10; return storylineStep(state, app, 'try_to_escape'); }},
+                {'text': 'Swim Straight', style: 'btn-info', 'on_click': (state, app) => { state.weather -= 5; return storylineStep(state, app, 'swim_straight'); }},
+            ]
+        },
+        'rainy_fishing': {
+            'text': `Your fleet is fishing under rain.`,
+            'on_enter': (state, app) => {
+                state.splash_counter = Math.floor((20+(state.navigation * 20)) / app.fleetSpeed());
+                return state;
+            },
+            'on_tick': (state, app) => {
+                if (state.splash_counter <= 0) {
+                    state = storylineStep(state, app, 'selector');
+                }
+                else {
+                    state.fish += state.fishing_tools ? 5 : 3 * app.getFleetPower();
                 }
                 return state;
             },
@@ -177,9 +214,9 @@ export const first_travel = {
             },
             'on_tick': null,
             'actions': [
-                {'text': 'Try to Escape', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'try_to_escape'); }},
-                {'text': 'Swim Carefully', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'swim_carefully'); }},
-                {'text': 'Swim Straight', style: 'btn-info', 'on_click': (state, app) => { return storylineStep(state, app, 'swim_straight'); }},
+                {'text': 'Try to Escape', style: 'btn-info', 'on_click': (state, app) => { state.weather += 10; state.trip_duration += 2; return storylineStep(state, app, 'try_to_escape'); }},
+                {'text': 'Swim Carefully', style: 'btn-info', 'on_click': (state, app) => { state.weather += 5; state.trip_duration++; return storylineStep(state, app, 'swim_carefully'); }},
+                {'text': 'Swim Straight', style: 'btn-info', 'on_click': (state, app) => {  state.weather -= 5; return storylineStep(state, app, 'swim_straight'); }},
             ]
         },
         'try_to_escape': {

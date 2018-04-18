@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import './css/App.css';
+import './css/conponents.css';
 import './css/tooltip.css';
 
-import {starter_pack, mother_island, island_types, resources, items, ships, buildings, professions} from './gamedata/knowledge';
+import {starter_pack, mother_island, island_types, resources, items, goods, ships, buildings, professions} from './gamedata/knowledge';
 import {storylines, storylineStart} from './gamedata/storylines';
 import {default_building_space, getDefaultState} from './gamedata/default_state';
 import {Machine} from './gamedata/Machine';
@@ -126,25 +127,11 @@ class App extends Component {
     }
 
     loadToFleet(state) {
-        let cargo = {
-            'fruits': state.fruits,
-            'roots': state.roots,
-            'fish': state.fish,
-            'meat': state.meat,
-            'wood': state.wood,
-            'stone': state.stone,
-            'iron': state.iron,
-            'vegetables': state.vegetables,
-            'coal': state.coal,
-            'turf': state.turf,
-            'obsidian': state.obsidian,
-            'wool': state.wool,
-            'skin': state.skin,
-            'meals': state.meals,
-            'tools': state.tools,
-            'instruments': state.instruments,
-            'armor': state.armor,
-        };
+        let cargo = {};
+
+        _.each(_.keys(goods), (key) => {
+            cargo[key] = state[key];
+        });
 
         let sum = _.sum(_.values(cargo));
         let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
@@ -636,8 +623,10 @@ class App extends Component {
                                                         <div className="alignleft">
                                                             { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
                                                                 ?
-                                                                <div className="fat h2" key={building_key}>
-                                                                    <span className="">
+                                                                <div key={building_key}>
+                                                                    <div className="building-container"
+                                                                         title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
+                                                                           style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}}>
                                                                         <span
                                                                         className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
@@ -649,18 +638,10 @@ class App extends Component {
 
                                                                         {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
 
-                                                                        <span className="label label-default titled"
-                                                                              style={{
-                                                                                  height: '80px',
-                                                                                  backgroundImage: 'url(/buildings/'+building_key+'.jpg)',
-                                                                                  backgroundRepeat: 'no-repeat',
-                                                                                  backgroundPosition: 'center center',
-                                                                                  backgroundSize: '100%'
-                                                                              }}
-                                                                            title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
+                                                                        <span className="fat h2" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
                                                                         </span>
-                                                                    </span>
+                                                                    </div>
                                                                 </div>
                                                                 : ''
                                                             }
