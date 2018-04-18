@@ -20,34 +20,36 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 7000, regen: 1},
-    'roots': {name: 'Roots', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 6000, regen: 1.5},
-    'fish': {name: 'Fish', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 5000, regen: 2},
-    'meat': {name: 'Meat', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 4000, regen: 2.5},
+    'fruits': {name: 'Fruits', 'style': 'bg-food', text: 'Exhaustible food from gardens.', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 7000, regen: 1.25},
+    'roots': {name: 'Roots', 'style': 'bg-food', text: 'Exhaustible food from fields.', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 6000, regen: 1.75},
+    'fish': {name: 'Fish', 'style': 'bg-food', text: 'Exhaustible food from piers, sustainable food by fishing from boats.', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 5000, regen: 2},
+    'meat': {name: 'Meat', 'style': 'bg-food', text: 'Exhaustible food from hunting, sustainable food from pasture.', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 4000, regen: 2.5},
 
-    'wood': {name: 'Wood', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 2},
-    'stone': {name: 'Stone', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
-    'iron': {name: 'Iron', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 1000, max_cap: 1000, regen: 0.01},
-    'moai': {name: 'Moai', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 1000000, max_cap: 100, regen: 0.0}
+    'wood': {name: 'Wood', 'style': 'bg-fuel', text: 'Exhaustible material and fuel from sawmill.', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 2},
+    'stone': {name: 'Stone', 'style': 'bg-material', text: 'Exhaustible material from quarries, sustainable material from mines.', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
+    'iron': {name: 'Iron', 'style': 'bg-material', text: 'Exhaustible material from mines.', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
+
+    'moai': {name: 'Moai', 'style': 'bg-rare', text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 1000000, max_cap: 100, regen: 0.0}
 };
 
 export const items = {
-    'vegetables': {name: 'Vegetables'},
-    'human_meat': {name: 'Human Meat'},
-    'meals': {name: 'Cooked Meal'},
-    'coal': {name: 'Coal'},
-    'turf': {name: 'Turf'},
-    'obsidian': {name: 'Obsidian'},
-    'wool': {name: 'Wool'},
-    'skin': {name: 'Skin'},
-    'tools': {name: 'Tools'},
-    'instruments': {name: 'Instrument'},
-    'weapon': {name: 'Weapon'},
-    'armor': {name: 'Armor'},
-    'fishing_tools': {name: 'Fishing Rods'},
-    'storm_set': {name: 'Storm Set'},
-    'legacy': {name: 'Legacy'},
-    'heritage': {name: 'Heritage'},
+    'vegetables': {name: 'Vegetables', 'style': 'bg-food', text: 'Sustainable food from fields.'},
+    'human_meat': {name: 'Human Meat', 'style': 'bg-food', text: 'Fresh human meat.'},
+    'meals': {name: 'Cooked Meal', 'style': 'bg-food', text: 'Cooked food. From a single piece of meat you can cook three dishes, from vegetables - two..'},
+    'coal': {name: 'Coal', 'style': 'bg-fuel', text: 'Coal is mined in quarry and mines and can be used as fuel.'},
+    'turf': {name: 'Turf', 'style': 'bg-fuel', text: 'Turf is extracted in canals and can be used as fuel. Swampy islands have 5 times more turf.'},
+    'obsidian': {name: 'Obsidian', 'style': 'bg-proxy', text: 'Obsidian is mined in quarries and can be used as a material for tools, instruments and weapons. Mountainous islands have 5 times more obsidian.'},
+    'wool': {name: 'Wool', 'style': 'bg-proxy', text: 'Wool is extracted from sheep in pastures.'},
+    'skin': {name: 'Skin', 'style': 'bg-proxy', text: 'Skins are produced on the hunt.'},
+    'tools': {name: 'Tools', 'style': 'bg-tools', text: 'Tools make the complexity of resource extraction three times lighter. Reduced durability in the extraction of fish, meat, stone and iron.'},
+    'instruments': {name: 'Instrument', 'style': 'bg-tools', text: 'Instrument make the complexity of resource extraction ten times lighter. Reduced durability in the extraction of stone and iron.'},
+    'weapon': {name: 'Weapon', 'style': 'bg-war', text: 'Weapons allow you to win more resources in the war.'},
+    'armor': {name: 'Armor', 'style': 'bg-war', text: 'Armor allows you to reduce losses in the war.'},
+    'fishing_tools': {name: 'Fishing Rods', 'style': 'bg-other', text: ''},
+    'storm_set': {name: 'Storm Set', 'style': 'bg-other', text: ''},
+    'legacy': {name: 'Legacy', 'style': 'bg-rare', text: 'The legacy grows with every island where you built Moai. New islands have a larger size for each point of legacy.'},
+    'heritage': {name: 'Heritage', 'style': 'bg-rare', text: 'The heritage grows with each Moai built. New islands are more rich in resources for each point of heritage.'},
+    'gold': {name: 'Gold', 'style': 'bg-rare', text: 'Gold is a valuable resource. It is extracted in the mine and is widely used in trade'},
 };
 
 export const goods = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron', 'vegetables', 'coal', 'turf', 'obsidian', 'wool', 'skin', 'meals', 'tools', 'instruments', 'weapon', 'armor'];
@@ -55,7 +57,7 @@ export const goods = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron'
 export const ships = {
     'canoe': {name: 'Canoe',         crew: 1, speed: 8, capacity: 100, locked_till: true, cost: {'wood': 100}, text: 'A soup boat for one.'},
     'proa': {name: 'Proa',           crew: 2, speed: 10, capacity: 300, locked_till: 'sawmill', cost: {'wood': 250, 'tools': 25}, text: 'Reliable fast boat.'},
-    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 1000, locked_till: 'forge', cost: {'wood': 500, 'iron': 100, 'instruments': 50}, text: 'Stable catamaran.'}
+    'catamaran': {name: 'Catamaran', crew: 3, speed: 5, capacity: 1000, locked_till: 'forge', cost: {'wood': 500, 'instruments': 50}, text: 'Stable catamaran.'}
 };
 
 export const buildings = {

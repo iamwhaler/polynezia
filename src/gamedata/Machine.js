@@ -253,14 +253,14 @@ export const Machine = {
         }
 
         // attract new people
-        if ((state.bonfire > 0 || state.house > 0 || state.monastery > 0 || state.moai > 0) && state.population < (state.hut * 2) + (state.house * 4) + (state.monastery * 9)) {
+        if ((state.bonfire > 0 || state.house > 0 || state.monastery > 0 || state.moai > 0) && state.population < ((state.hut * 2) + (state.house * 4) + (state.monastery * 9))) {
             if (_.random(1, Math.floor((10 * state.population) / (1 + state.bonfire + (2 * state.house) + (5 * state.monastery) + (10 * state.moai)))) === 1) {
                 state.population++;// ;app.setState({population: state.population + 1});
             }
         }
 
         // attract trader
-        let chance = Math.floor(_.random(1, 1 + (100 / (1 + state.lighthouse))));
+        let chance = _.random(1, Math.floor(1 + (420 / app.productivity('navigator'))));
         //console.log(state.lighthouse, chance, state.trader);
         if (state.lighthouse > 0 && !state.trader && chance === 1) {
             const rates = {
@@ -270,6 +270,7 @@ export const Machine = {
                 'meat': 2,
                 'wood': 5,
                 'turf': 5,
+                'coal': 5,
                 'stone': 10,
                 'obsidian': 25,
                 'wool': 25,
@@ -277,27 +278,28 @@ export const Machine = {
                 'iron': 50,
                 'meals': 1,
                 'tools': 15,
-                'instruments': 75
+                'instruments': 75,
+                'gold': 100,
             };
             const tradable = _.keys(rates);
 
             let size = _.random(1, 3);
-            let resource1 = _.sample(tradable);
-            let resource2 = _.sample(tradable);
+            let resource1 = _.random(1, 3) === 1 ? 'gold' :  _.sample(tradable);
+            let resource2 = resource1 === 'gold' ?  _.sample(tradable) : _.random(1, 3) === 1 ? 'gold' : _.sample(tradable);
 
-            let nav_factor = Math.floor(100 - (app.navigation/100));
-            console.log(nav_factor);
+            let nav_factor = Math.max(100, Math.floor(420 / (1 + 0.1*app.productivity('navigator'))));
+        //    console.log(nav_factor);
 
-            if (resource1 === resource2 || _.random(1, nav_factor) === 1) {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * state.lighthouse / rates[resource1]));
+            if (resource1 === resource2 || _.random(1, nav_factor) <= 10) {
+                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 1, 3, 10][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource1]));
                 state.trader = {
                     type: 'gift', offer: {'resource1': resource1, 'count1': count1},
                     //  text: <p>Traders arrived with gifts. Their gift is <span className="badge">{count1} {resource1}</span>.</p>
                 };
             }
             else {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * state.lighthouse / rates[resource1]));
-                let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * state.lighthouse / rates[resource2]));
+                let count1 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource1]));
+                let count2 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource2]));
                 state.trader = {
                     type: 'trade',
                     offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
@@ -400,18 +402,21 @@ export const Machine = {
                         if (_.random(1, 50) === 1) {
                             state['stone']++;
                         }
-                        if (_.random(1, 100) === 1) {
+                        if (_.random(1, 25) === 1) {
                             state['coal']++;
+                        }
+                        if (_.random(1, 420) === 1) {
+                            state['gold']++;
                         }
                     }
                 }
 
                 if (profession_key === 'mason') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 250 * state.island_type === 'mountain' ? 1 : 5) === 1) {
+                        if (_.random(1, 50 * (state.island_type === 'mountain' ? 1 : 5)) === 1) {
                             state['obsidian']++;
                         }
-                        if (_.random(1, 50) === 1) {
+                        if (_.random(1, 30) === 1) {
                             state['coal']++;
                         }
                     }
@@ -472,7 +477,7 @@ export const Machine = {
                 if (profession_key === 'cook') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
-                            if (_.random(1, 3) === 1) {
+                            if (_.random(1, 2) === 1) {
                                 state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'vegetables': 2, 'human_meat': 3}, 'meals');
                             }
                             return state;
@@ -489,7 +494,7 @@ export const Machine = {
 
                 if (profession_key === 'aquarius') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 100 * state.island_type === 'swamp' ? 1 : 5) === 1) {
+                        if (_.random(1, 50 * (state.island_type === 'swamp' ? 1 : 5)) === 1) {
                             state['turf']++;
                         }
                     }
@@ -508,8 +513,8 @@ export const Machine = {
 
                 if (profession_key === 'master') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 20) === 1) {
-                            state = transformer(state, {'stone': 1}, 'tools');
+                        if (_.random(1, 30) === 1) {
+                            state = transformer(state, {'stone': 1, 'obsidian': 2}, 'tools');
                         }
                     }
                 }
@@ -518,7 +523,7 @@ export const Machine = {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
-                                state = transformer(state, {'iron': 1, 'obsidian': 1}, 'instruments');
+                                state = transformer(state, {'iron': 2, 'obsidian': 1}, 'instruments');
                             }
                             return state;
                         });
@@ -529,7 +534,7 @@ export const Machine = {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
-                                state = transformer(state, {'iron': 1, 'wool': 1, 'skin': 1}, 'armor');
+                                state = transformer(state, {'iron': 2, 'wool': 1, 'skin': 1}, 'armor');
                             }
                             return state;
                         });

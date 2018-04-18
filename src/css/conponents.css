@@ -14,8 +14,12 @@
     font-weight: 700;
     line-height: 1;
     color: #fff;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
-    vertical-align: baseline;
+    vertical-align: bottom;
     border-radius: .25em;
+}
+.building-container-content {
+    bottom: 0;
+    left: 0;
 }

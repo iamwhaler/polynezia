@@ -17,6 +17,34 @@
 
 
 
+.bg-other {
+ background-color: rgba(78, 73, 231, 0.35);
+}
+.bg-food {
+ background-color: rgba(111, 223, 119, 0.44);
+}
+.bg-fuel {
+ background-color: rgba(224, 26, 35, 0.36);
+}
+.bg-material {
+ background-color: rgba(228, 159, 38, 0.52);
+}
+.bg-proxy {
+ background-color: rgba(213, 117, 5, 0.69);
+}
+.bg-tools {
+ background-color: rgba(153, 180, 52, 0.69);
+}
+.bg-war {
+ background-color: rgba(202, 24, 33, 0.54);
+}
+.bg-rare {
+ background-color: rgba(245, 244, 28, 0.57);
+}
+
+
+
+
 .App {
   text-align: center;
 }

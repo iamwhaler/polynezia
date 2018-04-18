@@ -118,12 +118,14 @@ class App extends Component {
         let bonused_by_megalith = ['gardener', 'fielder', 'herdsman', 'fisherman', 'hunter'];
         bonus += (_.indexOf(bonused_by_megalith, prof_key) && this.state.megalith > 0) ? this.productivity('astronomer') : 0;
 
-        return this.state[prof_key] * (1 + 0.01 * bonus) *
-            Math.max(1,
+        let productivity =  this.state[prof_key] * (1 + 0.01 * bonus) *
+            (1 + Math.max(0,
                 Math.min(
                     this.state[prof_key],
-                    this.state[professions[prof_key].home])
-                 - this.state.moai);
+                    this.state[professions[prof_key].home]) - this.state.moai
+            ));
+    //    console.log(prof_key + ' productivity ' + productivity);
+        return productivity;
     }
 
     loadToFleet(state) {
@@ -598,16 +600,16 @@ class App extends Component {
                                             <h4 className="App-title">Civilisation</h4>
                                             <div className="flex-container-row">
                                                 <div className="flex-element">
-                                                    <span className="badge bg-shore"> {this.state.space.shore - this.built('shore')} </span>
-                                                    <span className="badge bg-fertile"> {this.state.space.fertile - this.built('fertile')} </span>
-                                                    <span className="badge bg-mountain"> {this.state.space.mountain - this.built('mountain')} </span>
-                                                    <span className="badge bg-wasteland"> {this.state.space.wasteland - this.built('wasteland')} </span>
+                                                    <span title="Shore" className="badge bg-shore"> {this.state.space.shore - this.built('shore')} </span>
+                                                    <span title="Fertile land" className="badge bg-fertile"> {this.state.space.fertile - this.built('fertile')} </span>
+                                                    <span title="Mountain" className="badge bg-mountain"> {this.state.space.mountain - this.built('mountain')} </span>
+                                                    <span title="Wasteland" className="badge bg-wasteland"> {this.state.space.wasteland - this.built('wasteland')} </span>
                                                     =
-                                                    <span className="badge"> {this.sumSpace() - this.sumBuild()} </span>
+                                                    <span title="Free Space" className="badge"> {this.sumSpace() - this.sumBuild()} </span>
                                                     free space
                                                 </div>
                                                 <div className="flex-element">Population: {this.state.population}
-                                                    / {(this.state.hut * 2) + (this.state.house * 5)}</div>
+                                                    / {(this.state.hut * 2) + (this.state.house * 4) + (this.state.monastery * 9)}</div>
                                                 <div className="flex-element"> free citizens <span
                                                     className="badge"> {this.state.population - this.busy()}</span>
                                                 </div>
@@ -623,10 +625,10 @@ class App extends Component {
                                                         <div className="alignleft">
                                                             { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
                                                                 ?
-                                                                <div key={building_key}>
-                                                                    <div className="building-container"
-                                                                         title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
-                                                                           style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}}>
+                                                                <div className="building-container"
+                                                                      title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
+                                                                      style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}} key={building_key}>
+                                                                    <div className="building-container-content">
                                                                         <span
                                                                         className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
@@ -809,13 +811,14 @@ class App extends Component {
                                         <div className="datablock">
                                             {_.keys(resources).map((resource_key) => {
                                                 return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                                                    ? <div
-                                                    key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                                                    ? <div className={resources[resource_key].style} title={resources[resource_key].text}
+                                                        key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
                                                     : ''
                                             })}
                                             {_.keys(items).map((item_key) => {
-                                                return this.state[item_key] > 0 ? <div key={item_key}>
-                                                    {items[item_key].name}: {this.state[item_key]}</div> : ''
+                                                return this.state[item_key] > 0
+                                                    ? <div className={items[item_key].style} title={items[item_key].text}
+                                                           key={item_key}> {items[item_key].name}: {this.state[item_key]}</div> : ''
                                             })}
                                         </div>
                                     </div>

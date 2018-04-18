@@ -66,6 +66,7 @@ const default_state = {
     instruments: 0,
     weapon: 0,
     armor: 0,
+    gold: 0,
 
 
     hut: 0,
