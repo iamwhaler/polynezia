@@ -47,7 +47,7 @@ const collect = (state, app, resource_key) => {
 
 
 const storm = (state, app, strategy = 'normal', gear = false) => {
-    let modifer = {'safe': 1, 'normal': 3, 'fast': 6}[strategy] * gear ? 1 : 2;
+    let modifer = {'safe': 25, 'normal': 50, 'fast': 100}[strategy] * gear ? 1 : 2;
     let cargo = {};
     let loss = {};
 
@@ -56,10 +56,12 @@ const storm = (state, app, strategy = 'normal', gear = false) => {
     });
 
     _.each(_.keys(cargo), (key) => {
-        let ratio = 1 - 0.01 * modifer;
-        let loosed = Math.floor(cargo[key] * ratio);
-        loss[key] = state[key] - loosed;
-        state[key] = loosed;
+        let ratio = 1 - (0.001 * modifer);
+        let loosed = _.random(0, state[key] - Math.floor(cargo[key] * ratio));
+        if (loosed > 0) {
+            loss[key] = loosed;
+            state[key] -= loosed;
+        }
     });
 
     state.weather++;
@@ -173,7 +175,7 @@ const resettlement = {
                     state = storylineStep(state, app, 'selector');
                 }
                 else {
-                    state.fish += state.fishing_tools ? 3 : 2 * app.getFleetPower();
+                    state.fish += state.fishing_tools ? 5 : 3 * app.getFleetPower();
                 }
                 return state;
             },
@@ -205,7 +207,7 @@ const resettlement = {
                     state = storylineStep(state, app, 'selector');
                 }
                 else {
-                    state.fish += state.fishing_tools ? 5 : 3 * app.getFleetPower();
+                    state.fish += state.fishing_tools ? 9 : 5 * app.getFleetPower();
                 }
                 return state;
             },

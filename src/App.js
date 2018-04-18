@@ -497,7 +497,9 @@ class App extends Component {
     drawCost(cost) {
         let text = '';
         _.each(cost, (value, resource) => {
-            text += resource + ': ' + value + ' ';
+            if (value > 0) {
+                text += resource + ': ' + value + ' ';
+            }
         });
         return text;
     };
@@ -825,7 +827,7 @@ class App extends Component {
                                         </div>
                                     </div>
 
-                                    <p>{this.state.storm_loss}</p>
+                                    {this.state.storm_loss !== '' ? <p>{this.state.storm_loss}</p> : ''}
 
                                     {this.state.in_sea ? <div className="panel panel-info">
                                         <h4 className="App-title">High Seas</h4>
