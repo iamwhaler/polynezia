@@ -78,7 +78,7 @@ export const buildings = {
 
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 200, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
     'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 250, 'iron': 100, 'tools': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
-    'weapon_forge': {name: 'Armory', worker: 'weaponsmith', build_on: 'any', cost: {'wood': 500, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make weapon from iron or obsidian. Accelerates speed of weapon smith.'},
+    'weapon_forge': {name: 'Weapon Forge', worker: 'weaponsmith', build_on: 'any', cost: {'wood': 500, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make weapon from iron or obsidian. Accelerates speed of weapon smith.'},
     'armory': {name: 'Armory', worker: 'armorer', build_on: 'any', cost: {'wood': 500, 'stone': 250, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make armors from iron, wool or skin. Accelerates speed of armorer.'},
     'ground': {name: 'Training Ground', worker: 'instructor', build_on: 'any', cost: {'wood': 2000, 'stone': 500, 'instruments': 100}, locked_till: 'lodge', text: 'On the training ground, instructors will drill your soldiers, improving their training. Accelerates speed of instructor.'},
 

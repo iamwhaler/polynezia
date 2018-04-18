@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import './App.css';
-import './tooltip.css';
+import './css/App.css';
+import './css/tooltip.css';
 
 import {starter_pack, mother_island, island_types, resources, items, ships, buildings, professions} from './gamedata/knowledge';
 import {storylines, storylineStart} from './gamedata/storylines';
@@ -542,29 +542,6 @@ class App extends Component {
                 }}> {'>'} </button>
             </div>;
 
-        /*
-        let bg_style = '';
-        if (this.state.score) {
-            bg_style = 'url(/night.jpg)';
-        } else if (this.state.firs_slide) {
-            bg_style = 'url(/start.jpg)';
-        }
-        else if (this.state.in_sea) {
-            bg_style = 'url(/kayak.jpg)';
-        }
-        else if (this.state.shore) {
-            bg_style = 'url(/shore.jpg)';
-        }
-        else if (this.state.ahu > 0) {
-            bg_style = 'url(/moai.jpg)';
-        }
-        else if (this.state.embarked) {
-            bg_style = 'url(/'+this.state.island_type+'.jpg)';
-        }
-        else {
-            bg_style = 'url(/error.jpg)';
-        }
-        */
 
         let bg_style = this.state.environment === 'embarked'
             ? 'url(/environments/'+this.state.island_type+'.jpg)'
