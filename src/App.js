@@ -131,7 +131,7 @@ class App extends Component {
     loadToFleet(state) {
         let cargo = {};
 
-        _.each(_.keys(goods), (key) => {
+        _.each(goods, (key) => {
             cargo[key] = state[key];
         });
 
@@ -146,6 +146,8 @@ class App extends Component {
         state.population = this.sailorsNeed();
         state.sailor = this.sailorsNeed();
         state.moai = 0;
+
+        console.log(goods, cargo, sum, ratio, state);
 
         return state;
     }

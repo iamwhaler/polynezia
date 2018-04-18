@@ -443,7 +443,7 @@ export const Machine = {
                         //  console.log(ecofactor, difficulty, top, chance);
 
 
-                        if (state.tools > 0 && _.random(1, Math.floor((250 + (state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+                        if (state.tools > 0 && _.random(1, Math.floor((250 + (state.workshop * 100)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
                             state['tools']--;
                         }
                         if (state.instruments > 0 && _.random(1, Math.floor((1000 + (state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
@@ -513,7 +513,7 @@ export const Machine = {
 
                 if (profession_key === 'master') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 30) === 1) {
+                        if (_.random(1, 25) === 1) {
                             state = transformer(state, {'stone': 1, 'obsidian': 2}, 'tools');
                         }
                     }
