@@ -17,7 +17,7 @@ class App extends Component {
 
         this.timerID = null;
 
-        this.resetGame = this.resetGame.bind(this);
+        this.resettlement = this.resettlement.bind(this);
         this.newGame = this.newGame.bind(this);
 
         this.getStep = this.getStep.bind(this);
@@ -50,14 +50,14 @@ class App extends Component {
             this.state = app_state;
         } else {
             this.state = default_state;
-            this.state = this.initGame(start_island, starter_pack, {});
+            this.state = this.generateIsland(start_island, starter_pack, {});
         }
 
     }
 
     componentDidMount() {
         this.playGame();
-        this.storylineStart('travel');
+        this.storylineStart('resettlement');
     }
 
     playGame() {
@@ -111,7 +111,7 @@ class App extends Component {
                 Math.min(this.state[prof_key], this.state[professions[prof_key].home] - this.state.moai));
     }
 
-    initGame(island, old_things = {}, old_resources = {}) {
+    generateIsland(island, old_things = {}, old_resources = {}) {
         let building_space = island.custom_space ? island.custom_space : default_building_space;
 
         let sum = _.sum(_.values(old_resources));
@@ -145,7 +145,7 @@ class App extends Component {
             new_state.caps[res_key] = cap;
         });
 
-        console.log('initGame', sum, ratio, island, old_resources, old_things, new_state);
+        console.log('generateIsland', sum, ratio, island, old_resources, old_things, new_state);
 
         return new_state;
     }
@@ -157,12 +157,12 @@ class App extends Component {
         old_things.legacy = 0;
         old_things.heritage = 0;
 
-        this.setState(this.initGame(start_island, old_things, {}));
+        this.setState(this.generateIsland(start_island, old_things, {}));
 
         this.playGame();
     }
 
-    resetGame() {
+    resettlement() {
         if (this.state.sailor < this.sailorsNeed()) return false;
         if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources. New island will be bigger and rich if you built Moai.')) return false;
 
@@ -206,7 +206,7 @@ class App extends Component {
             'instruments': state.instruments,
         };
 
-        this.setState(this.initGame(island_types[island_type], things, res));
+        this.setState(this.generateIsland(island_types[island_type], things, res));
 
         this.playGame();
     }
@@ -512,7 +512,7 @@ class App extends Component {
                                     </span>
 
                                     <span className="pull-right">
-                                        {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
+                                        {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resettlement,
                                             'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
                                         {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
                                 </div>

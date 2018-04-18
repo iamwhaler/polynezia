@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import './App.css';
 import './tooltip.css';
 
-import {starter_pack, start_island, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
-import {storylines, storylineStart} from './appdata/storylines';
-import {default_building_space, default_state} from './appdata/default_state';
-import {Machine} from './appdata/Machine';
+import {starter_pack, mother_island, island_types, resources, items, ships, buildings, professions} from './gamedata/knowledge';
+import {storylines, storylineStart} from './gamedata/storylines';
+import {default_building_space, getDefaultState} from './gamedata/default_state';
+import {Machine} from './gamedata/Machine';
 
 var timerID = null;
 
@@ -17,7 +17,7 @@ class App extends Component {
 
         this.timerID = null;
 
-        this.resetGame = this.resetGame.bind(this);
+        this.resettlement = this.resettlement.bind(this);
         this.newGame = this.newGame.bind(this);
 
         this.getStep = this.getStep.bind(this);
@@ -44,19 +44,23 @@ class App extends Component {
         this.assignWorker = this.assignWorker.bind(this);
         this.detachWorker = this.detachWorker.bind(this);
 
-        var app_state = JSON.parse(localStorage.getItem("app_state"));
-
-        if (app_state) {
-            this.state = app_state;
-        } else {
-            this.state = default_state;
-            this.state = this.initGame(start_island, starter_pack, {});
-            this.state = storylineStart(this.state, this, 'prologue');
-        }
-
+        this.state = getDefaultState();
     }
 
     componentDidMount() {
+        console.log('App componentDidMount');
+        let story = {};
+        var app_state = JSON.parse(localStorage.getItem("app_state"));
+
+        if (app_state) {
+            story = app_state;
+        } else {
+            let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
+            story = storylineStart(island, this, 'prologue');
+            console.log({'what': 'new game', island: island, story: story});
+        }
+
+        this.setState(story);
         this.playGame();
     }
 
@@ -66,13 +70,13 @@ class App extends Component {
             () => this.tick(),
             Math.floor(this.state.game_speed / this.state.game_speed_multiplier)
         );
-        console.log('playGame');
+        console.log('playGame', this.state);
         this.setState({game_paused: false});
     }
 
     pauseGame() {
         clearInterval(timerID);
-        this.setState({game_paused: true});
+    //    this.setState({game_paused: true});
     }
 
     setGameSpeed(speed) {
@@ -81,9 +85,12 @@ class App extends Component {
     }
 
     tick() {
+        let old_state = this.state;
         console.log('tick');
-        let new_state = Machine.tick(this.state, this);
+     //   console.log(old_state);
+        let new_state = Machine.tick(old_state, this);
 
+    //    console.log('tick with states: ', old_state, new_state);
     //      console.log(new_state);
         this.setState(new_state);
         localStorage.setItem("app_state", JSON.stringify(new_state));
@@ -106,72 +113,62 @@ class App extends Component {
     }
 
     productivity(prof_key) {
-        return this.state[prof_key] *
+        let bonus = 0;
+        let bonused_by_megalith = ['gardener', 'fielder', 'herdsman', 'fisherman', 'hunter'];
+        bonus += (_.indexOf(bonused_by_megalith, prof_key) && this.state.megalith > 0) ? this.productivity('astronomer') : 0;
+
+        return this.state[prof_key] * (1 + 0.01 * bonus) *
             Math.max(1,
-                Math.min(this.state[prof_key], this.state[professions[prof_key].home] - this.state.moai));
+                Math.min(
+                    this.state[prof_key],
+                    this.state[professions[prof_key].home])
+                 - this.state.moai);
     }
 
-    initGame(island, old_things = {}, old_resources = {}) {
-        let building_space = island.custom_space ? island.custom_space : default_building_space;
+    loadToFleet(state) {
+        let cargo = {
+            'fruits': state.fruits,
+            'roots': state.roots,
+            'fish': state.fish,
+            'meat': state.meat,
+            'wood': state.wood,
+            'stone': state.stone,
+            'iron': state.iron,
+            'vegetables': state.vegetables,
+            'coal': state.coal,
+            'turf': state.turf,
+            'obsidian': state.obsidian,
+            'wool': state.wool,
+            'skin': state.skin,
+            'meals': state.meals,
+            'tools': state.tools,
+            'instruments': state.instruments,
+            'armor': state.armor,
+        };
 
-        let sum = _.sum(_.values(old_resources));
-
+        let sum = _.sum(_.values(cargo));
         let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-
-        _.each(_.keys(old_resources), (key) => {
-            old_things[key] = Math.floor(old_resources[key] * ratio);
+        _.each(_.keys(cargo), (key) => {
+            state[key] = Math.floor(cargo[key] * ratio);
         });
 
-        let new_state = JSON.parse(JSON.stringify(default_state));
+        _.each(_.keys(buildings), (building_key) => { state[building_key] = 0; });
+        _.each(_.keys(professions), (profession_key) => { state[profession_key] = 0; });
+        state.population = this.sailorsNeed();
+        state.sailor = this.sailorsNeed();
+        state.moai = 0;
 
-        new_state.volumes['moai'] = new_state.building_space;
-        new_state.caps['moai'] = new_state.building_space;
-
-        let resizer = island.land_rates;
-        _.each(_.keys(resizer), (res_key) => {
-            new_state.space[res_key] = Math.floor((building_space + old_things.legacy) * (resizer[res_key] / 100));
-        });
-        new_state.space.wasteland = building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
-
-        _.each(_.keys(old_things), (key) => {
-            new_state[key] = old_things[key];
-        });
-
-        let morf = island.resources_rates;
-
-        _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((old_things.heritage + morf[res_key]) / 100)));
-            new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
-            new_state.caps[res_key] = cap;
-        });
-
-        console.log('initGame', sum, ratio, island, old_resources, old_things, new_state);
-
-        return new_state;
+        return state;
     }
 
-    newGame() {
-        if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
 
-        let old_things = starter_pack;
-        old_things.legacy = 0;
-        old_things.heritage = 0;
+    generateIslandFULL(state, island, old_things = {}) {
 
-        this.setState(storylineStart(this.initGame(start_island, old_things, {}), this, 'prologue'));
 
-        this.playGame();
-    }
-
-    resetGame() {
-        if (this.state.sailor < this.sailorsNeed()) return false;
-        if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources. New island will be bigger and rich if you built Moai.')) return false;
-
-        let state = this.state;
 
         let things = {};
 
-        let island_type = _.sample(_.keys(island_types));
-        things.island_type = island_type;
+    //    things.island_type = island;
         things.population = this.sailorsNeed();
         things.sailor = this.sailorsNeed();
 
@@ -192,7 +189,9 @@ class App extends Component {
             things.heritage += state.moai;
         }
 
-        let res = {
+        _.assign(things, old_things);
+
+        let old_resources = {
             'fruits': state.fruits,
             'roots': state.roots,
             'fish': state.fish,
@@ -206,7 +205,105 @@ class App extends Component {
             'instruments': state.instruments,
         };
 
-        this.setState(storylineStart(this.initGame(island_types[island_type], things, res), this, 'travel'));
+        let sum = _.sum(_.values(old_resources));
+
+        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+
+        _.each(_.keys(old_resources), (key) => {
+            things[key] = Math.floor(old_resources[key] * ratio);
+        });
+
+        let new_state = getDefaultState();
+
+        let building_space = island.custom_space ? island.custom_space : default_building_space;
+        new_state.volumes['moai'] = new_state.building_space;
+        new_state.caps['moai'] = new_state.building_space;
+
+        let resizer = island.land_rates;
+        _.each(_.keys(resizer), (res_key) => {
+            new_state.space[res_key] = Math.floor((building_space + things.legacy) * (resizer[res_key] / 100));
+        });
+        new_state.space.wasteland = building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
+
+        _.each(_.keys(things), (key) => {
+            new_state[key] = things[key];
+        });
+
+        let morf = island.resources_rates;
+
+        _.each(_.keys(morf), (res_key) => {
+            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((things.heritage + morf[res_key]) / 100)));
+            new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
+            new_state.caps[res_key] = cap;
+        });
+
+        console.log('generateIsland', sum, ratio, island, old_resources, things, new_state);
+
+        return new_state;
+    }
+
+
+    generateIsland(state, island, things = {}) {
+
+
+        let new_state = state;
+
+        new_state.island_type = island.type;
+       // let new_state = getDefaultState();
+
+        //_.assign(things, old_things);
+
+
+        let building_space = island.custom_space ? island.custom_space : default_building_space;
+        building_space +=  + new_state.legacy;
+        new_state.volumes['moai'] = building_space;
+        new_state.caps['moai'] = building_space;
+
+        let resizer = island.land_rates;
+        _.each(_.keys(resizer), (res_key) => {
+            new_state.space[res_key] = Math.floor(building_space * (resizer[res_key] / 100));
+        });
+        new_state.space.wasteland = building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
+
+        _.each(_.keys(things), (key) => {
+            new_state[key] = things[key];
+        });
+
+        let morf = island.resources_rates;
+
+        _.each(_.keys(morf), (res_key) => {
+            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((new_state.heritage + morf[res_key]) / 100)));
+            new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
+            new_state.caps[res_key] = cap;
+        });
+
+        console.log('generateIsland', island, things, new_state);
+
+        return new_state;
+    }
+
+    newGame() {
+        if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
+
+        let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
+        let story = storylineStart(island, this, 'prologue');
+
+        this.setState(story);
+        this.playGame();
+    }
+
+    resettlement() {
+        if (this.state.sailor < this.sailorsNeed()) return false;
+        if (!window.confirm('Are you ready to move to a new island? Your lost all your old island and keep only your fleet, crew and resources. New island will be bigger and rich if you built Moai.')) return false;
+
+        let state = this.state;
+
+        if (state.moai > 0) {
+            state.legacy++;
+            state.heritage += state.moai;
+        }
+
+        this.setState(storylineStart(this.loadToFleet(state), this, 'resettlement'));
 
         this.playGame();
     }
@@ -319,7 +416,9 @@ class App extends Component {
 
     sumBuild() {
         let busy = 0;
-        _.each(_.keys(buildings), (building_key) => { busy += this.state[building_key]; });
+        _.each(_.keys(buildings), (building_key) => {
+          //  console.log(building_key, this.state[building_key]);
+            busy += this.state[building_key]; });
         return busy;
     }
 
@@ -338,7 +437,7 @@ class App extends Component {
             case 'fertile':
                 return this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
-                return this.state.quarry + this.state.mine < this.state.space.mountain;
+                return this.state.quarry + this.state.mine + this.state.megalith < this.state.space.mountain;
             case 'wasteland':
                 return this.sumBuild() < this.sumSpace();
             default:
@@ -351,8 +450,8 @@ class App extends Component {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
         model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
-        model.mountain = this.state.quarry + this.state.mine;
-        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
+        model.mountain = this.state.quarry + this.state.mine + this.state.megalith;
+        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.monastery + this.state.workshop + this.state.forge  + this.state.weapon_forge + this.state.armory + this.state.ground), this.state.space.wasteland);
         model.any = this.sumBuild();
 
         return model[land_type];
@@ -481,7 +580,7 @@ class App extends Component {
                         <div className="container">
                             <div>
                                 <h1>Your nation has become extinct. </h1>
-                                <h1>You have lived {this.state.tick} days. </h1>
+                                <h1>You have lived {Math.floor(this.state.tick/24)+1} days. </h1>
                                 <h1>Your legacy: {this.state.moai} moai.</h1>
                                 {make_button('refresh', 'New Game', this.newGame, '')}
                             </div>
@@ -506,7 +605,7 @@ class App extends Component {
                                 </span>
 
                                 <span className="pull-right flex-element">
-                                    {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resetGame,
+                                    {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resettlement,
                                         'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
                                     {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
                             </div>
@@ -665,10 +764,10 @@ class App extends Component {
                                             <div>
                                                 {this.state.mission
                                                     ? <div>Your fleet in {this.state.mission}. Return back
-                                                    in {this.state.mission_timer} days.</div>
+                                                    in {this.state.mission_timer} hours.</div>
                                                     :
                                                     <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
-                                                        {make_button('fishing', 'Fishing', () => {
+                                                        {this.lockedTill('embarked') ? '' : make_button('fishing', 'Fishing', () => {
                                                             this.startMission('fishing');
                                                         }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-info btn-sm disabled' : ' btn-info btn-sm')}
                                                         {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
@@ -766,14 +865,14 @@ class App extends Component {
                                     {this.state.in_sea ? <div className="panel panel-info">
                                         <h4 className="App-title">High Seas</h4>
                                         <div className="datablock">
-                                            Day: {this.state.tick} in sea
+                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1}  in sea
                                         </div>
                                     </div> : ''}
 
                                     {this.state.embarked ? <div className="panel panel-info">
                                         <h4 className="App-title">Island Resources</h4>
                                         <div className="datablock">
-                                            Day: {this.state.tick} on {island_types[this.state.island_type].name} island
+                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1} on {island_types[this.state.island_type].name} island
                                             <div>Size: {this.sumSpace()} ({this.drawCost({
                                                 shore: this.state.space.shore,
                                                 fertile: this.state.space.fertile,

@@ -1,7 +1,7 @@
 
 import _ from 'lodash';
 
-import {resources, professions} from '../appdata/knowledge';
+import {resources, professions} from './/knowledge';
 
 export const Machine = {
     tick: (state, app) => {
@@ -253,16 +253,16 @@ export const Machine = {
         }
 
         // attract new people
-        if ((app.state.bonfire > 0 || app.state.house > 0 || app.state.moai > 0) && app.state.population < (app.state.hut * 2) + (app.state.house * 4)) {
-            if (_.random(1, Math.floor((10 * app.state.population) / (1 + app.state.bonfire + (2 * app.state.house) + (10 * app.state.moai)))) === 1) {
-                state.population++;// ;app.setState({population: app.state.population + 1});
+        if ((state.bonfire > 0 || state.house > 0 || state.monastery > 0 || state.moai > 0) && state.population < (state.hut * 2) + (state.house * 4) + (state.monastery * 9)) {
+            if (_.random(1, Math.floor((10 * state.population) / (1 + state.bonfire + (2 * state.house) + (5 * state.monastery) + (10 * state.moai)))) === 1) {
+                state.population++;// ;app.setState({population: state.population + 1});
             }
         }
 
         // attract trader
-        let chance = Math.floor(_.random(1, 1 + (100 / (1 + app.state.lighthouse))));
-        //console.log(app.state.lighthouse, chance, app.state.trader);
-        if (app.state.lighthouse > 0 && !app.state.trader && chance === 1) {
+        let chance = Math.floor(_.random(1, 1 + (100 / (1 + state.lighthouse))));
+        //console.log(state.lighthouse, chance, state.trader);
+        if (state.lighthouse > 0 && !state.trader && chance === 1) {
             const rates = {
                 'fruits': 1.5,
                 'roots': 1.5,
@@ -289,15 +289,15 @@ export const Machine = {
             console.log(nav_factor);
 
             if (resource1 === resource2 || _.random(1, nav_factor) === 1) {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * app.state.lighthouse / rates[resource1]));
+                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 10, 50, 100][size] * _.random(7, 13) * state.lighthouse / rates[resource1]));
                 state.trader = {
                     type: 'gift', offer: {'resource1': resource1, 'count1': count1},
                     //  text: <p>Traders arrived with gifts. Their gift is <span className="badge">{count1} {resource1}</span>.</p>
                 };
             }
             else {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * app.state.lighthouse / rates[resource1]));
-                let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * app.state.lighthouse / rates[resource2]));
+                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * state.lighthouse / rates[resource1]));
+                let count2 = Math.floor(0.1 * (_.random(1, 10) + [0, 50, 100, 250][size] * _.random(7, 13) * state.lighthouse / rates[resource2]));
                 state.trader = {
                     type: 'trade',
                     offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
@@ -307,29 +307,31 @@ export const Machine = {
         }
 
         // feeding
-        for (let i = 0; i < app.state.population; i++) {
+        for (let i = 0; i < state.population; i++) {
             let selected_food = null;
-            if (app.state.meals > 1) {
+            if (state.meals > 1) {
                 selected_food = "meals";
             }
             else {
+                let eatable = ['fruits', 'roots', 'fish', 'meat', 'human_meat'];
                 let food = [];
-                _.each(['fruits', 'roots', 'fish', 'meat', 'human_meat'], (food_type) => {
-                    if (app.state[food_type] > 0) {
-                        food.push(food_type);
+                for (let e = 0; e < eatable.length; e++) {
+                    if (state[eatable[e]] > 0) {
+                        food.push(eatable[e]);
                     }
-                });
+                }
 
                 if (food.length === 0) {
                     state.population--;
                     state.human_meat += 50;
 
                     let works = [];
-                    _.each(professions, (profession, profession_key) => {
-                        if (app.state[profession_key] > 0) {
-                            works.push(profession_key);
+                    let profs = _.keys(professions);
+                    for (let w = 0; w < profs.length; w++) {
+                        if (state[profs[w]] > 0) {
+                            works.push(profs[w]);
                         }
-                    });
+                    }
                     state[_.sample(works)]--;
                     continue;
                 }
@@ -346,7 +348,7 @@ export const Machine = {
         const chooser = (state, items, func) => {
             let raw = [];
             _.each(items, (item) => {
-                if (app.state[item] > 0) {
+                if (state[item] > 0) {
                     raw.push(item);
                 }
             });
@@ -395,10 +397,10 @@ export const Machine = {
 
                 if (profession_key === 'miner') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 10) === 1) {
+                        if (_.random(1, 50) === 1) {
                             state['stone']++;
                         }
-                        if (_.random(1, 20) === 1) {
+                        if (_.random(1, 100) === 1) {
                             state['coal']++;
                         }
                     }
@@ -406,7 +408,7 @@ export const Machine = {
 
                 if (profession_key === 'mason') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 250 * app.state.island_type === 'mountain' ? 1 : 5) === 1) {
+                        if (_.random(1, 250 * state.island_type === 'mountain' ? 1 : 5) === 1) {
                             state['obsidian']++;
                         }
                         if (_.random(1, 50) === 1) {
@@ -415,20 +417,20 @@ export const Machine = {
                     }
                 }
 
-                if (app.state[profession_key] > 0 && app.state.volumes[profession.resource] > 0) {
+                if (state[profession_key] > 0 && state.volumes[profession.resource] > 0) {
                     let productivity = app.productivity(profession_key);
-                    if (app.state.human_meat > 0) {
+                    if (state.human_meat > 0) {
                         productivity *= 2;
                     }
                     //  console.log(productivity);
-                    //  console.log(app.state[profession_key], profession.home, app.state[profession.home]);
+                    //  console.log(state[profession_key], profession.home, state[profession.home]);
                     for (let i = 0; i < productivity; i++) {
-                        let ecofactor = app.state.volumes[profession.resource] / app.state.caps[profession.resource];
+                        let ecofactor = state.volumes[profession.resource] / state.caps[profession.resource];
                         let difficulty = resources[profession.resource].difficulty;
-                        if (app.state.tools > 0) {
+                        if (state.tools > 0) {
                             difficulty /= 3;
                         }
-                        if (app.state.instruments > 0) {
+                        if (state.instruments > 0) {
                             difficulty /= 10;
                         }
                         let top = 1 + Math.round(difficulty / ecofactor);
@@ -436,17 +438,17 @@ export const Machine = {
                         //  console.log(ecofactor, difficulty, top, chance);
 
 
-                        if (app.state.tools > 0 && _.random(1, Math.floor((250 + (app.state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+                        if (state.tools > 0 && _.random(1, Math.floor((250 + (state.workshop * 50)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
                             state['tools']--;
                         }
-                        if (app.state.instruments > 0 && _.random(1, Math.floor((1000 + (app.state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
+                        if (state.instruments > 0 && _.random(1, Math.floor((1000 + (state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
                             state['instruments']--;
                         }
 
 
                         if (chance === 1) {
                             if (profession.resource === 'moai') {
-                                if (app.state.moai < app.state.ahu) {
+                                if (state.moai < state.ahu) {
                                     state[profession.resource]++;
                                     state.volumes[profession.resource]--;
                                 }
@@ -455,7 +457,7 @@ export const Machine = {
                                 state[profession.resource]++;
                                 state.volumes[profession.resource]--;  // (((
 
-                                if (app.state.instruments > 0) {
+                                if (state.instruments > 0) {
                                     if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
                                         state.volumes[profession.resource]++; // (((
                                     }
@@ -487,7 +489,7 @@ export const Machine = {
 
                 if (profession_key === 'aquarius') {
                     for (let i = 0; i < app.productivity(profession_key); i++) {
-                        if (_.random(1, 100 * app.state.island_type === 'swamp' ? 1 : 5) === 1) {
+                        if (_.random(1, 100 * state.island_type === 'swamp' ? 1 : 5) === 1) {
                             state['turf']++;
                         }
                     }
@@ -534,22 +536,33 @@ export const Machine = {
                     }
                 }
 
+                if (profession_key === 'weaponsmith') {
+                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                        state = burner(state, (state) => {
+                            if (_.random(1, 50) === 1) {
+                                state = transformer(state, {'iron': 1, 'obsidian': 1}, 'weapon');
+                            }
+                            return state;
+                        });
+                    }
+                }
+
             }
         });
 
         // regeneration
         _.each(resources, (resource, resource_key) => {
-            if (app.state.volumes[resource_key] < app.state.caps[resource_key]) {
+            if (state.volumes[resource_key] < state.caps[resource_key]) {
                 let new_counter = 0;
-                if (resource.vegetation && app.state.aquarius > 0) {
-                    let productivity = app.state.aquarius + Math.min(app.state.aquarius, app.state.canal);
+                if (resource.vegetation && state.aquarius > 0) {
+                    let productivity = state.aquarius + Math.min(state.aquarius, state.canal);
                     let regen = resource.regen + Math.floor(resource.regen * productivity / 10);
-                    new_counter = app.state.volumes[resource_key] + regen;
+                    new_counter = state.volumes[resource_key] + regen;
                 }
                 else {
-                    new_counter = app.state.volumes[resource_key] + resource.regen;
+                    new_counter = state.volumes[resource_key] + resource.regen;
                 }
-                state.volumes[resource_key] = new_counter > app.state.caps[resource_key] ? app.state.caps[resource_key] : new_counter;
+                state.volumes[resource_key] = new_counter > state.caps[resource_key] ? state.caps[resource_key] : new_counter;
             }
         });
 
