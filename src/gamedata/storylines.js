@@ -277,7 +277,7 @@ const resettlement = {
 };
 
 
-const first_travel = _.clone(resettlement);
+const first_travel = _.cloneDeep(resettlement);
 first_travel.story.start = {
     'text': `You row, holding the paddle with trembling hands. All your thoughts are occupied with family and friends. Did they survive?.`,
         'on_enter': (state, app) => {
