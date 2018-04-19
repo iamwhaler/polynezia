@@ -230,6 +230,7 @@ const resettlement = {
             'on_enter': (state, app) => {
                 state.environment = 'storm';
                 state.in_sea = true;
+                state.weather += 15;
                 return state;
             },
             'on_tick': (state, app) => {

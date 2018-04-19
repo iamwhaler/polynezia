@@ -478,18 +478,18 @@ class App extends Component {
         return 0;
     }
 
-    assignWorker(work) {
+    assignWorker(work, all = false) {
         if (this.busy() < this.state.population) {
             let o = {};
-            o[work] = this.state[work] + 1;
+            o[work] = all ? (this.state.population - this.busy()) : this.state[work] + 1;
             this.setState(o)
         }
     }
 
-    detachWorker(work) {
+    detachWorker(work, all = false) {
         if (this.state[work] > 0) {
             let o = {};
-            o[work] = this.state[work] - 1;
+            o[work] = all ? 0 : this.state[work] - 1;
             this.setState(o)
         }
     }
@@ -526,13 +526,11 @@ class App extends Component {
         const make_arrows = (stat, name) =>
             <div key={stat + name}>
                 {name}
-                <button onClick={() => {
-                    this.detachWorker(stat)
-                }}> {'<'} </button>
-                <span className="font-weight-bold badge" style={{width: '28px'}}> {this.state[stat]} </span>
-                <button onClick={() => {
-                    this.assignWorker(stat)
-                }}> {'>'} </button>
+                <button className="arrow-button" onClick={() => { this.detachWorker(stat, true); }}> 0 </button>
+                <button className="arrow-button" onClick={() => { this.detachWorker(stat); }}> {'<'} </button>
+                <span className="font-weight-bold badge h4" style={{width: '28px'}}> {this.state[stat]} </span>
+                <button className="arrow-button" onClick={() => { this.assignWorker(stat); }}> {'>'} </button>
+                <button className="arrow-button" onClick={() => { this.assignWorker(stat, true); }}> ∞ </button>
             </div>;
 
 
