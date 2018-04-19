@@ -872,20 +872,20 @@ class App extends Component {
                 </div>
                 <div className="footer">
                     &nbsp;
-                    <a href="https://t.me/polynezia">
-                        <img src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />
+                    <a target="_blank" rel="noopener noreferrer" href="https://t.me/polynezia">
+                        <img alt="" src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />
                         &nbsp;
                         telegram
                     </a>
                     &nbsp;&nbsp;&nbsp;
-                    <a href="#">
-                        <img src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png" />
+                    <a target="_blank" rel="noopener noreferrer" href="#">
+                        <img alt="" src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png" />
                         &nbsp;
                         wiki
                     </a>
                     &nbsp;&nbsp;&nbsp;
-                    <a href="#">
-                        <img src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png" />
+                    <a target="_blank" rel="noopener noreferrer" href="#">
+                        <img alt="" src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png" />
                         &nbsp;
                         reddit
                     </a>
