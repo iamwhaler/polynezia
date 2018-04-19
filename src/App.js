@@ -593,7 +593,7 @@ class App extends Component {
 
                                 { // Left Column
                                 }
-                                <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3}}>
+                                <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3, 'minWidth': '450px'}}>
                                     {this.state.storyline === true ?
                                         <div>
                                             <p className="h4 fat">{this.getStep().text}</p>
@@ -693,7 +693,7 @@ class App extends Component {
 
 
                                 {this.state.firs_slide === true ? '' :
-                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
                                         <div>
@@ -767,10 +767,10 @@ class App extends Component {
                                         </div>
                                     </div>
 
-                                    <div className="fat ">
+                                    <div>
                                         {this.state.trader !== false
                                             ?
-                                            <div>
+                                            <div className="fat ">
                                                 {this.state.trader.type === 'gift'
                                                     ?
                                                     <div className="panel panel-info">
@@ -818,7 +818,7 @@ class App extends Component {
 
                                 { // Right Column 2
                                 }
-                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Your Resources</h4>
                                         <div className="datablock">
