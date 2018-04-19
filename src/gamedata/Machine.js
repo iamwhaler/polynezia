@@ -1,7 +1,7 @@
 
 import _ from 'lodash';
 
-import {resources, professions} from './/knowledge';
+import {resources, professions} from './knowledge';
 
 export const Machine = {
     tick: (state, app) => {

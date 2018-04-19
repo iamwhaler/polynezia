@@ -46,6 +46,9 @@ body {
   padding: 0px;
 }
 
+.air {
+    padding: 3px;
+}
 .filament {
   padding: 2px;
   margin: 2px;

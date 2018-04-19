@@ -539,10 +539,10 @@ class App extends Component {
             : 'url(/environments/'+this.state.environment+'.jpg)';
 
         return (
-            <div className="App clearfix">
+            <div className="App">
                 <div className="background-image" style={{'backgroundImage': bg_style}}>
                 </div>
-                <div className="content clearfix">
+                <div className="content">
                     {this.state.score
                         ?
                         <div className="container">
@@ -555,7 +555,7 @@ class App extends Component {
                         </div>
                         :
                         <div className="container theme-showcase" role="main">
-                            <div className="flex-container-row clearfix">
+                            <div className="flex-container-row">
                                 <span className="pull-left flex-element cheat"> {make_button('cheat', ' ', () => {
                                     this.setState({
                                         wood: 10000,
@@ -578,11 +578,11 @@ class App extends Component {
                                     {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
                             </div>
 
-                            <div className="flex-container-row clearfix">
+                            <div className="flex-container-row">
 
                                 { // Left Column
                                 }
-                                <div className="flex-element fat panel panel-default" style={{'flexGrow': 3}}>
+                                <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3}}>
                                     {this.state.storyline === true ?
                                         <div>
                                             <p className="h4 fat">{this.getStep().text}</p>
@@ -617,7 +617,7 @@ class App extends Component {
                                                 </div>
                                             </div>
 
-                                            <div className="">
+                                            <div className="scroller">
                                                 {_.keys(buildings).map((building_key) => {
                                                     let profession_key = buildings[building_key].worker;
                                                     //  console.log(building_key, profession_key);
