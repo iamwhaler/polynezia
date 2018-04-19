@@ -481,7 +481,7 @@ class App extends Component {
     assignWorker(work, all = false) {
         if (this.busy() < this.state.population) {
             let o = {};
-            o[work] = all ? (this.state.population - this.busy()) : this.state[work] + 1;
+            o[work] = all ? this.state[work] + (this.state.population - this.busy()) : this.state[work] + 1;
             this.setState(o)
         }
     }

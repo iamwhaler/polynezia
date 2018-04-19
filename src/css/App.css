@@ -43,7 +43,7 @@
 }
 
 .no-scroller {
-    height: 94vh;
+    max-height: 94vh;
 }
 
 .scroller {

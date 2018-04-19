@@ -20,16 +20,16 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', 'style': 'bg-food', text: 'Exhaustible food from gardens.', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 7000, regen: 1.25},
-    'roots': {name: 'Roots', 'style': 'bg-food', text: 'Exhaustible food from fields.', is_nature: true, vegetation: true, locked_till: 'field', difficulty: 2.5, max_cap: 6000, regen: 1.75},
-    'fish': {name: 'Fish', 'style': 'bg-food', text: 'Exhaustible food from piers, sustainable food by fishing from boats.', is_nature: true, vegetation: false, locked_till: 'pier', difficulty: 3, max_cap: 5000, regen: 2},
-    'meat': {name: 'Meat', 'style': 'bg-food', text: 'Exhaustible food from hunting, sustainable food from pasture.', is_nature: true, vegetation: false, locked_till: 'lodge', difficulty: 4, max_cap: 4000, regen: 2.5},
+    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 1.25, text: 'Exhaustible food from gardens.'},
+    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 5000, regen: 1.75, text: 'Exhaustible food from fields.'},
+    'fish': {name: 'Fish', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 4000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
+    'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 3000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
 
-    'wood': {name: 'Wood', 'style': 'bg-fuel', text: 'Exhaustible material and fuel from sawmill.', is_nature: true, vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 2},
-    'stone': {name: 'Stone', 'style': 'bg-material', text: 'Exhaustible material from quarries, sustainable material from mines.', is_nature: false, vegetation: false, locked_till: 'quarry', difficulty: 10, max_cap: 5000, regen: 0.1},
-    'iron': {name: 'Iron', 'style': 'bg-material', text: 'Exhaustible material from mines.', is_nature: false, vegetation: false, locked_till: 'mine', difficulty: 100, max_cap: 1000, regen: 0.01},
+    'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
+    'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 10, max_cap: 5000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
+    'iron': {name: 'Iron', 'style': 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
 
-    'moai': {name: 'Moai', 'style': 'bg-rare', text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.', is_nature: false, vegetation: false, locked_till: 'ahu', difficulty: 1000000, max_cap: 100, regen: 0.0}
+    'moai': {name: 'Moai', 'style': 'bg-rare',       is_nature: false, vegetation: false, locked_till: 'ahu',     difficulty: 500000, max_cap: 100, regen: 0.0, text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.'}
 };
 
 export const items = {
