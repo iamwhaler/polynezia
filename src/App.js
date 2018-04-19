@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import './css/App.css';
 import './css/conponents.css';
 import './css/tooltip.css';
+import './css/footer.css';
 
 import {starter_pack, mother_island, island_types, resources, items, goods, ships, buildings, professions} from './gamedata/knowledge';
 import {storylines, storylineStart} from './gamedata/storylines';
@@ -323,19 +324,29 @@ class App extends Component {
         }
     }
 
-    ruin(key, skip_firing = false) {
-        console.log(key);
-        console.log(this.state[key]);
+    ruin(key, type = 'buildings') {
+        console.log(key, type);
         if (this.state[key] < 1) return;
-        if (!window.confirm('Are you sure?')) return false;
-        let o = {};
-        o[key] = this.state[key] - 1;
+        if (!window.confirm('Are you sure? You will get back only half of the stone, wood and iron, spent during construction.')) return false;
+        let state = this.state;
 
-        if (!skip_firing && o[key] === 0) {
-            o[buildings[key].worker] = 0;
+        state[key]--;
+
+        let item = {'buildings': buildings, 'ships': ships}[type][key];
+
+        let cost = item.cost;
+        if (cost.wood) state.wood += Math.round(cost.wood/2);
+        if (cost.stone) state.stone += Math.round(cost.stone/2);
+        if (cost.iron) state.iron += Math.round(cost.iron/2);
+
+        if (type === 'buildings' && state[key] === 0) {
+            state[item.worker] = 0;
+        }
+        if (type === 'ships' && state[key] === 0) {
+            state['sailor'] -= item.crew;
         }
 
-        this.setState(o);
+        this.setState(state);
     }
 
     isEnough(building_key, type = 'buildings', cost = false) {
@@ -635,7 +646,7 @@ class App extends Component {
                                                                         className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
                                                                             () => {
-                                                                                this.ruin(building_key, false);
+                                                                                this.ruin(building_key, 'buildings');
                                                                             },
                                                                             'Destroy ' + buildings[building_key].name,
                                                                             'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
@@ -695,7 +706,7 @@ class App extends Component {
                                                                 <span className="badge"> {this.state[ship_key]} </span>
                                                                 {this.state.embarked && !this.state.mission ? make_button(ship_key + '_del', 'del',
                                                                     () => {
-                                                                        this.ruin(ship_key, true);
+                                                                        this.ruin(ship_key, 'ships');
                                                                     },
                                                                     'Destroy ' + ships[ship_key].name,
                                                                     'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : '')) : ''}
@@ -858,6 +869,26 @@ class App extends Component {
                             </div>
                         </div>
                     }
+                </div>
+                <div className="footer">
+                    &nbsp;
+                    <a href="https://t.me/polynezia">
+                        <img src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />
+                        &nbsp;
+                        telegram
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="#">
+                        <img src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png" />
+                        &nbsp;
+                        wiki
+                    </a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="#">
+                        <img src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png" />
+                        &nbsp;
+                        reddit
+                    </a>
                 </div>
             </div>
         );

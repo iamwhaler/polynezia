@@ -175,7 +175,7 @@ const resettlement = {
                     state = storylineStep(state, app, 'selector');
                 }
                 else {
-                    state.fish += state.fishing_tools ? 5 : 3 * app.getFleetPower();
+                    state.fish += (state.fishing_tools ? 5 : 3) * app.getFleetPower();
                 }
                 return state;
             },

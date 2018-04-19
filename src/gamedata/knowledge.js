@@ -7,7 +7,7 @@ export const mother_island = {name: 'Mountain', type: 'mountain',
     'text': 'text'};
 
 export const start_island = {name: 'Tropical', type: 'tropical',
-    custom_space: 9, land_rates: {shore: 45, fertile: 40, mountain: 0}, wasteland: 15,
+    custom_space: 9, land_rates: {shore: 45, fertile: 30, mountain: 0}, wasteland: 25,
     resources_rates: {'fruits': 25, 'roots': 25, 'fish': 25, 'meat': 25, 'wood': 25, 'stone': 0, 'iron': 0},
     'text': 'text'};
 
@@ -20,12 +20,12 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 1.25, text: 'Exhaustible food from gardens.'},
-    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 5000, regen: 1.75, text: 'Exhaustible food from fields.'},
+    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 0.75, text: 'Exhaustible food from gardens.'},
+    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 5000, regen: 1.25, text: 'Exhaustible food from fields.'},
     'fish': {name: 'Fish', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 4000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
     'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 3000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
 
-    'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
+    'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 7000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
     'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 10, max_cap: 5000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
     'iron': {name: 'Iron', 'style': 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
 
@@ -45,8 +45,8 @@ export const items = {
     'instruments': {name: 'Instrument', 'style': 'bg-tools', text: 'Instrument make the complexity of resource extraction ten times lighter. Reduced durability in the extraction of stone and iron.'},
     'weapon': {name: 'Weapon', 'style': 'bg-war', text: 'Weapons allow you to win more resources in the war.'},
     'armor': {name: 'Armor', 'style': 'bg-war', text: 'Armor allows you to reduce losses in the war.'},
-    'fishing_tools': {name: 'Fishing Rods', 'style': 'bg-other', text: ''},
-    'storm_set': {name: 'Storm Set', 'style': 'bg-other', text: ''},
+    'fishing_tools': {name: 'Fishing Rods', 'style': 'bg-other', text: 'Increases fish catch on the journey.'},
+    'storm_set': {name: 'Storm Set', 'style': 'bg-other', text: 'Reduces cargo loss during a storm.'},
     'legacy': {name: 'Legacy', 'style': 'bg-rare', text: 'The legacy grows with every island where you built Moai. New islands have a larger size for each point of legacy.'},
     'heritage': {name: 'Heritage', 'style': 'bg-rare', text: 'The heritage grows with each Moai built. New islands are more rich in resources for each point of heritage.'},
     'gold': {name: 'Gold', 'style': 'bg-rare', text: 'Gold is a valuable resource. It is extracted in the mine and is widely used in trade'},
@@ -63,16 +63,16 @@ export const ships = {
 export const buildings = {
     'hut': {name: 'Hut', worker: null, build_on: 'any', cost: {'wood': 25}, locked_till: 'bonfire', text: 'Home for Two.'},
     'house': {name: 'House', worker: null, build_on: 'any', cost: {'wood': 50, 'stone': 50, 'tools': 25}, locked_till: 'workshop', text: 'Home for Four. Attracts new residents.'},
-    'monastery': {name: 'Monastery', worker: null, build_on: 'any', cost: {'wood': 400, 'stone': 200, 'gold': 20}, locked_till: 'mine', text: 'Home for Nine. Attracts new residents.'},
+    'monastery': {name: 'Monastery', worker: null, build_on: 'any', cost: {'wood': 400, 'stone': 200, 'gold': 100}, locked_till: 'mine', text: 'Home for Nine. Attracts new residents.'},
 
     'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore', cost: {'wood': 10}, locked_till: true, text: 'Attracts new residents. Accelerates speed of cook.'},
-    'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 100, 'stone': 25}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
+    'pier': {name: 'Pier', worker: 'fisherman', build_on: 'shore', cost: {'wood': 200, 'stone': 50}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', cost: {'wood': 200, 'stone': 500, 'tools': 100}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
     'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile', cost: {'fruits': 100}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of gardener.'},
-    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 200, 'tools': 25}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
-    'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'wood': 200, 'meals': 100}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
-    'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile', cost: {'wood': 200, 'meals': 200, 'stone': 50}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
+    'canal': {name: 'Canal', worker: 'aquarius', build_on: 'fertile', cost: {'meals': 200}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
+    'field': {name: 'Field', worker: 'fielder', build_on: 'fertile', cost: {'meals': 300, 'tools': 25}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
+    'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile', cost: {'wood': 200, 'meals': 400, 'roots': 400, 'stone': 50}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
     'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 500, 'tools': 100}, locked_till: 'workshop', text: 'Allows to build proa boats. Accelerates speed of woodcutter.'},
     'lodge': {name: 'Lodge', worker: 'hunter', build_on: 'any', cost: {'wood': 600, 'stone': 200, 'instruments': 100}, locked_till: 'forge', text: 'Provide hunt and robbery. Accelerates speed of hunter.'},
 
@@ -81,10 +81,10 @@ export const buildings = {
     'megalith': {name: 'Megalith', worker: 'astronomer', build_on: 'mountain', cost: {'meals': 1000, 'stone': 500, 'tools': 100}, locked_till: 'workshop', text: 'Observation of the sky allows you to predict seasons, improving the weather in sea wanderings and productivity of gardener, fielder, herdsman, fisherman and hunter. Accelerates speed of astronomer.'},
 
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any', cost: {'wood': 200, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
-    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 250, 'iron': 100, 'tools': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
-    'weapon_forge': {name: 'Weapon Forge', worker: 'weaponsmith', build_on: 'any', cost: {'wood': 500, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make weapon from iron or obsidian. Accelerates speed of weapon smith.'},
-    'armory': {name: 'Armory', worker: 'armorer', build_on: 'any', cost: {'wood': 500, 'stone': 250, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make armors from iron, wool or skin. Accelerates speed of armorer.'},
-    'ground': {name: 'Training Ground', worker: 'instructor', build_on: 'any', cost: {'wood': 2000, 'stone': 500, 'instruments': 100}, locked_till: 'lodge', text: 'On the training ground, instructors will drill your soldiers, improving their training. Accelerates speed of instructor.'},
+    'forge': {name: 'Forge', worker: 'smith', build_on: 'any', cost: {'stone': 400, 'tools': 200, 'iron': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
+    'weapon_forge': {name: 'Weapon Forge', worker: 'weaponsmith', build_on: 'any', cost: {'wood': 1000, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make weapon from iron or obsidian. Accelerates speed of weapon smith.'},
+    'armory': {name: 'Armory', worker: 'armorer', build_on: 'any', cost: {'wood': 500, 'stone': 500, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make armors from iron, wool or skin. Accelerates speed of armorer.'},
+    'ground': {name: 'Training Ground', worker: 'instructor', build_on: 'any', cost: {'wood': 2000, 'stone': 1000}, locked_till: 'lodge', text: 'On the training ground, instructors will drill your soldiers, improving their training. Accelerates speed of instructor.'},
 
     'ahu': {name: 'Ahu', worker: 'builder', build_on: 'any', cost: {'stone': 1000}, locked_till: 'quarry', text: 'Each Ahu allow to build one Moai. Accelerates speed of builder. Moai will attracts new residents.'},
 };

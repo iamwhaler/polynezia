@@ -15,22 +15,6 @@ export const Machine = {
             if (app.getStep().on_tick) state = app.getStep().on_tick(state, app);
         }
 
-        /*
-        if (state.firs_slide) {
-            if (state.fruits > 10 + _.random(1, 10) || state.wood > 20 + _.random(1, 10) || state.tools > 3 + _.random(1, 3)) {
-
-            }
-        }
-
-        // searching new island
-        if (state.in_sea) {
-            if (state.tick > 30 && state.fish > 30) {
-                state.in_sea = false;
-                state.shore = true;
-            }
-        }
-         */
-
         // fleeting
         if (state.mission !== false) {
             if (state.mission_timer <= 0) {
