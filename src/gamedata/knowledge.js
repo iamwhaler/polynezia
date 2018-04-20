@@ -1,5 +1,5 @@
 
-export const starter_pack = {meals: 42, population: 1, sailor: 1, canoe: 1};
+export const starter_pack = {meals: 42, population: 1, sailor: 1};
 
 export const mother_island = {name: 'Mountain', type: 'mountain',
     custom_space: 420, land_rates: {shore: 42, fertile: 42, mountain: 222}, wasteland: 42,

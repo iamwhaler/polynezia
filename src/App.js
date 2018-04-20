@@ -7,9 +7,10 @@ import './css/tooltip.css';
 import './css/footer.css';
 
 import {starter_pack, mother_island, island_types, resources, items, goods, ships, buildings, professions} from './gamedata/knowledge';
-import {storylines, storylineStart} from './gamedata/storylines';
+import {storylines} from './gamedata/storylines';
+import StorylineTool from './engine/StorylineTool';
 import {default_building_space, getDefaultState} from './gamedata/default_state';
-import {Machine} from './gamedata/Machine';
+import Machine from './gamedata/Machine';
 
 var timerID = null;
 
@@ -58,7 +59,7 @@ class App extends Component {
             story = app_state;
         } else {
             let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
-            story = storylineStart(island, this, 'prologue');
+            story = this.storylineStart(island, 'prologue');
             console.log({'what': 'new game', island: island, story: story});
         }
 
@@ -88,12 +89,8 @@ class App extends Component {
 
     tick() {
         let old_state = this.state;
-        console.log('tick');
-     //   console.log(old_state);
-        let new_state = Machine.tick(old_state, this);
-
+        let new_state = Machine.tick.call(this, old_state);
     //    console.log('tick with states: ', old_state, new_state);
-    //      console.log(new_state);
         this.setState(new_state);
         localStorage.setItem("app_state", JSON.stringify(new_state));
     }
@@ -153,98 +150,10 @@ class App extends Component {
         return state;
     }
 
-
-    generateIslandFULL(state, island, old_things = {}) {
-
-
-
-        let things = {};
-
-    //    things.island_type = island;
-        things.population = this.sailorsNeed();
-        things.sailor = this.sailorsNeed();
-
-        things.canoe = state.canoe;
-        things.proa = state.proa;
-        things.catamaran = state.catamaran;
-
-        things.firs_slide = false;
-        things.in_sea = true;
-        things.shore = false;
-        things.embarked = false;
-        things.score = false;
-
-        things.legacy = state.legacy;
-        things.heritage = state.heritage;
-        if (state.moai > 0) {
-            things.legacy++;
-            things.heritage += state.moai;
-        }
-
-        _.assign(things, old_things);
-
-        let old_resources = {
-            'fruits': state.fruits,
-            'roots': state.roots,
-            'fish': state.fish,
-            'meat': state.meat,
-            'wood': state.wood,
-            'stone': state.stone,
-            'iron': state.iron,
-            'vegetables': state.vegetables,
-            'meals': state.meals,
-            'tools': state.tools,
-            'instruments': state.instruments,
-        };
-
-        let sum = _.sum(_.values(old_resources));
-
-        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-
-        _.each(_.keys(old_resources), (key) => {
-            things[key] = Math.floor(old_resources[key] * ratio);
-        });
-
-        let new_state = getDefaultState();
-
-        let building_space = island.custom_space ? island.custom_space : default_building_space;
-        new_state.volumes['moai'] = new_state.building_space;
-        new_state.caps['moai'] = new_state.building_space;
-
-        let resizer = island.land_rates;
-        _.each(_.keys(resizer), (res_key) => {
-            new_state.space[res_key] = Math.floor((building_space + things.legacy) * (resizer[res_key] / 100));
-        });
-        new_state.space.wasteland = building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
-
-        _.each(_.keys(things), (key) => {
-            new_state[key] = things[key];
-        });
-
-        let morf = island.resources_rates;
-
-        _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((things.heritage + morf[res_key]) / 100)));
-            new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
-            new_state.caps[res_key] = cap;
-        });
-
-        console.log('generateIsland', sum, ratio, island, old_resources, things, new_state);
-
-        return new_state;
-    }
-
-
     generateIsland(state, island, things = {}) {
-
-
         let new_state = state;
 
         new_state.island_type = island.type;
-       // let new_state = getDefaultState();
-
-        //_.assign(things, old_things);
-
 
         let building_space = island.custom_space ? island.custom_space : default_building_space;
         building_space +=  + new_state.legacy;
@@ -274,11 +183,30 @@ class App extends Component {
         return new_state;
     }
 
+    storylineStart(state, storyline) {
+        console.log('storylineStart', storyline);
+        return StorylineTool.run.call(this, state, storyline);
+    }
+
+    storylineClick(action) {
+        let state = this.state;
+
+        if (action.on_click) {
+            state = _.bind(action.on_click, this)(state);
+        }
+
+        if (action.next) {
+            state = StorylineTool.step.call(this, state, action.next);
+        }
+
+        this.setState(state);
+    }
+
     newGame() {
         if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
 
         let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
-        let story = storylineStart(island, this, 'prologue');
+        let story = this.storylineStart(island, 'prologue');
 
         this.setState(story);
         this.playGame();
@@ -295,7 +223,7 @@ class App extends Component {
             state.heritage += state.moai;
         }
 
-        this.setState(storylineStart(this.loadToFleet(state), this, 'resettlement'));
+        this.setState(this.storylineStart(this.loadToFleet(state), 'resettlement'));
 
         this.playGame();
     }
@@ -582,11 +510,6 @@ class App extends Component {
                                         });
                                     }, 'text', ' cheat')}
                                 </span>
-
-                                <span className="pull-right flex-element">
-                                    {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resettlement,
-                                        'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
-                                    {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
                             </div>
 
                             <div className="flex-container-row">
@@ -599,7 +522,7 @@ class App extends Component {
                                             <p className="h4 fat">{this.getStep().text}</p>
                                             <span>
                                                 {this.getStep().actions.map((action, key) => {
-                                                    return make_button('action_'+key, action.text, () => { let result = action.on_click(this.state, this); if (result) this.setState(result); }, action.text, action.style);
+                                                    return make_button('action_'+key, action.text, () => { this.storylineClick(action); }, action.text, action.style);
                                                 })}
                                             </span>
                                             {this.state.splash_counter ? <p className="h4 fat">{this.state.splash_counter}</p> : ''}
@@ -692,7 +615,7 @@ class App extends Component {
                                 }
 
 
-                                {this.state.firs_slide === true ? '' :
+                                {this.getFleetPower() === 0 ? '' :
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
@@ -749,6 +672,8 @@ class App extends Component {
                                                         {this.lockedTill('lodge') ? '' : make_button('robbery', 'Robbery', () => {
                                                             this.startMission('robbery');
                                                         }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-danger btn-sm disabled' : ' btn-danger btn-sm')}
+                                                        {this.lockedTill('embarked') ? '' : make_button('resettlement', 'Resettlement', this.resettlement,
+                                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-primary btn-sm disabled' : ' btn-primary btn-sm')}
                                                     </div>
                                                 }
                                             </div>
@@ -871,6 +796,8 @@ class App extends Component {
                     }
                 </div>
                 <div className="footer">
+                    <span className="pull-left"><a href="#" onClick={this.newGame} title='Hard Reset For Developers'>new game</a></span>
+
                     &nbsp;
                     <a target="_blank" rel="noopener noreferrer" href="https://t.me/polynezia">
                         <img alt="" src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />

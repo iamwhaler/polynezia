@@ -3,16 +3,22 @@ import _ from 'lodash';
 
 import {resources, professions} from './knowledge';
 
-export const Machine = {
-    tick: (state, app) => {
+class Machine {
+    static tick(state) {
+
+        //console.log(this);
+        //console.log(state);
+
+
         state.tick++;
         state.storm_loss = '';
 
         // storyline
-        if (state.storyline){
+        if (state.storyline) {
             if (state.splash_counter > 0) state.splash_counter--;
-         //   console.log(state.storyline, app.getStep(), app.getStep().on_tick);
-            if (app.getStep().on_tick) state = app.getStep().on_tick(state, app);
+         //   console.log(state.storyline, this);
+         //   console.log(state.storyline, this.getStep(), this.getStep().on_tick);
+            if (this.getStep().on_tick) state = this.getStep().on_tick.call(this, state);
         }
 
         // fleeting
@@ -21,7 +27,7 @@ export const Machine = {
 
                 switch (state.mission) {
                     case 'fishing':
-                        let reward = 10 + app.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
+                        let reward = 10 + this.sailorsNeed() * _.random(1, state.mission_long) + Math.floor(state.mission_distance * _.random(0.7, 1 + 0.1 * state.canoe + 0.3 * state.proa + 0.7 * state.catamaran));
                         state.mission_text = "Your ships come back from fishing. Fish catch: " + reward;
                         state.fish += reward;
                         break;
@@ -35,13 +41,13 @@ export const Machine = {
                                     catamaran: _.random(Math.min(tension, state.catamaran), state.catamaran)
                                 };
                                 let human_los = ships_los.canoe + ships_los.proa * 2 + ships_los.catamaran * 3;
-                                state.mission_text = '<p>You loose your fleet:</p> ' + app.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
+                                state.mission_text = '<p>You loose your fleet:</p> ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew.';
                                 state.sailor -= human_los;
                                 state.population -= human_los;
-                                app.charge(ships_los);
+                                this.charge(ships_los);
                                 break;
                             case 2:
-                                let res_reward = (state.mission_distance + app.sailorsNeed()) * _.random(7, 13);
+                                let res_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
                                 let new_resources = {
                                     fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
                                     roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
@@ -61,7 +67,7 @@ export const Machine = {
 
                                 let achieved_resources = {};
                                 let sum = _.sum(_.values(new_resources));
-                                let ratio = sum > app.fleetCapacity() ? app.fleetCapacity() / sum : 1;
+                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
                                 _.each(new_resources, (count, resource) => {
                                     if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
                                 });
@@ -73,7 +79,7 @@ export const Machine = {
                                 console.log(res_reward, sum, ratio, new_resources, achieved_resources);
 
                                 if (!_.isEmpty(achieved_resources)) {
-                                    state.mission_text = 'You found another island and harvest it! Resources: ' + app.drawCost(achieved_resources);
+                                    state.mission_text = 'You found another island and harvest it! Resources: ' + this.drawCost(achieved_resources);
                                     _.each(achieved_resources, (value, resource_key) => {
                                         state[resource_key] += value;
                                     });
@@ -83,7 +89,7 @@ export const Machine = {
                                 }
                                 break;
                             case 3:
-                                let ships_reward = (state.mission_distance + app.sailorsNeed()) * _.random(7, 13);
+                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
                                 let new_ships = {
                                     canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
                                     proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
@@ -98,7 +104,7 @@ export const Machine = {
                                 console.log(ships_reward, new_ships, reward_ships);
 
                                 if (!_.isEmpty(reward_ships)) {
-                                    state.mission_text = 'You found new ships! Ships: ' + app.drawCost(reward_ships);
+                                    state.mission_text = 'You found new ships! Ships: ' + this.drawCost(reward_ships);
                                     _.each(reward_ships, (value, resource_key) => {
                                         state[resource_key] += value;
                                     });
@@ -114,14 +120,14 @@ export const Machine = {
                     case 'robbery':
                         switch (_.random(1, 3)) {
                             case 1: {
-                                let ships_los = { canoe: state.canoe, proa: state.proa, catamaran: state.catamaran };
+                                let ships_los = {canoe: state.canoe, proa: state.proa, catamaran: state.catamaran};
                                 let human_los = state.canoe + state.proa * 2 + state.catamaran * 3;
                                 state.sailor -= human_los;
                                 state.population -= human_los;
                                 let armor_loss = Math.min(state.armor, human_los);
                                 state.armor -= armor_loss;
-                                state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + app.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
-                                state = app.chargeState(state, ships_los);
+                                state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                                state = this.chargeState(state, ships_los);
                             }
                                 break;
                             case 2: {
@@ -136,14 +142,14 @@ export const Machine = {
                                 state.population -= human_los;
                                 let armor_loss = Math.min(state.armor, human_los);
                                 state.armor -= armor_loss;
-                                state.mission_text = 'your fleet retreated with losses: ' + app.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
-                                state = app.chargeState(state, ships_los);
+                                state.mission_text = 'your fleet retreated with losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                                state = this.chargeState(state, ships_los);
                             }
                                 break;
                             case 3: {
                                 state.mission_text = 'You found another island and conquer it! ';
 
-                                let res_reward = (state.mission_distance + app.sailorsNeed() ) * _.random(7, 13);
+                                let res_reward = (state.mission_distance + this.sailorsNeed() ) * _.random(7, 13);
                                 let new_resources = {
                                     fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
                                     roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
@@ -163,7 +169,7 @@ export const Machine = {
 
                                 let achieved_resources = {};
                                 let sum = _.sum(_.values(new_resources));
-                                let ratio = sum > app.fleetCapacity() ? app.fleetCapacity() / sum : 1;
+                                let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
                                 _.each(new_resources, (count, resource) => {
                                     if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
                                 });
@@ -173,7 +179,7 @@ export const Machine = {
                                 console.log(res_reward, sum, ratio, new_resources, achieved_resources);
 
                                 if (!_.isEmpty(achieved_resources)) {
-                                    state.mission_text += ' Resources: ' + app.drawCost(achieved_resources);
+                                    state.mission_text += ' Resources: ' + this.drawCost(achieved_resources);
                                     _.each(achieved_resources, (value, resource_key) => {
                                         state[resource_key] += value;
                                     });
@@ -182,7 +188,7 @@ export const Machine = {
                                     state.mission_text = ' ';
                                 }
 
-                                let ships_reward = (state.mission_distance + app.sailorsNeed()) * _.random(7, 13);
+                                let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
                                 let new_ships = {
                                     canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
                                     proa: Math.ceil((_.random(0, ships_reward) - 25) / 50),
@@ -195,7 +201,7 @@ export const Machine = {
                                 console.log(ships_reward, new_ships, reward_ships);
 
                                 if (!_.isEmpty(reward_ships)) {
-                                    state.mission_text += ' Stolen ships: ' + app.drawCost(reward_ships);
+                                    state.mission_text += ' Stolen ships: ' + this.drawCost(reward_ships);
                                     _.each(reward_ships, (value, resource_key) => {
                                         state[resource_key] += value;
                                     });
@@ -216,9 +222,9 @@ export const Machine = {
                                 state.population -= human_los;
                                 let armor_loss = Math.min(state.armor, human_los);
                                 state.armor -= armor_loss;
-                                state = app.chargeState(state, ships_los);
+                                state = this.chargeState(state, ships_los);
 
-                                state.mission_text += ' Your losses: ' + app.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
+                                state.mission_text += ' Your losses: ' + this.drawCost(ships_los) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor.';
                             }
                                 break;
                             default:
@@ -240,12 +246,12 @@ export const Machine = {
         // attract new people
         if ((state.bonfire > 0 || state.house > 0 || state.monastery > 0 || state.moai > 0) && state.population < ((state.hut * 2) + (state.house * 4) + (state.monastery * 9))) {
             if (_.random(1, Math.floor((10 * state.population) / (1 + state.bonfire + (2 * state.house) + (5 * state.monastery) + (10 * state.moai)))) === 1) {
-                state.population++;// ;app.setState({population: state.population + 1});
+                state.population++;// ; this.setState({population: state.population + 1});
             }
         }
 
         // attract trader
-        let chance = _.random(1, Math.floor(1 + (420 / app.productivity('navigator'))));
+        let chance = _.random(1, Math.floor(1 + (420 / this.productivity('navigator'))));
         //console.log(state.lighthouse, chance, state.trader);
         if (state.lighthouse > 0 && !state.trader && chance === 1) {
             const rates = {
@@ -269,22 +275,22 @@ export const Machine = {
             const tradable = _.keys(rates);
 
             let size = _.random(1, 3);
-            let resource1 = _.random(1, 3) === 1 ? 'gold' :  _.sample(tradable);
-            let resource2 = resource1 === 'gold' ?  _.sample(tradable) : _.random(1, 3) === 1 ? 'gold' : _.sample(tradable);
+            let resource1 = _.random(1, 3) === 1 ? 'gold' : _.sample(tradable);
+            let resource2 = resource1 === 'gold' ? _.sample(tradable) : _.random(1, 3) === 1 ? 'gold' : _.sample(tradable);
 
-            let nav_factor = Math.max(100, Math.floor(420 / (1 + 0.1*app.productivity('navigator'))));
-        //    console.log(nav_factor);
+            let nav_factor = Math.max(100, Math.floor(420 / (1 + 0.1 * this.productivity('navigator'))));
+            //    console.log(nav_factor);
 
             if (resource1 === resource2 || _.random(1, nav_factor) <= 10) {
-                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 1, 3, 10][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource1]));
+                let count1 = Math.floor(0.1 * (_.random(1, 10) + [0, 1, 3, 10][size] * _.random(7, 13) * this.productivity('navigator') / rates[resource1]));
                 state.trader = {
                     type: 'gift', offer: {'resource1': resource1, 'count1': count1},
                     //  text: <p>Traders arrived with gifts. Their gift is <span className="badge">{count1} {resource1}</span>.</p>
                 };
             }
             else {
-                let count1 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource1]));
-                let count2 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * app.productivity('navigator') / rates[resource2]));
+                let count1 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * this.productivity('navigator') / rates[resource1]));
+                let count2 = Math.ceil(0.1 * (_.random(1, 10) + [0, 5, 10, 25][size] * _.random(7, 13) * this.productivity('navigator') / rates[resource2]));
                 state.trader = {
                     type: 'trade',
                     offer: {'resource1': resource1, 'count1': count1, 'resource2': resource2, 'count2': count2},
@@ -351,7 +357,7 @@ export const Machine = {
                     state[selected]--;
                 }
                 return func(state);
-            } );
+            });
         };
 
         const transformer = (state, rates, production) => {
@@ -359,7 +365,7 @@ export const Machine = {
                 state[selected]--;
                 state[production] += rates[selected];
                 return state;
-            } );
+            });
         };
 
         // work
@@ -367,7 +373,7 @@ export const Machine = {
             if (profession.resource) {
 
                 if (profession_key === 'fielder') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 5) === 1) {
                             state['vegetables']++;
                         }
@@ -375,7 +381,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'hunter') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50) === 1) {
                             state['skin']++;
                         }
@@ -383,7 +389,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'miner') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50) === 1) {
                             state['stone']++;
                         }
@@ -397,7 +403,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'mason') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50 * (state.island_type === 'mountain' ? 1 : 5)) === 1) {
                             state['obsidian']++;
                         }
@@ -408,7 +414,7 @@ export const Machine = {
                 }
 
                 if (state[profession_key] > 0 && state.volumes[profession.resource] > 0) {
-                    let productivity = app.productivity(profession_key);
+                    let productivity = this.productivity(profession_key);
                     if (state.human_meat > 0) {
                         productivity *= 2;
                     }
@@ -460,10 +466,17 @@ export const Machine = {
             }
             else {
                 if (profession_key === 'cook') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 2) === 1) {
-                                state = transformer(state, {'fruits': 2, 'roots': 2, 'fish': 3, 'meat': 3, 'vegetables': 2, 'human_meat': 3}, 'meals');
+                                state = transformer(state, {
+                                    'fruits': 2,
+                                    'roots': 2,
+                                    'fish': 3,
+                                    'meat': 3,
+                                    'vegetables': 2,
+                                    'human_meat': 3
+                                }, 'meals');
                             }
                             return state;
                         });
@@ -472,13 +485,16 @@ export const Machine = {
 
                 if (profession_key === 'navigator') {
                     state.navigation = 1;
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
-                        state = burner(state, (state) => { state.navigation++; return state; });
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        state = burner(state, (state) => {
+                            state.navigation++;
+                            return state;
+                        });
                     }
                 }
 
                 if (profession_key === 'aquarius') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50 * (state.island_type === 'swamp' ? 1 : 5)) === 1) {
                             state['turf']++;
                         }
@@ -486,7 +502,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'herdsman') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50) === 1) {
                             state.meat += 10;
                         }
@@ -497,7 +513,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'master') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 25) === 1) {
                             state = transformer(state, {'stone': 1, 'obsidian': 2}, 'tools');
                         }
@@ -505,7 +521,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'smith') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
                                 state = transformer(state, {'iron': 2, 'obsidian': 1}, 'instruments');
@@ -516,7 +532,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'armorer') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
                                 state = transformer(state, {'iron': 2, 'wool': 1, 'skin': 1}, 'armor');
@@ -527,7 +543,7 @@ export const Machine = {
                 }
 
                 if (profession_key === 'weaponsmith') {
-                    for (let i = 0; i < app.productivity(profession_key); i++) {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
                                 state = transformer(state, {'iron': 1, 'obsidian': 1}, 'weapon');
@@ -560,12 +576,13 @@ export const Machine = {
         if (state.population === 0) {
             state.score = true;
             state.environment = 'end';
-            app.pauseGame();
+            this.pauseGame();
         }
-
 
 
         return state;
     }
+}
 
-};
+export default Machine;
+

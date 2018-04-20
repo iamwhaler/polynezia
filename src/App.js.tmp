@@ -57,7 +57,7 @@ class App extends Component {
 
     componentDidMount() {
         this.playGame();
-        this.storylineStart('resettlement');
+        this.run('resettlement');
     }
 
     playGame() {
@@ -218,7 +218,7 @@ class App extends Component {
     }
 
 
-    storylineStart(storyline_key) {
+    run(storyline_key) {
         let storyline = storylines[storyline_key];
         console.log(storyline_key, storyline);
 
