@@ -371,15 +371,6 @@ class Machine {
         // work
         _.each(professions, (profession, profession_key) => {
             if (profession.resource) {
-
-                if (profession_key === 'fielder') {
-                    for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 5) === 1) {
-                            state['vegetables']++;
-                        }
-                    }
-                }
-
                 if (profession_key === 'hunter') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 50) === 1) {
@@ -480,6 +471,14 @@ class Machine {
                             }
                             return state;
                         });
+                    }
+                }
+
+                if (profession_key === 'gardener') {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        if (_.random(1, 5) === 1) {
+                            state['vegetables']++;
+                        }
                     }
                 }
 

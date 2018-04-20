@@ -365,7 +365,7 @@ class App extends Component {
             case 'shore':
                 return this.state.bonfire + this.state.lighthouse + this.state.pier < this.state.space.shore;
             case 'fertile':
-                return this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
+                return this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
                 return this.state.quarry + this.state.mine + this.state.megalith < this.state.space.mountain;
             case 'wasteland':
@@ -379,7 +379,7 @@ class App extends Component {
     built(land_type = 'any') {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
-        model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
+        model.fertile = this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
         model.mountain = this.state.quarry + this.state.mine + this.state.megalith;
         model.wasteland = Math.min((this.state.hut + this.state.house + this.state.monastery + this.state.workshop + this.state.forge  + this.state.weapon_forge + this.state.armory + this.state.ground), this.state.space.wasteland);
         model.any = this.sumBuild();
