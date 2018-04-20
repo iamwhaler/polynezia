@@ -306,7 +306,7 @@ class App extends Component {
     }
 
     charge(cost) {
-        console.log(cost);
+     //   console.log(cost);
         let o = {};
         _.each(cost, (value, resource_key) => {
             o[resource_key] = this.state[resource_key] - value;
@@ -453,7 +453,7 @@ class App extends Component {
           </span>;
 
         const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
-            <span className="h4" key={stat + name}>
+            <span className="" key={stat + name}>
             <button
                 className={classNames('btn', 'btn-success', 'btn-xs', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                 data-toggle="tooltip" data-placement="top" data-html="true"
@@ -564,19 +564,19 @@ class App extends Component {
                                                                 <div className="building-container"
                                                                       title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
                                                                       style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}} key={building_key}>
-                                                                    <div className="building-container-content">
+                                                                    <div className="building-container-content h2 fat">
                                                                         <span
-                                                                        className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
+                                                                        className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
                                                                             () => {
                                                                                 this.ruin(building_key, 'buildings');
                                                                             },
                                                                             'Destroy ' + buildings[building_key].name,
-                                                                            'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+                                                                            'btn-danger btn-xs filament' + (this.state[building_key] === 0 ? ' disabled' : ''))}
 
                                                                         {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
 
-                                                                        <span className="fat h2" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
+                                                                        <span className="filament" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
                                                                         </span>
                                                                     </div>

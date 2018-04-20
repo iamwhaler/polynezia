@@ -333,7 +333,7 @@ class Machine {
                 }
             }
 
-            if (Math.floor(_.random(1, 3)) === 1) {
+            if (Math.floor(_.random(1, 5)) < 3) {
                 state[selected_food]--;
             }
         }
@@ -415,10 +415,10 @@ class Machine {
                         let ecofactor = state.volumes[profession.resource] / state.caps[profession.resource];
                         let difficulty = resources[profession.resource].difficulty;
                         if (state.tools > 0) {
-                            difficulty /= 3;
+                            difficulty /= 2;
                         }
                         if (state.instruments > 0) {
-                            difficulty /= 10;
+                            difficulty /= 3;
                         }
                         let top = 1 + Math.round(difficulty / ecofactor);
                         let chance = Math.ceil(_.random(1, top));
@@ -476,7 +476,7 @@ class Machine {
 
                 if (profession_key === 'gardener') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 5) === 1) {
+                        if (_.random(1, 10) === 1) {
                             state['vegetables']++;
                         }
                     }
@@ -502,10 +502,8 @@ class Machine {
 
                 if (profession_key === 'herdsman') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 50) === 1) {
-                            state.meat += 10;
-                        }
                         if (_.random(1, 100) === 1) {
+                            state.meat += 10;
                             state.wool += 1;
                         }
                     }
@@ -545,7 +543,7 @@ class Machine {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
                         state = burner(state, (state) => {
                             if (_.random(1, 50) === 1) {
-                                state = transformer(state, {'iron': 1, 'obsidian': 1}, 'weapon');
+                                state = transformer(state, {'iron': 2, 'obsidian': 1}, 'weapon');
                             }
                             return state;
                         });
@@ -560,8 +558,7 @@ class Machine {
             if (state.volumes[resource_key] < state.caps[resource_key]) {
                 let new_counter = 0;
                 if (resource.vegetation && state.aquarius > 0) {
-                    let productivity = state.aquarius + Math.min(state.aquarius, state.canal);
-                    let regen = resource.regen + Math.floor(resource.regen * productivity / 10);
+                    let regen = resource.regen + Math.floor(resource.regen * this.productivity('aquarius') / 10);
                     new_counter = state.volumes[resource_key] + regen;
                 }
                 else {

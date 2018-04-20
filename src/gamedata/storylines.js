@@ -8,7 +8,7 @@ import StorylineTool from '../engine/StorylineTool';
 
 function collect(state, resource_key) {
   //  console.log(resource_key);
-    let count = {'fruits': 10, 'wood': 1, 'tools': 1, 'meals': 1, 'roots': 10}[resource_key];
+    let count = {'fruits': 3, 'wood': 1, 'tools': 1, 'meals': 1, 'roots': 2}[resource_key];
     //let count = resource_key === 'wood' ? 1 : 10;
 
     if (state.volumes[resource_key] > count) {

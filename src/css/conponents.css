@@ -1,5 +1,6 @@
 
 .building-container {
+    position: relative;
     /* display: inline; */
 
     height: 70px;
@@ -20,6 +21,7 @@
     border-radius: .25em;
 }
 .building-container-content {
-    bottom: 0;
-    left: 0;
+    position: absolute;
+    bottom: 4px;
+    left: 7px;
 }
