@@ -73,7 +73,7 @@ class App extends Component {
             () => this.tick(),
             Math.floor(this.state.game_speed / this.state.game_speed_multiplier)
         );
-        console.log('playGame', this.state);
+    //    console.log('playGame', this.state);
         this.setState({game_paused: false});
     }
 
@@ -145,7 +145,7 @@ class App extends Component {
         state.sailor = this.sailorsNeed();
         state.moai = 0;
 
-        console.log(goods, cargo, sum, ratio, state);
+     //   console.log(goods, cargo, sum, ratio, state);
 
         return state;
     }

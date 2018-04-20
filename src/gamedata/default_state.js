@@ -17,6 +17,7 @@ const default_state = {
     shore: false,
     score: false,
 
+    trip_duration: 0,
     storm_loss: '',
     fishing_tools: 0,
     storm_set: 0,
