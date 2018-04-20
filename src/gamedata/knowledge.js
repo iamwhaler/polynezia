@@ -41,6 +41,7 @@ export const items = {
     'obsidian': {name: 'Obsidian', 'style': 'bg-proxy', text: 'Obsidian is mined in quarries and can be used as a material for tools, instruments and weapons. Mountainous islands have 5 times more obsidian.'},
     'wool': {name: 'Wool', 'style': 'bg-proxy', text: 'Wool is extracted from sheep in pastures.'},
     'skin': {name: 'Skin', 'style': 'bg-proxy', text: 'Skins are produced on the hunt.'},
+    'shovels': {name: 'Shovels', 'style': 'bg-tools', text: 'Shovels are necessary for the construction of many buildings, which are terraforming land.'},
     'tools': {name: 'Tools', 'style': 'bg-tools', text: 'Tools make the complexity of resource extraction three times lighter. Reduced durability in the extraction of fish, meat, stone and iron.'},
     'instruments': {name: 'Instrument', 'style': 'bg-tools', text: 'Instrument make the complexity of resource extraction ten times lighter. Reduced durability in the extraction of stone and iron.'},
     'weapon': {name: 'Weapon', 'style': 'bg-war', text: 'Weapons allow you to win more resources in the war.'},
@@ -62,25 +63,26 @@ export const ships = {
 
 export const buildings = {
     'hut': {name: 'Hut',        worker: null, build_on: 'any',              cost: {'wood': 50}, locked_till: 'bonfire', text: 'Home for Two.'},
-    'house': {name: 'House',    worker: null, build_on: 'any',              cost: {'wood': 100, 'stone': 50, 'tools': 25}, locked_till: 'workshop', text: 'Home for Four. Attracts new residents.'},
-    'monastery': {name: 'Monastery', worker: null, build_on: 'any',         cost: {'wood': 400, 'stone': 200, 'gold': 100}, locked_till: 'mine', text: 'Home for Nine. Attracts new residents.'},
+    'house': {name: 'House',    worker: null, build_on: 'any',              cost: {'wood': 100, 'stone': 50, 'tools': 25}, locked_till: 'sawmill', text: 'Home for Four. Attracts new residents.'},
+    'monastery': {name: 'Monastery', worker: null, build_on: 'mountain',    cost: {'wood': 400, 'stone': 200, 'gold': 100}, locked_till: 'mine', text: 'Home for Nine. Attracts new residents.'},
 
     'bonfire': {name: 'Bonfire', worker: 'cook', build_on: 'shore',         cost: {'wood': 10}, locked_till: true, text: 'Attracts new residents. Accelerates speed of cook.'},
     'pier': {name: 'Pier',      worker: 'fisherman', build_on: 'shore',     cost: {'wood': 200, 'stone': 50}, locked_till: 'quarry', text: 'Provide fishing. Accelerates speed of fisherman.'},
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', cost: {'wood': 200, 'stone': 500, 'tools': 100}, locked_till: 'pier', text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
     'orchard': {name: 'Orchard', worker: 'keeper', build_on: 'fertile',     cost: {'fruits': 100}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of keeper.'},
-    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile',     cost: {'wood': 100}, locked_till: 'hut', text: 'Plant vegetables. Accelerates speed of gardener.'},
-    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    cost: {'meals': 200, 'tools': 25}, locked_till: 'garden', text: 'Accelerates speed of aquarius.'},
-    'field': {name: 'Field',    worker: 'fielder', build_on: 'fertile',     cost: {'meals': 300, 'tools': 50}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
-    'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile',   cost: {'wood': 200, 'meals': 400, 'roots': 400, 'stone': 50}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
+    'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile',     cost: {'wood': 100}, locked_till: 'orchard', text: 'Plant vegetables. Accelerates speed of gardener.'},
+    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    cost: {'meals': 200, 'shovels': 100}, locked_till: 'orchard', text: 'Accelerates speed of aquarius.'},
+    'field': {name: 'Field',    worker: 'fielder', build_on: 'fertile',     cost: {'meals': 300, 'shovels': 200}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
+    'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile',   cost: {'wood': 200, 'meals': 400, 'roots': 400, 'shovels': 200}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
     'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 500, 'tools': 100}, locked_till: 'workshop', text: 'Allows to build proa boats. Accelerates speed of woodcutter.'},
     'lodge': {name: 'Lodge',    worker: 'hunter', build_on: 'any',          cost: {'wood': 600, 'stone': 200, 'instruments': 100}, locked_till: 'forge', text: 'Provide hunt and robbery. Accelerates speed of hunter.'},
 
-    'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain',       cost: {'wood': 500, 'meals': 1000}, locked_till: 'bonfire', text: 'Provide stone. Accelerates speed of mason.'},
-    'mine': {name: 'Mine',      worker: 'miner', build_on: 'mountain',      cost: {'wood': 1000, 'stone': 100, 'tools': 25}, locked_till: 'workshop', text: 'Provide iron, stone and gold. Accelerates speed of miner.'},
+    'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain',       cost: {'wood': 500, 'meals': 1000, 'shovels': 100}, locked_till: 'carpentry', text: 'Provide stone. Accelerates speed of mason.'},
+    'mine': {name: 'Mine',      worker: 'miner', build_on: 'mountain',      cost: {'wood': 1000, 'stone': 100, 'shovels': 250}, locked_till: 'workshop', text: 'Provide iron, stone and gold. Accelerates speed of miner.'},
     'megalith': {name: 'Megalith', worker: 'astronomer', build_on: 'mountain', cost: {'meals': 1000, 'stone': 500, 'tools': 100}, locked_till: 'workshop', text: 'Observation of the sky allows you to predict seasons, improving the weather in sea wanderings and productivity of gardener, fielder, herdsman, fisherman and hunter. Accelerates speed of astronomer.'},
 
+    'carpentry': {name: 'Carpentry', worker: 'carpenter', build_on: 'any',  cost: {'wood': 250}, locked_till: 'hut', text: 'Allows to make shovels. Accelerates speed of carpenter.'},
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any',       cost: {'wood': 200, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
     'forge': {name: 'Forge',    worker: 'smith', build_on: 'any',           cost: {'stone': 400, 'tools': 200, 'iron': 100}, locked_till: 'mine', text: 'Allows to make iron tools and build catamarans. Accelerates speed of smith.'},
     'weapon_forge': {name: 'Weapon Forge', worker: 'weaponsmith', build_on: 'any', cost: {'wood': 1000, 'iron': 200, 'instruments': 100}, locked_till: 'lodge', text: 'Allows to make weapon from iron or obsidian. Accelerates speed of weapon smith.'},
@@ -109,6 +111,7 @@ export const professions = {
     'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron. The mine will improve its work and add stone to extraction.'},
     'astronomer': {name: 'Astronomer', resource: null, home: 'megalith', locked_till: 'megalith', text: 'Observation of the sky allows you to predict seasons, improving the weather in sea wanderings and productivity of gardener, fielder, herdsman, fisherman and hunter. The megalith will improve its work.'},
 
+    'carpenter': {name: 'Carpenter', resource: null, home: 'carpentry', locked_till: 'carpentry', text: 'The carpenter produces shovels. The carpentry will improve its work.'},
     'master': {name: 'Master', resource: null, home: 'workshop', locked_till: 'workshop', text: 'The master produces stone tools. The workshop will improve its work.'},
     'smith': {name: 'Smith', resource: null, home: 'forge', locked_till: 'forge', text: 'The smith produces iron tools. The forge will improve its work.'},
     'weaponsmith': {name: 'Weapon Smith', resource: null, home: 'weapon_forge', locked_till: 'weapon_forge', text: 'The weapon smith produces armor from iron, wool or skin. The weapon forge will improve its work.'},

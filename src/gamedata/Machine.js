@@ -509,6 +509,14 @@ class Machine {
                     }
                 }
 
+                if (profession_key === 'carpenter') {
+                    for (let i = 0; i < this.productivity(profession_key); i++) {
+                        if (_.random(1, 20) === 1) {
+                            state = transformer(state, {'wood': 1}, 'shovels');
+                        }
+                    }
+                }
+
                 if (profession_key === 'master') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
                         if (_.random(1, 25) === 1) {
