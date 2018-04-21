@@ -26,7 +26,7 @@ export const resources = {
     'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 4000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
 
     'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
-    'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 10, max_cap: 5000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
+    'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 20, max_cap: 10000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
     'iron': {name: 'Iron', 'style': 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
 
     'moai': {name: 'Moai', 'style': 'bg-rare',       is_nature: false, vegetation: false, locked_till: 'ahu',     difficulty: 500000, max_cap: 100, regen: 0.0, text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.'}

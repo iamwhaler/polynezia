@@ -4,7 +4,7 @@
     /* display: inline; */
 
     height: 60px;
-    width: 200px;
+    width: 215px;
     backgroundRepeat: 'no-repeat';
     backgroundPosition: 'center center';
     backgroundSize: '100%';
@@ -23,5 +23,5 @@
 .building-container-content {
     position: absolute;
     bottom: 3px;
-    left: 4px;
+    left: 0px;
 }
