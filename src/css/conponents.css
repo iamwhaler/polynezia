@@ -3,8 +3,8 @@
     position: relative;
     /* display: inline; */
 
-    height: 70px;
-    width: 220px;
+    height: 60px;
+    width: 200px;
     backgroundRepeat: 'no-repeat';
     backgroundPosition: 'center center';
     backgroundSize: '100%';
@@ -22,6 +22,6 @@
 }
 .building-container-content {
     position: absolute;
-    bottom: 4px;
-    left: 7px;
+    bottom: 3px;
+    left: 4px;
 }

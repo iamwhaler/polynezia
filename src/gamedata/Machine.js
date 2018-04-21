@@ -307,7 +307,7 @@ class Machine {
                 selected_food = "meals";
             }
             else {
-                let eatable = ['fruits', 'roots', 'fish', 'meat', 'human_meat'];
+                let eatable = ['fruits', 'vegetables', 'roots', 'fish', 'meat', 'human_meat'];
                 let food = [];
                 for (let e = 0; e < eatable.length; e++) {
                     if (state[eatable[e]] > 0) {
@@ -512,7 +512,7 @@ class Machine {
 
                 if (profession_key === 'carpenter') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 20) === 1) {
+                        if (_.random(1, 10) === 1) {
                             state = transformer(state, {'wood': 1}, 'shovels');
                         }
                     }
@@ -520,7 +520,7 @@ class Machine {
 
                 if (profession_key === 'master') {
                     for (let i = 0; i < this.productivity(profession_key); i++) {
-                        if (_.random(1, 25) === 1) {
+                        if (_.random(1, 20) === 1) {
                             state = transformer(state, {'stone': 1, 'obsidian': 2}, 'tools');
                         }
                     }

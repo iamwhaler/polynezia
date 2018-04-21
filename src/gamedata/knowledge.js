@@ -8,7 +8,7 @@ export const mother_island = {name: 'Mountain', type: 'mountain',
 
 export const start_island = {name: 'Tropical', type: 'tropical',
     custom_space: 9, land_rates: {shore: 45, fertile: 33, mountain: 0}, wasteland: 22,
-    resources_rates: {'fruits': 25, 'roots': 25, 'fish': 25, 'meat': 25, 'wood': 25, 'stone': 0, 'iron': 0},
+    resources_rates: {'fruits': 50, 'roots': 25, 'fish': 25, 'meat': 25, 'wood': 25, 'stone': 0, 'iron': 0},
     'text': 'text'};
 
 export const island_types = {
@@ -20,10 +20,10 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 5000, regen: 0.5, text: 'Exhaustible food from orchards.'},
-    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 4000, regen: 1.25, text: 'Exhaustible food from fields.'},
-    'fish': {name: 'Fish', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 3000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
-    'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 2000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
+    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 0.5, text: 'Exhaustible food from orchards.'},
+    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 7000, regen: 1.25, text: 'Exhaustible food from fields.'},
+    'fish': {name: 'Fish', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 5000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
+    'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 4000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
 
     'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
     'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 10, max_cap: 5000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},

@@ -98,7 +98,7 @@ class App extends Component {
     startMission(type) {
         if (this.state.sailor < this.sailorsNeed()) return false;
 
-        let len = Math.floor((this.state.navigation * 100) / this.fleetSpeed());
+        let len = Math.floor(((this.productivity('navigator') * 100) + 500) / this.fleetSpeed());
 
         let o = {};
         o.mission = type;
