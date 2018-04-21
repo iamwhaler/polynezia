@@ -263,14 +263,15 @@ class Machine {
                 'turf': 5,
                 'coal': 5,
                 'stone': 10,
-                'obsidian': 25,
-                'wool': 25,
-                'skin': 25,
+                'obsidian': 20,
+                'wool': 20,
+                'skin': 20,
                 'iron': 50,
                 'meals': 1,
-                'tools': 15,
-                'instruments': 75,
-                'gold': 100,
+                'shovels': 10,
+                'tools': 20,
+                'instruments': 100,
+                'gold': 1000,
             };
             const tradable = _.keys(rates);
 
