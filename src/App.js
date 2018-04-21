@@ -365,7 +365,7 @@ class App extends Component {
             case 'shore':
                 return this.state.bonfire + this.state.lighthouse + this.state.pier < this.state.space.shore;
             case 'fertile':
-                return this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
+                return this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
                 return this.state.quarry + this.state.mine + this.state.megalith + this.state.monastery < this.state.space.mountain;
             case 'wasteland':
