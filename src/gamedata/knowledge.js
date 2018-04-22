@@ -2,13 +2,13 @@
 export const starter_pack = {meals: 42, population: 1, sailor: 1};
 
 export const mother_island = {name: 'Mountain', type: 'mountain',
-    custom_space: 420, land_rates: {shore: 42, fertile: 42, mountain: 222}, wasteland: 42,
+    custom_space: 420, land_rates: {shore: 35, fertile: 15, mountain: 40}, wasteland: 10,
     resources_rates: {'fruits': 2500, 'roots': 2500, 'fish': 2500, 'meat': 2500, 'wood': 2500, 'stone': 10000, 'iron': 1000},
     'text': 'text'};
 
 export const start_island = {name: 'Tropical', type: 'tropical',
-    custom_space: 9, land_rates: {shore: 45, fertile: 33, mountain: 0}, wasteland: 22,
-    resources_rates: {'fruits': 50, 'roots': 25, 'fish': 25, 'meat': 25, 'wood': 25, 'stone': 0, 'iron': 0},
+    custom_space: 16, land_rates: {shore: 40, fertile: 40, mountain: 0}, wasteland: 20,
+    resources_rates: {'fruits': 75, 'roots': 50, 'fish': 50, 'meat': 50, 'wood': 75, 'stone': 0, 'iron': 0},
     'text': 'text'};
 
 export const island_types = {
@@ -20,37 +20,38 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', 'style': 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 0.5, text: 'Exhaustible food from orchards.'},
-    'roots': {name: 'Roots', 'style': 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 7000, regen: 1.25, text: 'Exhaustible food from fields.'},
-    'fish': {name: 'Fish', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 5000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
-    'meat': {name: 'Meat', 'style': 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 4000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
+    'fruits': {name: 'Fruits', style: 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 8000, regen: 0.5, text: 'Exhaustible food from orchards.'},
+    'roots': {name: 'Roots', style: 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 7000, regen: 1.25, text: 'Exhaustible food from fields.'},
+    'fish': {name: 'Fish', style: 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 3, max_cap: 5000, regen: 2, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
+    'meat': {name: 'Meat', style: 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 4000, regen: 2.5, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
 
-    'wood': {name: 'Wood', 'style': 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
-    'stone': {name: 'Stone', 'style': 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 20, max_cap: 10000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
-    'iron': {name: 'Iron', 'style': 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
+    'wood': {name: 'Wood', style: 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
+    'stone': {name: 'Stone', style: 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 20, max_cap: 10000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
+    'iron': {name: 'Iron', style: 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
 
-    'moai': {name: 'Moai', 'style': 'bg-rare',       is_nature: false, vegetation: false, locked_till: 'ahu',     difficulty: 500000, max_cap: 100, regen: 0.0, text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.'}
+    'moai': {name: 'Moai', style: 'bg-rare',       is_nature: false, vegetation: false, locked_till: 'ahu',     difficulty: 500000, max_cap: 100, regen: 0.0, text: 'Praying Moai idol is the legacy of your people. Celebrate them and let your civilization grow.'}
 };
 
 export const items = {
-    'vegetables': {name: 'Vegetables', 'style': 'bg-food', text: 'Sustainable food from gardens.'},
-    'human_meat': {name: 'Human Meat', 'style': 'bg-food', text: 'Fresh human meat.'},
-    'meals': {name: 'Cooked Meal', 'style': 'bg-food', text: 'Cooked food. From a single piece of meat you can cook three dishes, from vegetables - two.'},
-    'coal': {name: 'Coal', 'style': 'bg-fuel', text: 'Coal is mined in quarry and mines and can be used as fuel.'},
-    'turf': {name: 'Turf', 'style': 'bg-fuel', text: 'Turf is extracted in canals and can be used as fuel. Swampy islands have 5 times more turf.'},
-    'obsidian': {name: 'Obsidian', 'style': 'bg-proxy', text: 'Obsidian is mined in quarries and can be used as a material for tools, instruments and weapons. Mountainous islands have 5 times more obsidian.'},
-    'wool': {name: 'Wool', 'style': 'bg-proxy', text: 'Wool is extracted from sheep in pastures.'},
-    'skin': {name: 'Skin', 'style': 'bg-proxy', text: 'Skins are produced on the hunt.'},
-    'shovels': {name: 'Shovels', 'style': 'bg-tools', text: 'Shovels are necessary for the construction of many buildings, which are terraforming land.'},
-    'tools': {name: 'Tools', 'style': 'bg-tools', text: 'Tools make the complexity of resource extraction three times lighter. Reduced durability in the extraction of fish, meat, stone and iron.'},
-    'instruments': {name: 'Instrument', 'style': 'bg-tools', text: 'Instrument make the complexity of resource extraction ten times lighter. Reduced durability in the extraction of stone and iron.'},
-    'weapon': {name: 'Weapon', 'style': 'bg-war', text: 'Weapons allow you to win more resources in the war.'},
-    'armor': {name: 'Armor', 'style': 'bg-war', text: 'Armor allows you to reduce losses in the war.'},
-    'fishing_tools': {name: 'Fishing Rods', 'style': 'bg-other', text: 'Increases fish catch on the journey.'},
-    'storm_set': {name: 'Storm Set', 'style': 'bg-other', text: 'Reduces cargo loss during a storm.'},
-    'legacy': {name: 'Legacy', 'style': 'bg-rare', text: 'The legacy grows with every island where you built Moai. New islands have a larger size for each point of legacy.'},
-    'heritage': {name: 'Heritage', 'style': 'bg-rare', text: 'The heritage grows with each Moai built. New islands are more rich in resources for each point of heritage.'},
-    'gold': {name: 'Gold', 'style': 'bg-rare', text: 'Gold is a valuable resource. It is extracted in the mine and is widely used in trade'},
+    'vegetables': {name: 'Vegetables', style: 'bg-food', locked_till: 'garden', text: 'Sustainable food from gardens.'},
+    'human_meat': {name: 'Human Meat', style: 'bg-food', text: 'Fresh human meat.'},
+    'meals': {name: 'Cooked Meal', style: 'bg-food', text: 'Cooked food. From a single piece of meat you can cook three dishes, from vegetables - two.'},
+    'coal': {name: 'Coal', style: 'bg-fuel', locked_till: 'quarry', text: 'Coal is mined in quarry and mines and can be used as fuel.'},
+    'turf': {name: 'Turf', style: 'bg-fuel', locked_till: 'canal', text: 'Turf is extracted in canals and can be used as fuel. Swampy islands have 5 times more turf.'},
+    'obsidian': {name: 'Obsidian', style: 'bg-proxy', locked_till: 'quarry', text: 'Obsidian is mined in quarries and can be used as a material for tools, instruments and weapons. Mountainous islands have 5 times more obsidian.'},
+    'wool': {name: 'Wool', style: 'bg-proxy', locked_till: 'pasture', text: 'Wool is extracted from sheep in pastures.'},
+    'skin': {name: 'Skin', style: 'bg-proxy', locked_till: 'lodge', text: 'Skins are produced on the hunt.'},
+    'shovels': {name: 'Shovels', style: 'bg-tools', locked_till: 'carpentry', text: 'Shovels are necessary for the construction of many buildings, which are terraforming land.'},
+    'tools': {name: 'Tools', style: 'bg-tools', locked_till: 'workshop', text: 'Tools make the complexity of resource extraction three times lighter. Reduced durability in the extraction of fish, meat, stone and iron.'},
+    'instruments': {name: 'Instrument', style: 'bg-tools', locked_till: 'forge', text: 'Instrument make the complexity of resource extraction ten times lighter. Reduced durability in the extraction of stone and iron.'},
+    'weapon': {name: 'Weapon', style: 'bg-war', locked_till: 'weapon_forge', text: 'Weapons allow you to win more resources in the war.'},
+    'armor': {name: 'Armor', style: 'bg-war', locked_till: 'armory', text: 'Armor allows you to reduce losses in the war.'},
+    'fishing_tools': {name: 'Fishing Rods', style: 'bg-other', text: 'Increases fish catch on the journey.'},
+    'storm_set': {name: 'Storm Set', style: 'bg-other', text: 'Reduces cargo loss during a storm.'},
+    'skull': {name: 'Human Skull', style: 'bg-other', text: 'In your tribe it is customary to store the skull of the eaten as a sign of memory.'},
+    'legacy': {name: 'Legacy', style: 'bg-rare', text: 'The legacy grows with every island where you built Moai. New islands have a larger size for each point of legacy.'},
+    'heritage': {name: 'Heritage', style: 'bg-rare', text: 'The heritage grows with each Moai built. New islands are more rich in resources for each point of heritage.'},
+    'gold': {name: 'Gold', style: 'bg-rare', text: 'Gold is a valuable resource. It is extracted in the mine and is widely used in trade'},
 };
 
 export const goods = ['fruits', 'roots', 'fish', 'meat', 'wood', 'stone', 'iron', 'vegetables', 'coal', 'turf', 'obsidian', 'wool', 'skin', 'meals', 'shovels', 'tools', 'instruments', 'weapon', 'armor'];
@@ -72,7 +73,7 @@ export const buildings = {
 
     'orchard': {name: 'Orchard', worker: 'keeper', build_on: 'fertile',     cost: {'fruits': 100}, locked_till: 'hut', text: 'Provide fruits. Accelerates speed of keeper.'},
     'garden': {name: 'Garden', worker: 'gardener', build_on: 'fertile',     cost: {'wood': 100}, locked_till: 'orchard', text: 'Plant vegetables. Accelerates speed of gardener.'},
-    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    cost: {'meals': 200, 'shovels': 200}, locked_till: 'orchard', text: 'Accelerates speed of aquarius.'},
+    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    cost: {'meals': 100, 'shovels': 100}, locked_till: 'orchard', text: 'Accelerates speed of aquarius.'},
     'field': {name: 'Field',    worker: 'fielder', build_on: 'fertile',     cost: {'meals': 400, 'shovels': 200}, locked_till: 'canal', text: 'Provide roots. Accelerates speed of fielder.'},
     'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile',   cost: {'wood': 400, 'meals': 400, 'roots': 400, 'shovels': 200}, locked_till: 'field', text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
     'sawmill': {name: 'Sawmill', worker: 'woodcutter', build_on: 'fertile', cost: {'wood': 500, 'tools': 100}, locked_till: 'workshop', text: 'Allows to build proa boats. Accelerates speed of woodcutter.'},

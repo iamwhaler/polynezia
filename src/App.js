@@ -10,7 +10,7 @@ import {starter_pack, mother_island, island_types, resources, items, goods, ship
 import {storylines} from './gamedata/storylines';
 import StorylineTool from './engine/StorylineTool';
 import {default_building_space, getDefaultState} from './gamedata/default_state';
-import Machine from './gamedata/Machine';
+import tick from './gamedata/tick';
 
 var timerID = null;
 
@@ -89,7 +89,7 @@ class App extends Component {
 
     tick() {
         let old_state = this.state;
-        let new_state = Machine.tick.call(this, old_state);
+        let new_state = tick.call(this, old_state);
     //    console.log('tick with states: ', old_state, new_state);
         this.setState(new_state);
         localStorage.setItem("app_state", JSON.stringify(new_state));
@@ -138,12 +138,6 @@ class App extends Component {
         _.each(_.keys(cargo), (key) => {
             state[key] = Math.floor(cargo[key] * ratio);
         });
-
-        _.each(_.keys(buildings), (building_key) => { state[building_key] = 0; });
-        _.each(_.keys(professions), (profession_key) => { state[profession_key] = 0; });
-        state.population = this.sailorsNeed();
-        state.sailor = this.sailorsNeed();
-        state.moai = 0;
 
      //   console.log(goods, cargo, sum, ratio, state);
 
@@ -223,7 +217,15 @@ class App extends Component {
             state.heritage += state.moai;
         }
 
-        this.setState(this.storylineStart(this.loadToFleet(state), 'resettlement'));
+        state = this.loadToFleet(state);
+
+        _.each(_.keys(buildings), (building_key) => { state[building_key] = 0; });
+        _.each(_.keys(professions), (profession_key) => { state[profession_key] = 0; });
+        state.population = this.sailorsNeed();
+        state.sailor = this.sailorsNeed();
+        state.moai = 0;
+
+        this.setState(this.storylineStart(state, 'resettlement'));
 
         this.playGame();
     }
@@ -395,11 +397,74 @@ class App extends Component {
 
 
     getFleetPower() {
-        return Math.floor(this.sailorsNeed() * (1 + 0.1 * this.state.canoe + 0.3 * this.state.proa + 0.7 * this.state.catamaran));
+        return Math.floor(this.sailorsNeed() * (1 + 0.1 * this.state.canoe + 0.3 * this.state.proa + 1 * this.state.catamaran));
     }
 
     shipsSum() {
         return this.state.canoe + this.state.proa + this.state.catamaran;
+    }
+
+    armoredSailors() { // from 0 to 1
+        return this.state.armor > this.state.sailor ? 1 : this.state.armor / this.state.sailor;
+    }
+
+    weaponedSailors() { // from 0 to 1
+        return this.state.weapon > this.state.sailor ? 1 : this.state.weapon / this.state.sailor;
+    }
+
+    shipsLoss(state) {
+        let tension = state.mission_long * 0.1;
+        return {
+            canoe: _.random(Math.min(Math.ceil(tension*10), state.canoe), state.canoe),
+            proa: _.random(Math.min(Math.ceil(tension*3), state.proa), state.proa),
+            catamaran: _.random(Math.min(Math.ceil(tension), state.catamaran), state.catamaran)
+        };
+    }
+
+    shipsReward(state) {
+        let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
+        let new_ships = {
+            canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
+            proa: Math.ceil((_.random(0, ships_reward) - 50) / 100),
+            catamaran: Math.ceil((_.random(0, ships_reward) - 100) / 500)
+        };
+        let reward_ships = {};
+        _.each(new_ships, (count, ship) => {
+            if (count > 0) reward_ships[ship] = count;
+        });
+        return reward_ships;
+    }
+
+    resourcesReward(state) {
+        let res_reward = (state.mission_distance + this.sailorsNeed() ) * _.random(7, 13);
+        let new_resources = {
+            fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+            roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
+            fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+            meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
+
+            wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
+            stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
+            iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
+            moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
+        };
+
+        console.log(new_resources);
+        _.each(new_resources, (count, resource) => {
+            if (count < 1) delete new_resources[resource];
+        });
+
+        let achieved_resources = {};
+        let sum = _.sum(_.values(new_resources));
+        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+        _.each(new_resources, (count, resource) => {
+            if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
+        });
+        _.each(achieved_resources, (count, resource) => {
+            if (count < 1) delete achieved_resources[resource];
+        });
+        console.log(res_reward, sum, ratio, new_resources, achieved_resources);
+        return achieved_resources;
     }
 
     sailorsNeed() {
