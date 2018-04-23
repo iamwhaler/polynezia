@@ -113,15 +113,15 @@ class App extends Component {
 
     productivity(prof_key) {
         let bonus = 0;
-        let bonused_by_megalith = ['gardener', 'fielder', 'herdsman', 'fisherman', 'hunter'];
+        let bonused_by_megalith = ['keeper', 'gardener', 'fielder', 'herdsman', 'fisherman', 'hunter'];
         bonus += (_.indexOf(bonused_by_megalith, prof_key) && this.state.megalith > 0) ? this.productivity('astronomer') : 0;
 
-        let productivity =  this.state[prof_key] * (1 + 0.01 * bonus) *
+        let productivity = Math.ceil(this.state[prof_key] * (1 + 0.01 * bonus) *
             (1 + Math.max(0,
                 Math.min(
                     this.state[prof_key],
                     this.state[professions[prof_key].home]) - this.state.moai
-            ));
+            )));
     //    console.log(prof_key + ' productivity ' + productivity);
         return productivity;
     }

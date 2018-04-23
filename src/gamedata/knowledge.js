@@ -81,7 +81,7 @@ export const buildings = {
 
     'quarry': {name: 'Quarry', worker: 'mason', build_on: 'mountain',       cost: {'wood': 500, 'meals': 1000, 'shovels': 100}, locked_till: 'carpentry', text: 'Provide stone. Accelerates speed of mason.'},
     'mine': {name: 'Mine',      worker: 'miner', build_on: 'mountain',      cost: {'wood': 1000, 'stone': 200, 'shovels': 500, 'tools': 100}, locked_till: 'workshop', text: 'Provide iron, stone and gold. Accelerates speed of miner.'},
-    'megalith': {name: 'Megalith', worker: 'astronomer', build_on: 'mountain', cost: {'meals': 1000, 'stone': 500, 'tools': 100}, locked_till: 'workshop', text: 'Observation of the sky allows you to predict seasons, improving the weather in sea wanderings and productivity of gardener, fielder, herdsman, fisherman and hunter. Accelerates speed of astronomer.'},
+    'megalith': {name: 'Megalith', worker: 'astronomer', build_on: 'mountain', cost: {'meals': 1000, 'stone': 500, 'tools': 100}, locked_till: 'workshop', text: 'Observation of the sky allows you to predict seasons, improving the weather in sea wanderings and productivity of keeper, gardener, fielder, herdsman, fisherman and hunter. Accelerates speed of astronomer.'},
 
     'carpentry': {name: 'Carpentry', worker: 'carpenter', build_on: 'any',  cost: {'wood': 250}, locked_till: 'hut', text: 'Allows to make shovels. Accelerates speed of carpenter.'},
     'workshop': {name: 'Workshop', worker: 'master', build_on: 'any',       cost: {'wood': 500, 'stone': 100}, locked_till: 'quarry', text: 'Allows to make stone tools. Accelerates speed of master.'},
