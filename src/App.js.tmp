@@ -1,16 +1,13 @@
 import React, {Component} from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
-import './css/App.css';
-import './css/conponents.css';
-import './css/tooltip.css';
-import './css/footer.css';
+import './App.css';
+import './tooltip.css';
 
-import {starter_pack, mother_island, island_types, resources, items, goods, ships, buildings, professions} from './gamedata/knowledge';
-import {storylines} from './gamedata/storylines';
-import StorylineTool from './engine/StorylineTool';
-import {default_building_space, getDefaultState} from './gamedata/default_state';
-import tick from './gamedata/tick';
+import {starter_pack, start_island, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
+import {storylines} from './appdata/storylines';
+import {default_building_space, default_state} from './appdata/default_state';
+import {Machine} from './appdata/Machine';
 
 var timerID = null;
 
@@ -47,24 +44,20 @@ class App extends Component {
         this.assignWorker = this.assignWorker.bind(this);
         this.detachWorker = this.detachWorker.bind(this);
 
-        this.state = getDefaultState();
-    }
-
-    componentDidMount() {
-        console.log('App componentDidMount');
-        let story = {};
         var app_state = JSON.parse(localStorage.getItem("app_state"));
 
         if (app_state) {
-            story = app_state;
+            this.state = app_state;
         } else {
-            let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
-            story = this.storylineStart(island, 'prologue');
-            console.log({'what': 'new game', island: island, story: story});
+            this.state = default_state;
+            this.state = this.generateIsland(start_island, starter_pack, {});
         }
 
-        this.setState(story);
+    }
+
+    componentDidMount() {
         this.playGame();
+        this.run('resettlement');
     }
 
     playGame() {
@@ -73,13 +66,13 @@ class App extends Component {
             () => this.tick(),
             Math.floor(this.state.game_speed / this.state.game_speed_multiplier)
         );
-    //    console.log('playGame', this.state);
+        console.log('playGame');
         this.setState({game_paused: false});
     }
 
     pauseGame() {
         clearInterval(timerID);
-    //    this.setState({game_paused: true});
+        this.setState({game_paused: true});
     }
 
     setGameSpeed(speed) {
@@ -88,9 +81,10 @@ class App extends Component {
     }
 
     tick() {
-        let old_state = this.state;
-        let new_state = tick.call(this, old_state);
-    //    console.log('tick with states: ', old_state, new_state);
+        console.log('tick');
+        let new_state = Machine.tick(this.state, this);
+
+    //      console.log(new_state);
         this.setState(new_state);
         localStorage.setItem("app_state", JSON.stringify(new_state));
     }
@@ -98,7 +92,7 @@ class App extends Component {
     startMission(type) {
         if (this.state.sailor < this.sailorsNeed()) return false;
 
-        let len = Math.floor(((this.productivity('navigator') * 100) + 500) / this.fleetSpeed());
+        let len = Math.floor((this.state.navigation * 100) / this.fleetSpeed());
 
         let o = {};
         o.mission = type;
@@ -112,97 +106,59 @@ class App extends Component {
     }
 
     productivity(prof_key) {
-        let bonus = 0;
-        let bonused_by_megalith = ['keeper', 'gardener', 'fielder', 'herdsman', 'fisherman', 'hunter'];
-        bonus += (_.indexOf(bonused_by_megalith, prof_key) && this.state.megalith > 0) ? this.productivity('astronomer') : 0;
-
-        let productivity = Math.ceil(this.state[prof_key] * (1 + 0.01 * bonus) *
-            (1 + Math.max(0,
-                Math.min(
-                    this.state[prof_key],
-                    this.state[professions[prof_key].home]) - this.state.moai
-            )));
-    //    console.log(prof_key + ' productivity ' + productivity);
-        return productivity;
+        return this.state[prof_key] *
+            Math.max(1,
+                Math.min(this.state[prof_key], this.state[professions[prof_key].home] - this.state.moai));
     }
 
-    loadToFleet(state) {
-        let cargo = {};
-
-        _.each(goods, (key) => {
-            cargo[key] = state[key];
-        });
-
-        let sum = _.sum(_.values(cargo));
-        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-        _.each(_.keys(cargo), (key) => {
-            state[key] = Math.floor(cargo[key] * ratio);
-        });
-
-     //   console.log(goods, cargo, sum, ratio, state);
-
-        return state;
-    }
-
-    generateIsland(state, island, things = {}) {
-        let new_state = state;
-
-        new_state.island_type = island.type;
-
+    generateIsland(island, old_things = {}, old_resources = {}) {
         let building_space = island.custom_space ? island.custom_space : default_building_space;
-        building_space +=  + new_state.legacy;
-        new_state.volumes['moai'] = building_space;
-        new_state.caps['moai'] = building_space;
+
+        let sum = _.sum(_.values(old_resources));
+
+        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
+
+        _.each(_.keys(old_resources), (key) => {
+            old_things[key] = Math.floor(old_resources[key] * ratio);
+        });
+
+        let new_state = JSON.parse(JSON.stringify(default_state));
+
+        new_state.volumes['moai'] = new_state.building_space;
+        new_state.caps['moai'] = new_state.building_space;
 
         let resizer = island.land_rates;
         _.each(_.keys(resizer), (res_key) => {
-            new_state.space[res_key] = Math.floor(building_space * (resizer[res_key] / 100));
+            new_state.space[res_key] = Math.floor((building_space + old_things.legacy) * (resizer[res_key] / 100));
         });
         new_state.space.wasteland = building_space - new_state.space.fertile - new_state.space.shore - new_state.space.mountain;
 
-        _.each(_.keys(things), (key) => {
-            new_state[key] = things[key];
+        _.each(_.keys(old_things), (key) => {
+            new_state[key] = old_things[key];
         });
 
         let morf = island.resources_rates;
 
         _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((new_state.heritage + morf[res_key]) / 100)));
+            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((old_things.heritage + morf[res_key]) / 100)));
             new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
             new_state.caps[res_key] = cap;
         });
 
-        console.log('generateIsland', island, things, new_state);
+        console.log('generateIsland', sum, ratio, island, old_resources, old_things, new_state);
 
         return new_state;
-    }
-
-    storylineStart(state, storyline) {
-        console.log('storylineStart', storyline);
-        return StorylineTool.run.call(this, state, storyline);
-    }
-
-    storylineClick(action) {
-        let state = this.state;
-
-        if (action.on_click) {
-            state = _.bind(action.on_click, this)(state);
-        }
-
-        if (action.next) {
-            state = StorylineTool.step.call(this, state, action.next);
-        }
-
-        this.setState(state);
     }
 
     newGame() {
         if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
 
-        let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
-        let story = this.storylineStart(island, 'prologue');
+        let old_things = starter_pack;
+        old_things.legacy = 0;
+        old_things.heritage = 0;
 
-        this.setState(story);
+        this.setState(this.generateIsland(start_island, old_things, {}));
+
         this.playGame();
     }
 
@@ -212,20 +168,45 @@ class App extends Component {
 
         let state = this.state;
 
+        let things = {};
+
+        let island_type = _.sample(_.keys(island_types));
+        things.island_type = island_type;
+        things.population = this.sailorsNeed();
+        things.sailor = this.sailorsNeed();
+
+        things.canoe = state.canoe;
+        things.proa = state.proa;
+        things.catamaran = state.catamaran;
+
+        things.firs_slide = false;
+        things.in_sea = true;
+        things.shore = false;
+        things.embarked = false;
+        things.score = false;
+
+        things.legacy = state.legacy;
+        things.heritage = state.heritage;
         if (state.moai > 0) {
-            state.legacy++;
-            state.heritage += state.moai;
+            things.legacy++;
+            things.heritage += state.moai;
         }
 
-        state = this.loadToFleet(state);
+        let res = {
+            'fruits': state.fruits,
+            'roots': state.roots,
+            'fish': state.fish,
+            'meat': state.meat,
+            'wood': state.wood,
+            'stone': state.stone,
+            'iron': state.iron,
+            'vegetables': state.vegetables,
+            'meals': state.meals,
+            'tools': state.tools,
+            'instruments': state.instruments,
+        };
 
-        _.each(_.keys(buildings), (building_key) => { state[building_key] = 0; });
-        _.each(_.keys(professions), (profession_key) => { state[profession_key] = 0; });
-        state.population = this.sailorsNeed();
-        state.sailor = this.sailorsNeed();
-        state.moai = 0;
-
-        this.setState(this.storylineStart(state, 'resettlement'));
+        this.setState(this.generateIsland(island_types[island_type], things, res));
 
         this.playGame();
     }
@@ -234,6 +215,17 @@ class App extends Component {
         return step
             ? storylines[this.state.storyline_name].story[step]
             : storylines[this.state.storyline_name].story[this.state.storyline_step];
+    }
+
+
+    run(storyline_key) {
+        let storyline = storylines[storyline_key];
+        console.log(storyline_key, storyline);
+
+        this.setState({'storyline_name': storyline_key, 'storyline_step': 'start'});
+        if (storyline.init) {
+            this.setState(storyline.init(this.state, this));
+        }
     }
 
 
@@ -254,29 +246,19 @@ class App extends Component {
         }
     }
 
-    ruin(key, type = 'buildings') {
-        console.log(key, type);
+    ruin(key, skip_firing = false) {
+        console.log(key);
+        console.log(this.state[key]);
         if (this.state[key] < 1) return;
-        if (!window.confirm('Are you sure? You will get back only half of the stone, wood and iron, spent during construction.')) return false;
-        let state = this.state;
+        if (!window.confirm('Are you sure?')) return false;
+        let o = {};
+        o[key] = this.state[key] - 1;
 
-        state[key]--;
-
-        let item = {'buildings': buildings, 'ships': ships}[type][key];
-
-        let cost = item.cost;
-        if (cost.wood) state.wood += Math.round(cost.wood/2);
-        if (cost.stone) state.stone += Math.round(cost.stone/2);
-        if (cost.iron) state.iron += Math.round(cost.iron/2);
-
-        if (type === 'buildings' && state[key] === 0) {
-            state[item.worker] = 0;
-        }
-        if (type === 'ships' && state[key] === 0) {
-            state['sailor'] -= item.crew;
+        if (!skip_firing && o[key] === 0) {
+            o[buildings[key].worker] = 0;
         }
 
-        this.setState(state);
+        this.setState(o);
     }
 
     isEnough(building_key, type = 'buildings', cost = false) {
@@ -308,7 +290,7 @@ class App extends Component {
     }
 
     charge(cost) {
-     //   console.log(cost);
+        console.log(cost);
         let o = {};
         _.each(cost, (value, resource_key) => {
             o[resource_key] = this.state[resource_key] - value;
@@ -348,9 +330,7 @@ class App extends Component {
 
     sumBuild() {
         let busy = 0;
-        _.each(_.keys(buildings), (building_key) => {
-          //  console.log(building_key, this.state[building_key]);
-            busy += this.state[building_key]; });
+        _.each(_.keys(buildings), (building_key) => { busy += this.state[building_key]; });
         return busy;
     }
 
@@ -367,9 +347,9 @@ class App extends Component {
             case 'shore':
                 return this.state.bonfire + this.state.lighthouse + this.state.pier < this.state.space.shore;
             case 'fertile':
-                return this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.sawmill < this.state.space.fertile;
+                return this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
-                return this.state.quarry + this.state.mine + this.state.megalith + this.state.monastery < this.state.space.mountain;
+                return this.state.quarry + this.state.mine < this.state.space.mountain;
             case 'wasteland':
                 return this.sumBuild() < this.sumSpace();
             default:
@@ -381,9 +361,9 @@ class App extends Component {
     built(land_type = 'any') {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
-        model.fertile = this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
-        model.mountain = this.state.quarry + this.state.mine + this.state.megalith + this.state.monastery;
-        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.carpentry + this.state.workshop + this.state.forge + this.state.weapon_forge + this.state.armory + this.state.ground), this.state.space.wasteland);
+        model.fertile = this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
+        model.mountain = this.state.quarry + this.state.mine;
+        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
         model.any = this.sumBuild();
 
         return model[land_type];
@@ -397,74 +377,11 @@ class App extends Component {
 
 
     getFleetPower() {
-        return Math.floor(this.sailorsNeed() * (1 + 0.1 * this.state.canoe + 0.3 * this.state.proa + 1 * this.state.catamaran));
+        return Math.floor(this.sailorsNeed() * (1 + 0.1 * this.state.canoe + 0.3 * this.state.proa + 0.7 * this.state.catamaran));
     }
 
     shipsSum() {
         return this.state.canoe + this.state.proa + this.state.catamaran;
-    }
-
-    armoredSailors() { // from 0 to 1
-        return this.state.armor > this.state.sailor ? 1 : this.state.armor / this.state.sailor;
-    }
-
-    weaponedSailors() { // from 0 to 1
-        return this.state.weapon > this.state.sailor ? 1 : this.state.weapon / this.state.sailor;
-    }
-
-    shipsLoss(state) {
-        let tension = state.mission_long * 0.1;
-        return {
-            canoe: _.random(Math.min(Math.ceil(tension*10), state.canoe), state.canoe),
-            proa: _.random(Math.min(Math.ceil(tension*3), state.proa), state.proa),
-            catamaran: _.random(Math.min(Math.ceil(tension), state.catamaran), state.catamaran)
-        };
-    }
-
-    shipsReward(state) {
-        let ships_reward = (state.mission_distance + this.sailorsNeed()) * _.random(7, 13);
-        let new_ships = {
-            canoe: Math.ceil((_.random(0, ships_reward) - 10) / 25),
-            proa: Math.ceil((_.random(0, ships_reward) - 50) / 100),
-            catamaran: Math.ceil((_.random(0, ships_reward) - 100) / 500)
-        };
-        let reward_ships = {};
-        _.each(new_ships, (count, ship) => {
-            if (count > 0) reward_ships[ship] = count;
-        });
-        return reward_ships;
-    }
-
-    resourcesReward(state) {
-        let res_reward = (state.mission_distance + this.sailorsNeed() ) * _.random(7, 13);
-        let new_resources = {
-            fruits: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-            roots: Math.ceil((_.random(0, res_reward) / 0.1) - 50),
-            fish: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-            meat: Math.ceil((_.random(0, res_reward) / 0.2) - 50),
-
-            wood: Math.ceil((_.random(0, res_reward) / 5) - 10),
-            stone: Math.ceil((_.random(0, res_reward) / 10) - 10),
-            iron: Math.ceil((_.random(0, res_reward) / 25) - 50),
-            moai: Math.ceil((_.random(0, res_reward) / 250) - 100)
-        };
-
-        console.log(new_resources);
-        _.each(new_resources, (count, resource) => {
-            if (count < 1) delete new_resources[resource];
-        });
-
-        let achieved_resources = {};
-        let sum = _.sum(_.values(new_resources));
-        let ratio = sum > this.fleetCapacity() ? this.fleetCapacity() / sum : 1;
-        _.each(new_resources, (count, resource) => {
-            if (count > 0) achieved_resources[resource] = Math.ceil(count * ratio);
-        });
-        _.each(achieved_resources, (count, resource) => {
-            if (count < 1) delete achieved_resources[resource];
-        });
-        console.log(res_reward, sum, ratio, new_resources, achieved_resources);
-        return achieved_resources;
     }
 
     sailorsNeed() {
@@ -482,18 +399,18 @@ class App extends Component {
         return 0;
     }
 
-    assignWorker(work, all = false) {
+    assignWorker(work) {
         if (this.busy() < this.state.population) {
             let o = {};
-            o[work] = all ? this.state[work] + (this.state.population - this.busy()) : this.state[work] + 1;
+            o[work] = this.state[work] + 1;
             this.setState(o)
         }
     }
 
-    detachWorker(work, all = false) {
+    detachWorker(work) {
         if (this.state[work] > 0) {
             let o = {};
-            o[work] = all ? 0 : this.state[work] - 1;
+            o[work] = this.state[work] - 1;
             this.setState(o)
         }
     }
@@ -501,9 +418,7 @@ class App extends Component {
     drawCost(cost) {
         let text = '';
         _.each(cost, (value, resource) => {
-            if (value > 0) {
-                text += resource + ': ' + value + ' ';
-            }
+            text += resource + ': ' + value + ' ';
         });
         return text;
     };
@@ -518,7 +433,7 @@ class App extends Component {
           </span>;
 
         const make_buy_button = (stat, name, text = '', type = 'buildings', cost = false) =>
-            <span className="" key={stat + name}>
+            <span className="h4" key={stat + name}>
             <button
                 className={classNames('btn', 'btn-success', 'btn-xs', 'titled', (this.isEnough(stat, type, cost) ? '' : 'disabled'))}
                 data-toggle="tooltip" data-placement="top" data-html="true"
@@ -530,64 +445,90 @@ class App extends Component {
         const make_arrows = (stat, name) =>
             <div key={stat + name}>
                 {name}
-                <button className="arrow-button" onClick={() => { this.detachWorker(stat, true); }}> 0 </button>
-                <button className="arrow-button" onClick={() => { this.detachWorker(stat); }}> {'<'} </button>
-                <span className="font-weight-bold badge h4" style={{width: '28px'}}> {this.state[stat]} </span>
-                <button className="arrow-button" onClick={() => { this.assignWorker(stat); }}> {'>'} </button>
-                <button className="arrow-button" onClick={() => { this.assignWorker(stat, true); }}> ∞ </button>
+                <button onClick={() => {
+                    this.detachWorker(stat)
+                }}> {'<'} </button>
+                <span className="font-weight-bold badge" style={{width: '28px'}}> {this.state[stat]} </span>
+                <button onClick={() => {
+                    this.assignWorker(stat)
+                }}> {'>'} </button>
             </div>;
 
-
-        let bg_style = this.state.environment === 'embarked'
-            ? 'url(/environments/'+this.state.island_type+'.jpg)'
-            : 'url(/environments/'+this.state.environment+'.jpg)';
+        let bg_style = '';
+        if (this.state.score) {
+            bg_style = 'url(/night.jpg)';
+        } else if (this.state.firs_slide) {
+            bg_style = 'url(/start.jpg)';
+        }
+        else if (this.state.in_sea) {
+            bg_style = 'url(/kayak.jpg)';
+        }
+        else if (this.state.shore) {
+            bg_style = 'url(/shore.jpg)';
+        }
+        else if (this.state.ahu > 0) {
+            bg_style = 'url(/moai.jpg)';
+        }
+        else if (this.state.embarked) {
+            bg_style = 'url(/'+this.state.island_type+'.jpg)';
+        }
+        else {
+            bg_style = 'url(/error.jpg)';
+        }
 
         return (
-            <div className="App">
+            <div className="App clearfix">
                 <div className="background-image" style={{'backgroundImage': bg_style}}>
                 </div>
-                <div className="content">
+                <div className="content clearfix">
                     {this.state.score
                         ?
                         <div className="container">
                             <div>
                                 <h1>Your nation has become extinct. </h1>
-                                <h1>You have lived {Math.floor(this.state.tick/24)+1} days. </h1>
+                                <h1>You have lived {this.state.tick} days. </h1>
                                 <h1>Your legacy: {this.state.moai} moai.</h1>
                                 {make_button('refresh', 'New Game', this.newGame, '')}
                             </div>
                         </div>
                         :
-                        <div className="container theme-showcase" role="main">
-                            <div className="flex-container-row">
-                                <span className="pull-left flex-element cheat"> {make_button('cheat', ' ', () => {
-                                    this.setState({
-                                        wood: 10000,
-                                        stone: 1000,
-                                        iron: 500,
-                                        fruits: 10000,
-                                        fish: 10000,
-                                        meals: 10000,
-                                        tools: 100,
-                                        instruments: 100,
-                                        population: 100,
-                                        tick: 100,
-                                        });
-                                    }, 'text', ' cheat')}
-                                </span>
+                        <div className="container clearfix theme-showcase" role="main">
+                            <div>
+                                <div>
+                                    <span className="pull-left cheat"> {make_button('cheat', ' ', () => {
+                                        this.setState({
+                                            wood: 10000,
+                                            stone: 1000,
+                                            iron: 500,
+                                            fruits: 10000,
+                                            fish: 10000,
+                                            meals: 10000,
+                                            tools: 100,
+                                            instruments: 100,
+                                            population: 100,
+                                            tick: 100,
+                                            });
+                                        }, 'text', ' cheat')}
+                                    </span>
+
+                                    <span className="pull-right">
+                                        {this.state.embarked ? make_button('resettlement', 'Resettlement', this.resettlement,
+                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-success btn-sm disabled' : ' btn-success btn-sm') : ''}
+                                        {make_button('refresh', 'reset', this.newGame, 'Hard Reset For Developers', ' btn-xs btn-danger')}</span>
+                                </div>
                             </div>
 
-                            <div className="flex-container-row">
+                            <div className="flex-container-row clearfix">
 
                                 { // Left Column
                                 }
-                                <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3, 'minWidth': '450px'}}>
+                                <div className="flex-element fat panel panel-default" style={{'flexGrow': 3}}>
                                     {this.state.storyline === true ?
                                         <div>
                                             <p className="h4 fat">{this.getStep().text}</p>
                                             <span>
                                                 {this.getStep().actions.map((action, key) => {
-                                                    return make_button('action_'+key, action.text, () => { this.storylineClick(action); }, action.text, action.style);
+                                                    return make_button('action_'+key, action.text, () => { let result = action.on_click(this.state, this); if (result) this.setState(result); }, action.text, action.style);
                                                 })}
                                             </span>
                                             {this.state.splash_counter ? <p className="h4 fat">{this.state.splash_counter}</p> : ''}
@@ -595,28 +536,43 @@ class App extends Component {
                                         : ''
                                     }
 
-                                    {this.state.embarked === true
+
+                                    {this.state.firs_slide === true ? <div>
+                                        <p className="h4 fat">
+                                            The explosion of the volcano destroys your island and everything that was dear to you. Miraculously you managed to get to the canoe. It's time to sail
+                                            <span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>.</span></p>
+                                    </div> :
+                                     this.state.embarked === true
                                         ?
                                         <div>
                                             <h4 className="App-title">Civilisation</h4>
                                             <div className="flex-container-row">
                                                 <div className="flex-element">
-                                                    <span title="Shore" className="badge bg-shore titled"> {this.state.space.shore - this.built('shore')} </span>
-                                                    <span title="Fertile land" className="badge bg-fertile titled"> {this.state.space.fertile - this.built('fertile')} </span>
-                                                    <span title="Mountain" className="badge bg-mountain titled"> {this.state.space.mountain - this.built('mountain')} </span>
-                                                    <span title="Wasteland" className="badge bg-wasteland titled"> {this.state.space.wasteland - this.built('wasteland')} </span>
+                                                    <span className="badge bg-shore"> {this.state.space.shore - this.built('shore')} </span>
+                                                    <span className="badge bg-fertile"> {this.state.space.fertile - this.built('fertile')} </span>
+                                                    <span className="badge bg-mountain"> {this.state.space.mountain - this.built('mountain')} </span>
+                                                    <span className="badge bg-wasteland"> {this.state.space.wasteland - this.built('wasteland')} </span>
                                                     =
-                                                    <span title="Free Space" className="badge"> {this.sumSpace() - this.sumBuild()} </span>
+                                                    <span className="badge"> {this.sumSpace() - this.sumBuild()} </span>
                                                     free space
                                                 </div>
                                                 <div className="flex-element">Population: {this.state.population}
-                                                    / {(this.state.hut * 2) + (this.state.house * 4) + (this.state.monastery * 9)}</div>
+                                                    / {(this.state.hut * 2) + (this.state.house * 5)}</div>
                                                 <div className="flex-element"> free citizens <span
                                                     className="badge"> {this.state.population - this.busy()}</span>
                                                 </div>
                                             </div>
 
-                                            <div className="scroller">
+                                            <div className="">
                                                 {_.keys(buildings).map((building_key) => {
                                                     let profession_key = buildings[building_key].worker;
                                                     //  console.log(building_key, profession_key);
@@ -626,25 +582,31 @@ class App extends Component {
                                                         <div className="alignleft">
                                                             { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
                                                                 ?
-                                                                <div className="building-container"
-                                                                      title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
-                                                                      style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}} key={building_key}>
-                                                                    <div className="building-container-content h2 fat">
+                                                                <div className="fat h2" key={building_key}>
+                                                                    <span className="">
                                                                         <span
-                                                                        className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
+                                                                        className={classNames('badge', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
                                                                         {make_button(building_key + '_del', 'del',
                                                                             () => {
-                                                                                this.ruin(building_key, 'buildings');
+                                                                                this.ruin(building_key, false);
                                                                             },
                                                                             'Destroy ' + buildings[building_key].name,
-                                                                            'btn-danger btn-xs filament' + (this.state[building_key] === 0 ? ' disabled' : ''))}
+                                                                            'btn-danger btn-xs' + (this.state[building_key] === 0 ? ' disabled' : ''))}
 
                                                                         {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
 
-                                                                        <span className="filament" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
+                                                                        <span className="label label-default titled"
+                                                                              style={{
+                                                                                  height: '80px',
+                                                                                  backgroundImage: 'url(/buildings/'+building_key+'.jpg)',
+                                                                                  backgroundRepeat: 'no-repeat',
+                                                                                  backgroundPosition: 'center center',
+                                                                                  backgroundSize: '100%'
+                                                                              }}
+                                                                            title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
                                                                         </span>
-                                                                    </div>
+                                                                    </span>
                                                                 </div>
                                                                 : ''
                                                             }
@@ -671,8 +633,81 @@ class App extends Component {
 
 
                                         </div>
-                                        : ''
+                                        : this.state.in_sea ? <div>
+                                        <p className="h4 fat">Your boat throws waves, but you hold the oar firmly. The last
+                                            in your tribe, you tirelessly row, in search of a new
+                                            haven. How not to die of hunger<span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>?</span></p>
+                                    </div>  : <div>
+                                        <p className="h4 fat">Your ship boarded on the inhabitant island. Fortunately, life
+                                            is accelerating in this place, and you can survive there for a while.
+                                            Praying Moai idol is the legacy of your people. Celebrate them and let your
+                                            civilization
+                                            grow<span onClick={() => {
+                                                this.setState({
+                                                    wood: 2000,
+                                                    stone: 200,
+                                                    iron: 50,
+                                                    meals: 1000,
+                                                    tools: 100,
+                                                    population: 10
+                                                });
+                                            }}>!</span></p>
+                                        {make_button('embark', 'Disembark', () => {
+                                            this.setState({shore: false, embarked: true});
+                                        })}
+                                    </div>
                                     }
+
+                                    <div>
+
+
+                                        {this.state.firs_slide ?
+                                            <span>
+                                                {make_button('haste', 'Haste!', () => {
+                                                    this.setState({luck: this.state.luck + 10});
+                                                }, 'text', 'btn-info')}
+                                                {make_button('meals', 'Grab Meals', () => {
+                                                    this.collect('meals');
+                                                }, 'text', 'btn-warning')}
+                                                {make_button('tools', 'Looking Tools', () => {
+                                                    this.collect('tools');
+                                                }, 'text', 'btn-danger')}
+                                            </span> : ''}
+
+                                        {this.state.in_sea ?
+                                            <span>
+                                                {make_button('looking', 'Rowing', () => {
+                                                    this.setState({luck: this.state.luck + 1, sea_search: this.state.sea_search - 1});
+                                                }, 'text', 'btn-info')}
+                                                {make_button('fish', 'Fishing', () => {
+                                                    this.collect('fish');
+                                                }, 'text', 'btn-success')}
+                                            </span> : ''}
+
+                                        {this.state.embarked ?
+                                            <span>
+                                        {make_button('fruits', 'Collect Fruits', () => {
+                                            this.collect('fruits');
+                                        }, 'text')}
+                                                {this.lockedTill('field') ? '' : make_button('roots', 'Collect Roots', () => {
+                                                    this.collect('roots');
+                                                }, 'text')}
+                                                {make_button('wood', 'Collect Wood', () => {
+                                                    this.collect('wood');
+                                                }, 'text')}
+                                        </span> : ''}
+
+                                    </div>
+
                                 </div>
 
 
@@ -680,8 +715,8 @@ class App extends Component {
                                 }
 
 
-                                {this.getFleetPower() === 0 ? '' :
-                                <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
+                                {this.state.firs_slide === true ? '' :
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
                                         <div>
@@ -694,7 +729,7 @@ class App extends Component {
                                                                 <span className="badge"> {this.state[ship_key]} </span>
                                                                 {this.state.embarked && !this.state.mission ? make_button(ship_key + '_del', 'del',
                                                                     () => {
-                                                                        this.ruin(ship_key, 'ships');
+                                                                        this.ruin(ship_key, true);
                                                                     },
                                                                     'Destroy ' + ships[ship_key].name,
                                                                     'btn-danger btn-xs' + (this.state[ship_key] === 0 ? ' disabled' : '')) : ''}
@@ -725,10 +760,10 @@ class App extends Component {
                                             <div>
                                                 {this.state.mission
                                                     ? <div>Your fleet in {this.state.mission}. Return back
-                                                    in {this.state.mission_timer} hours.</div>
+                                                    in {this.state.mission_timer} days.</div>
                                                     :
                                                     <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
-                                                        {this.lockedTill('embarked') ? '' : make_button('fishing', 'Fishing', () => {
+                                                        {make_button('fishing', 'Fishing', () => {
                                                             this.startMission('fishing');
                                                         }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-info btn-sm disabled' : ' btn-info btn-sm')}
                                                         {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
@@ -737,8 +772,6 @@ class App extends Component {
                                                         {this.lockedTill('lodge') ? '' : make_button('robbery', 'Robbery', () => {
                                                             this.startMission('robbery');
                                                         }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-danger btn-sm disabled' : ' btn-danger btn-sm')}
-                                                        {this.lockedTill('embarked') ? '' : make_button('resettlement', 'Resettlement', this.resettlement,
-                                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-primary btn-sm disabled' : ' btn-primary btn-sm')}
                                                     </div>
                                                 }
                                             </div>
@@ -757,10 +790,10 @@ class App extends Component {
                                         </div>
                                     </div>
 
-                                    <div>
+                                    <div className="fat ">
                                         {this.state.trader !== false
                                             ?
-                                            <div className="fat ">
+                                            <div>
                                                 {this.state.trader.type === 'gift'
                                                     ?
                                                     <div className="panel panel-info">
@@ -808,37 +841,34 @@ class App extends Component {
 
                                 { // Right Column 2
                                 }
-                                <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
+                                <div className="flex-element fat panel panel-info" style={{'height': '100%'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Your Resources</h4>
                                         <div className="datablock">
                                             {_.keys(resources).map((resource_key) => {
                                                 return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                                                    ? <div className={classNames('titled', resources[resource_key].style)} title={resources[resource_key].text}
-                                                        key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                                                    ? <div
+                                                    key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
                                                     : ''
                                             })}
                                             {_.keys(items).map((item_key) => {
-                                                return this.state[item_key] > 0
-                                                    ? <div className={classNames('titled', items[item_key].style)} title={items[item_key].text}
-                                                           key={item_key}> {items[item_key].name}: {this.state[item_key]}</div> : ''
+                                                return this.state[item_key] > 0 ? <div key={item_key}>
+                                                    {items[item_key].name}: {this.state[item_key]}</div> : ''
                                             })}
                                         </div>
                                     </div>
 
-                                    {this.state.storm_loss !== '' ? <p>{this.state.storm_loss}</p> : ''}
-
                                     {this.state.in_sea ? <div className="panel panel-info">
                                         <h4 className="App-title">High Seas</h4>
                                         <div className="datablock">
-                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1}  in sea
+                                            Day: {this.state.tick} in sea
                                         </div>
                                     </div> : ''}
 
                                     {this.state.embarked ? <div className="panel panel-info">
                                         <h4 className="App-title">Island Resources</h4>
                                         <div className="datablock">
-                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1} on {island_types[this.state.island_type].name} island
+                                            Day: {this.state.tick} on {island_types[this.state.island_type].name} island
                                             <div>Size: {this.sumSpace()} ({this.drawCost({
                                                 shore: this.state.space.shore,
                                                 fertile: this.state.space.fertile,
@@ -859,28 +889,6 @@ class App extends Component {
                             </div>
                         </div>
                     }
-                </div>
-                <div className="footer">
-                    <span className="pull-left"><a href="#" onClick={this.newGame} title='Hard Reset For Developers'>new game</a></span>
-
-                    &nbsp;
-                    <a target="_blank" rel="noopener noreferrer" href="https://t.me/polynezia">
-                        <img alt="" src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />
-                        &nbsp;
-                        telegram
-                    </a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a target="_blank" rel="noopener noreferrer" href="#">
-                        <img alt="" src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png" />
-                        &nbsp;
-                        wiki
-                    </a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a target="_blank" rel="noopener noreferrer" href="#">
-                        <img alt="" src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png" />
-                        &nbsp;
-                        reddit
-                    </a>
                 </div>
             </div>
         );

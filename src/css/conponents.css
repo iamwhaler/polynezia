@@ -1,0 +1,27 @@
+
+.building-container {
+    position: relative;
+    /* display: inline; */
+
+    height: 60px;
+    width: 215px;
+    backgroundRepeat: 'no-repeat';
+    backgroundPosition: 'center center';
+    backgroundSize: '100%';
+
+    padding: .2em .6em .3em;
+    margin: 2px;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: bottom;
+    border-radius: .25em;
+}
+.building-container-content {
+    position: absolute;
+    bottom: 3px;
+    left: 0px;
+}

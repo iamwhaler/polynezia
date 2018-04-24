@@ -27,5 +27,6 @@ build
 
 # misc
 .DS_Store
-.idea
 .idea/workspace.xml
+.idea
+.idea/
