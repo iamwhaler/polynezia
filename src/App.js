@@ -614,7 +614,7 @@ class App extends Component {
                                                     free space
                                                 </div>
                                                 <div className="flex-element">Population: {this.state.population}
-                                                    / {(this.state.hut * 2) + (this.state.house * 4) + (this.state.monastery * 9)}</div>
+                                                    / {(this.state.hut * 2) + (this.state.house * 4)}</div>
                                                 <div className="flex-element"> free citizens <span
                                                     className="badge"> {this.state.population - this.busy()}</span>
                                                 </div>
