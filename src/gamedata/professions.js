@@ -111,7 +111,7 @@ export const professions = {
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key, function(state) {
                 return burner.call(this, state, function(state) {
-                    return (_.random(1, 2) === 1) ?
+                    return (_.random(1, 5) === 1) ?
                         state = transformer.call(this, state, {
                             'fruits': 2,
                             'roots': 2,
@@ -182,11 +182,11 @@ export const professions = {
     'carpenter': {name: 'Carpenter', resource: null, home: 'carpentry', locked_till: 'carpentry', text: 'The carpenter produces shovels. The carpentry will improve its work.',
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key,
-                function(state) { return (_.random(1, 10) === 1) ? transformer.call(this, state, {'wood': 1}, 'shovels') : state; }); }},
+                function(state) { return (_.random(1, 15) === 1) ? transformer.call(this, state, {'wood': 1}, 'shovels') : state; }); }},
     'master': {name: 'Master', resource: null, home: 'workshop', locked_till: 'workshop', text: 'The master produces stone tools. The workshop will improve its work.',
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key,
-                function(state) { return (_.random(1, 20) === 1) ? transformer.call(this, state, {'stone': 1, 'obsidian': 2}, 'tools') : state; }); }},
+                function(state) { return (_.random(1, 30) === 1) ? transformer.call(this, state, {'stone': 1, 'obsidian': 2}, 'tools') : state; }); }},
     'smith': {name: 'Smith', resource: null, home: 'forge', locked_till: 'forge', text: 'The smith produces iron tools. The forge will improve its work.',
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key,
