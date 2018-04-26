@@ -387,9 +387,9 @@ class App extends Component {
     built(land_type = 'any') {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
-        model.fertile = this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
+        model.fertile = this.state.orchard + this.state.canal + this.state.field + this.state.pasture + this.state.sawmill;
         model.mountain = this.state.quarry + this.state.mine;
-        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.carpentry + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
+        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.carpentry + this.state.lodge + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
         model.any = this.sumBuild();
 
         return model[land_type];
