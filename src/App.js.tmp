@@ -5,6 +5,7 @@ import './App.css';
 import './tooltip.css';
 
 import {starter_pack, start_island, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
+import {starter_pack, start_island, island_types, resources, items, ships, buildings, professions} from './appdata/knowledge';
 import {storylines} from './appdata/storylines';
 import {default_building_space, default_state} from './appdata/default_state';
 import {Machine} from './appdata/Machine';

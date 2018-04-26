@@ -6,7 +6,8 @@ import './css/conponents.css';
 import './css/tooltip.css';
 import './css/footer.css';
 
-import {starter_pack, mother_island, island_types, resources, items, goods, ships, buildings, professions} from './gamedata/knowledge';
+import {starter_pack, mother_island, fast_island, island_types, resources, items, goods, ships, buildings} from './gamedata/knowledge';
+import {professions} from './gamedata/professions';
 import {storylines} from './gamedata/storylines';
 import StorylineTool from './engine/StorylineTool';
 import {default_building_space, getDefaultState} from './gamedata/default_state';
@@ -98,7 +99,7 @@ class App extends Component {
     startMission(type) {
         if (this.state.sailor < this.sailorsNeed()) return false;
 
-        let len = Math.floor(((this.productivity('navigator') * 100) + 500) / this.fleetSpeed());
+        let len = Math.floor(((this.productivity('navigator') * 25) + 200) / this.fleetSpeed());
 
         let o = {};
         o.mission = type;
@@ -150,7 +151,7 @@ class App extends Component {
         new_state.island_type = island.type;
 
         let building_space = island.custom_space ? island.custom_space : default_building_space;
-        building_space +=  + new_state.legacy;
+    //    building_space +=  + new_state.legacy;
         new_state.volumes['moai'] = building_space;
         new_state.caps['moai'] = building_space;
 
@@ -167,7 +168,7 @@ class App extends Component {
         let morf = island.resources_rates;
 
         _.each(_.keys(morf), (res_key) => {
-            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * ((new_state.heritage + morf[res_key]) / 100)));
+            let cap = Math.floor(_.random(0.7, 1.3) * Math.floor(resources[res_key].max_cap * (morf[res_key] / 100)));
             new_state.volumes[res_key] = Math.floor(_.random(cap * 0.4, cap * 0.6));
             new_state.caps[res_key] = cap;
         });
@@ -199,8 +200,11 @@ class App extends Component {
     newGame() {
         if (!window.confirm('Are you ready to start a new game? Your progress will be lost.')) return false;
 
-        let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
-        let story = this.storylineStart(island, 'prologue');
+        //let island = this.generateIsland(getDefaultState(), mother_island, starter_pack);
+        //let story = this.storylineStart(island, 'prologue');
+
+        let island = this.generateIsland(getDefaultState(), fast_island, starter_pack);
+        let story = this.storylineStart(island, 'fast');
 
         this.setState(story);
         this.playGame();
@@ -212,10 +216,12 @@ class App extends Component {
 
         let state = this.state;
 
+        /*
         if (state.moai > 0) {
             state.legacy++;
             state.heritage += state.moai;
         }
+        */
 
         state = this.loadToFleet(state);
 
@@ -369,7 +375,7 @@ class App extends Component {
             case 'fertile':
                 return this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.sawmill < this.state.space.fertile;
             case 'mountain':
-                return this.state.quarry + this.state.mine + this.state.megalith + this.state.monastery < this.state.space.mountain;
+                return this.state.quarry + this.state.mine < this.state.space.mountain;
             case 'wasteland':
                 return this.sumBuild() < this.sumSpace();
             default:
@@ -382,8 +388,8 @@ class App extends Component {
         let model = {shore: 0, fertile: 0, mountain: 0, wasteland: 0};
         model.shore = this.state.bonfire + this.state.lighthouse + this.state.pier;
         model.fertile = this.state.orchard + this.state.canal + this.state.garden + this.state.field + this.state.pasture + this.state.lodge + this.state.sawmill;
-        model.mountain = this.state.quarry + this.state.mine + this.state.megalith + this.state.monastery;
-        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.carpentry + this.state.workshop + this.state.forge + this.state.weapon_forge + this.state.armory + this.state.ground), this.state.space.wasteland);
+        model.mountain = this.state.quarry + this.state.mine;
+        model.wasteland = Math.min((this.state.hut + this.state.house + this.state.carpentry + this.state.workshop + this.state.forge + this.state.armory), this.state.space.wasteland);
         model.any = this.sumBuild();
 
         return model[land_type];
@@ -563,15 +569,14 @@ class App extends Component {
                                 <span className="pull-left flex-element cheat"> {make_button('cheat', ' ', () => {
                                     this.setState({
                                         wood: 10000,
-                                        stone: 1000,
+                                        stone: 10000,
                                         iron: 500,
                                         fruits: 10000,
                                         fish: 10000,
                                         meals: 10000,
-                                        tools: 100,
-                                        instruments: 100,
+                                        tools: 1000,
+                                        instruments: 500,
                                         population: 100,
-                                        tick: 100,
                                         });
                                     }, 'text', ' cheat')}
                                 </span>
@@ -582,7 +587,7 @@ class App extends Component {
                                 { // Left Column
                                 }
                                 <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3, 'minWidth': '450px'}}>
-                                    {this.state.storyline === true ?
+                                    {this.state.storyline === true && true === false ?
                                         <div>
                                             <p className="h4 fat">{this.getStep().text}</p>
                                             <span>
@@ -597,8 +602,7 @@ class App extends Component {
 
                                     {this.state.embarked === true
                                         ?
-                                        <div>
-                                            <h4 className="App-title">Civilisation</h4>
+                                        <div style={{paddingRight: '12px'}}>
                                             <div className="flex-container-row">
                                                 <div className="flex-element">
                                                     <span title="Shore" className="badge bg-shore titled"> {this.state.space.shore - this.built('shore')} </span>
@@ -630,17 +634,15 @@ class App extends Component {
                                                                       title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
                                                                       style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}} key={building_key}>
                                                                     <div className="building-container-content h2 fat">
-                                                                        <span
-                                                                        className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
-                                                                        {make_button(building_key + '_del', 'del',
+                                                                        <span className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
+                                                                        {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
+                                                                        {this.state[building_key] > 0 ? make_button(building_key + '_del', 'del',
                                                                             () => {
                                                                                 this.ruin(building_key, 'buildings');
                                                                             },
                                                                             'Destroy ' + buildings[building_key].name,
-                                                                            'btn-danger btn-xs filament' + (this.state[building_key] === 0 ? ' disabled' : ''))}
-
-                                                                        {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
-
+                                                                            'btn-danger btn-xs filament' + (this.state[building_key] === 0 ? ' disabled' : ''))
+                                                                            : ''}
                                                                         <span className="filament" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
                                                                         </span>
@@ -680,7 +682,7 @@ class App extends Component {
                                 }
 
 
-                                {this.getFleetPower() === 0 ? '' :
+                                {false ? '' :
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>

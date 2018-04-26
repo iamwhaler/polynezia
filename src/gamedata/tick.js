@@ -1,7 +1,8 @@
 
 import _ from 'lodash';
 
-import {resources, professions} from './knowledge';
+import {resources} from './knowledge';
+import {professions} from '../gamedata/professions';
 
 export default function tick(state) {
 
@@ -160,9 +161,15 @@ export default function tick(state) {
     }
 
     // attract new people
-    if ((state.bonfire > 0 || state.house > 0 || state.monastery > 0 || state.moai > 0) && state.population < ((state.hut * 2) + (state.house * 4) + (state.monastery * 9))) {
-        if (_.random(1, Math.floor((10 * state.population) / (1 + state.bonfire + (2 * state.house) + (5 * state.monastery) + (10 * state.moai)))) === 1) {
-            state.population++;// ; this.setState({population: state.population + 1});
+    if ((state.bonfire > 0 || state.house > 0 || state.moai > 0) && state.population < ((state.hut * 2) + (state.house * 4))) {
+        let pro = 1 + state.bonfire + (2 * state.house) + (10 * state.moai);
+        let contra = 60 + (20 * state.population);
+        let ratio = Math.floor(contra / pro);
+        let top = 30 + ratio;
+        let chance = _.random(1, top);
+     //   console.log(pro, contra, ratio, top, chance);
+        if (chance === 1) {
+            state.population++;
         }
     }
 
@@ -219,11 +226,11 @@ export default function tick(state) {
     // feeding
     for (let i = 0; i < state.population; i++) {
         let selected_food = null;
-        if (state.meals > 1) {
+        if (state.meals > 0) {
             selected_food = "meals";
         }
         else {
-            let eatable = ['fruits', 'vegetables', 'roots', 'fish', 'meat', 'human_meat'];
+            let eatable = ['fruits', 'roots', 'fish', 'meat', 'human_meat'];
             let food = [];
             for (let e = 0; e < eatable.length; e++) {
                 if (state[eatable[e]] > 0) {
@@ -251,229 +258,15 @@ export default function tick(state) {
             }
         }
 
-        if (Math.floor(_.random(1, 5)) < 3) {
+        if (Math.floor(_.random(1, 24)) <= 5) {
             state[selected_food]--;
         }
     }
 
-    const chooser = (state, items, func) => {
-        let raw = [];
-        _.each(items, (item) => {
-            if (state[item] > 0) {
-                raw.push(item);
-            }
-        });
-        if (raw.length > 0) {
-            return func(state, _.sample(raw));
-        }
-        return state;
-    };
-
-    const burner = (state, func) => {
-        return chooser(state, ['wood', 'coal', 'turf'], (state, selected) => {
-            if (_.random(1, 10) === 1) {
-                state[selected]--;
-            }
-            return func(state);
-        });
-    };
-
-    const transformer = (state, rates, production) => {
-        return chooser(state, _.keys(rates), (state, selected) => {
-            state[selected]--;
-            state[production] += rates[selected];
-            return state;
-        });
-    };
-
     // work
     _.each(professions, (profession, profession_key) => {
-        if (profession.resource) {
-            if (state[profession_key] > 0 && state.volumes[profession.resource] > 0) {
-                let productivity = this.productivity(profession_key);
-                if (state.human_meat > 0) {
-                    productivity *= 2;
-                }
-                //  console.log(productivity);
-                //  console.log(state[profession_key], profession.home, state[profession.home]);
-                for (let i = 0; i < productivity; i++) {
-                    let ecofactor = state.volumes[profession.resource] / state.caps[profession.resource];
-                    let difficulty = resources[profession.resource].difficulty;
-                    if (state.tools > 0) {
-                        difficulty /= 2;
-                    }
-                    if (state.instruments > 0) {
-                        difficulty /= 3;
-                    }
-                    let top = 1 + Math.round(difficulty / ecofactor);
-                    let chance = Math.ceil(_.random(1, top));
-                    //  console.log(ecofactor, difficulty, top, chance);
-
-
-                    if (state.tools > 0 && _.random(1, Math.floor((250 + (state.workshop * 100)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
-                        state['tools']--;
-                    }
-                    if (state.instruments > 0 && _.random(1, Math.floor((1000 + (state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {
-                        state['instruments']--;
-                    }
-
-
-                    if (chance === 1) {
-                        if (profession.resource === 'moai') {
-                            if (state.moai < state.ahu) {
-                                state[profession.resource]++;
-                                state.volumes[profession.resource]--;
-                            }
-                        }
-                        else {
-                            state[profession.resource]++;
-                            state.volumes[profession.resource]--;  // (((
-
-                            if (state.instruments > 0) {
-                                if (profession.resource !== 'moai' && _.random(1, 2) === 1) {
-                                    state.volumes[profession.resource]++; // (((
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-        if (profession_key === 'hunter') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 50) === 1) {
-                    state['skin']++;
-                }
-            }
-        }
-
-        if (profession_key === 'miner') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 50) === 1) {
-                    state['stone']++;
-                }
-                if (_.random(1, 25) === 1) {
-                    state['coal']++;
-                }
-                if (_.random(1, 420) === 1) {
-                    state['gold']++;
-                }
-            }
-        }
-
-        if (profession_key === 'mason') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 50 * (state.island_type === 'mountain' ? 1 : 5)) === 1) {
-                    state['obsidian']++;
-                }
-                if (_.random(1, 30) === 1) {
-                    state['coal']++;
-                }
-            }
-        }
-
-        if (profession_key === 'cook') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                state = burner(state, (state) => {
-                    if (_.random(1, 2) === 1) {
-                        state = transformer(state, {
-                            'fruits': 2,
-                            'roots': 2,
-                            'fish': 3,
-                            'meat': 3,
-                            'vegetables': 2,
-                            'human_meat': 3
-                        }, 'meals');
-                    }
-                    return state;
-                });
-            }
-        }
-
-        if (profession_key === 'gardener') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 10) === 1) {
-                    state['vegetables']++;
-                }
-            }
-        }
-
-        if (profession_key === 'navigator') {
-            state.navigation = 1;
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                state = burner(state, (state) => {
-                    state.navigation++;
-                    return state;
-                });
-            }
-        }
-
-        if (profession_key === 'aquarius') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 50 * (state.island_type === 'swamp' ? 1 : 5)) === 1) {
-                    state['turf']++;
-                }
-            }
-        }
-
-        if (profession_key === 'herdsman') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 100) === 1) {
-                    state.meat += 10;
-                    state.wool += 1;
-                }
-            }
-        }
-
-        if (profession_key === 'carpenter') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 10) === 1) {
-                    state = transformer(state, {'wood': 1}, 'shovels');
-                }
-            }
-        }
-
-        if (profession_key === 'master') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                if (_.random(1, 20) === 1) {
-                    state = transformer(state, {'stone': 1, 'obsidian': 2}, 'tools');
-                }
-            }
-        }
-
-        if (profession_key === 'smith') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                state = burner(state, (state) => {
-                    if (_.random(1, 50) === 1) {
-                        state = transformer(state, {'iron': 2, 'obsidian': 1}, 'instruments');
-                    }
-                    return state;
-                });
-            }
-        }
-
-        if (profession_key === 'armorer') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                state = burner(state, (state) => {
-                    if (_.random(1, 50) === 1) {
-                        state = transformer(state, {'iron': 2, 'wool': 1, 'skin': 1}, 'armor');
-                    }
-                    return state;
-                });
-            }
-        }
-
-        if (profession_key === 'weaponsmith') {
-            for (let i = 0; i < this.productivity(profession_key); i++) {
-                state = burner(state, (state) => {
-                    if (_.random(1, 50) === 1) {
-                        state = transformer(state, {'iron': 2, 'obsidian': 1}, 'weapon');
-                    }
-                    return state;
-                });
-            }
+        if (state[profession_key] > 0 && profession.onTick) {
+            state = profession.onTick.call(this, state, profession_key);
         }
     });
 
