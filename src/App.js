@@ -411,11 +411,11 @@ class App extends Component {
     }
 
     armoredSailors() { // from 0 to 1
-        return this.state.armor > this.state.sailor ? 1 : this.state.armor / this.state.sailor;
+        return this.state.armor === 0 ? 0 : this.state.armor > this.state.sailor ? 1 : this.state.armor / this.state.sailor;
     }
 
     weaponedSailors() { // from 0 to 1
-        return this.state.weapon > this.state.sailor ? 1 : this.state.weapon / this.state.sailor;
+        return  0; // this.state.weapon > this.state.sailor ? 1 : this.state.weapon / this.state.sailor;
     }
 
     shipsLoss(state) {

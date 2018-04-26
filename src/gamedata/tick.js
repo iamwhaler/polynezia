@@ -78,10 +78,10 @@ export default function tick(state) {
                             state.sailor -= human_los;
                             state.population -= human_los;
                             let armor_loss = Math.min(state.armor, human_los);
-                            let weapon_loss = Math.min(state.weapon, human_los);
+                            let weapon_loss = 0;// Math.min(state.weapon, human_los);
                             state.armor -= armor_loss;
                             state.weapon -= weapon_loss;
-                            state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and' + weapon_loss + ' weapon.';
+                            state.mission_text = 'You lost the war, your entire fleet was lost. Loss: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and ' + weapon_loss + ' weapon.';
                             state = this.chargeState(state, ships_loss);
                         }
                             break;
@@ -91,10 +91,10 @@ export default function tick(state) {
                             state.sailor -= human_los;
                             state.population -= human_los;
                             let armor_loss = Math.round(Math.min(state.armor, human_los) * this.armoredSailors(state));
-                            let weapon_loss = Math.round(Math.min(state.weapon, human_los) * this.weaponedSailors(state));
+                            let weapon_loss = 0;// Math.round(Math.min(state.weapon, human_los) * this.weaponedSailors(state));
                             state.armor -= armor_loss;
                             state.weapon -= weapon_loss;
-                            state.mission_text = 'your fleet retreated with losses: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and' + weapon_loss + ' weapon.';
+                            state.mission_text = 'your fleet retreated with losses: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and ' + weapon_loss + ' weapon.';
                             state = this.chargeState(state, ships_loss);
                         }
                             break;
@@ -136,12 +136,12 @@ export default function tick(state) {
                             state.sailor -= human_los;
                             state.population -= human_los;
                             let armor_loss = Math.round(Math.min(state.armor, human_los) * this.armoredSailors(state));
-                            let weapon_loss = Math.round(Math.min(state.weapon, human_los) * this.weaponedSailors(state));
+                            let weapon_loss = 0;// Math.round(Math.min(state.weapon, human_los) * this.weaponedSailors(state));
                             state.armor -= armor_loss;
                             state.weapon -= weapon_loss;
                             state = this.chargeState(state, ships_loss);
 
-                            state.mission_text += '. Your losses: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and' + weapon_loss + ' weapon.';
+                            state.mission_text += '. Your losses: ' + this.drawCost(ships_loss) + ' and ' + human_los + ' member of crew with ' + armor_loss + ' armor and ' + weapon_loss + ' weapon.';
                         }
                             break;
                         default:
