@@ -143,7 +143,7 @@ const default_state = {
 
 
     game_speed: 1000,
-    game_speed_multiplier: 5,
+    game_speed_multiplier: 2,
     game_paused: true,
     tick: 0
 };
