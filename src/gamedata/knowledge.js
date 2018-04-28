@@ -1,5 +1,5 @@
 
-export const starter_pack = {fruits: 420, population: 1};
+export const starter_pack = {fruits: 420, population: 1, tools:5, instruments: 2};
 
 export const mother_island = {name: 'Mountain', type: 'mountain',
     custom_space: 420, land_rates: {shore: 35, fertile: 15, mountain: 40}, wasteland: 10,
@@ -25,12 +25,12 @@ export const island_types = {
 };
 
 export const resources = {
-    'fruits': {name: 'Fruits', style: 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 0.5, text: 'Exhaustible food from orchards.'},
-    'roots': {name: 'Roots', style: 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 5000, regen: 0.75, text: 'Exhaustible food from fields.'},
+    'fruits': {name: 'Fruits', style: 'bg-food',   is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 1, max_cap: 6000, regen: 0.75, text: 'Exhaustible food from orchards.'},
+    'roots': {name: 'Roots', style: 'bg-food',     is_nature: true,  vegetation: true, locked_till: 'field',    difficulty: 2.5, max_cap: 5000, regen: 1, text: 'Exhaustible food from fields.'},
     'meat': {name: 'Meat', style: 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'lodge',   difficulty: 4, max_cap: 2000, regen: 2, text: 'Exhaustible food from hunting, sustainable food from pasture.'},
     'fish': {name: 'Fish', style: 'bg-food',       is_nature: true,  vegetation: false, locked_till: 'pier',    difficulty: 5, max_cap: 3000, regen: 3, text: 'Exhaustible food from piers, sustainable food by fishing from boats.'},
 
-    'wood': {name: 'Wood', style: 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 4, max_cap: 6000, regen: 2, text: 'Exhaustible material and fuel from sawmill.'},
+    'wood': {name: 'Wood', style: 'bg-fuel',       is_nature: true,  vegetation: true, locked_till: 'embarked', difficulty: 5, max_cap: 6000, regen: 1, text: 'Exhaustible material and fuel from sawmill.'},
     'stone': {name: 'Stone', style: 'bg-material', is_nature: false, vegetation: false, locked_till: 'quarry',  difficulty: 20, max_cap: 10000, regen: 0.1, text: 'Exhaustible material from quarries, sustainable material from mines.'},
     'iron': {name: 'Iron', style: 'bg-material',   is_nature: false, vegetation: false, locked_till: 'mine',    difficulty: 100, max_cap: 1000, regen: 0.01, text: 'Exhaustible material from mines.'},
 
@@ -76,7 +76,7 @@ export const buildings = {
     'lighthouse': {name: 'Lighthouse', worker: 'navigator', build_on: 'shore', locked_till: 'pier',   cost: {'wood': 500, 'stone': 500, 'tools': 100}, text: 'The lighthouse allows longer sea trips and attracts traders.'},
 
     'orchard': {name: 'Orchard', worker: 'keeper',  build_on: 'fertile',    locked_till: 'hut',       cost: {'fruits': 50}, text: 'Provide fruits. Accelerates speed of gatherers.'},
-    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    locked_till: 'carpentry', cost: {'meals': 200, 'shovels': 100}, text: 'Accelerates speed of aquarius.'},
+    'canal': {name: 'Canal',    worker: 'aquarius', build_on: 'fertile',    locked_till: 'carpentry', cost: {'meals': 200, 'shovels': 100}, text: 'Improves the regeneration of natural resources: fruits, roots and wood. Accelerates speed of aquarius.'},
     'field': {name: 'Field',    worker: 'fielder',  build_on: 'fertile',    locked_till: 'canal',     cost: {'meals': 400, 'shovels': 200}, text: 'Provide roots. Accelerates speed of fielders.'},
     'pasture': {name: 'Pasture', worker: 'herdsman', build_on: 'fertile',   locked_till: 'canal',     cost: {'wood': 400, 'meals': 400, 'roots': 400, 'shovels': 100}, text: 'Provide passive source of meat and wool. Accelerates speed of herdsman.'},
 

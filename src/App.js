@@ -682,7 +682,7 @@ class App extends Component {
                                 }
 
 
-                                {false ? '' :
+                                {!(this.state.canoe > 0 || this.state.proa > 0 || this.state.catamaran > 0 || this.state.carpentry > 0 || this.state.sawmill > 0 || this.state.forge > 0) ? '' :
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
                                         <h4 className="App-title">Fleet</h4>
@@ -812,7 +812,7 @@ class App extends Component {
                                 }
                                 <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
                                     <div className="panel panel-info">
-                                        <h4 className="App-title">Your Resources</h4>
+                                        <h4 className="App-title">Island Resources</h4>
                                         <div className="datablock">
                                             {_.keys(resources).map((resource_key) => {
                                                 return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
@@ -838,7 +838,7 @@ class App extends Component {
                                     </div> : ''}
 
                                     {this.state.embarked ? <div className="panel panel-info">
-                                        <h4 className="App-title">Island Resources</h4>
+                                        <h4 className="App-title">Natural Resources</h4>
                                         <div className="datablock">
                                             {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1} on {island_types[this.state.island_type].name} island
                                             <div>Size: {this.sumSpace()} ({this.drawCost({

@@ -137,12 +137,12 @@ export const professions = {
         onTick: function(state, profession_key) {
             return getter.call(this, state, profession_key); }},
     'aquarius': {name: 'Aquarius', resource: null, home: 'canal', locked_till: 'canal', text: 'The aquarius improves the regeneration of natural resources: fruits, roots and wood.', onTick: false},
-    'fielder': {name: 'Fielder', resource: 'roots', home: 'field', locked_till: 'field', text: 'The fielder produces roots. The field will improve its work.',
+    'fielder': {name: 'Fielder', resource: 'roots', home: 'field', locked_till: 'field', text: 'The fielder produces roots, consuming shovels. The field will improve its work.',
         onTick: function(state, profession_key) {
                 return productor.call(this, state, profession_key, function(state) {
                     return digger.call(this, state, function(state) {
                         return get.call(this, state, profession_key); })})}},
-    'herdsman': {name: 'Herdsman', resource: null, home: 'pasture', locked_till: 'pasture', text: 'The herdsman produces meat and wool. The pasture will improve its work.',
+    'herdsman': {name: 'Herdsman', resource: null, home: 'pasture', locked_till: 'pasture', text: 'The herdsman produces meat and wool, consuming shovels. The pasture will improve its work.',
         onTick: function(state, profession_key) {
                 return productor.call(this, state, profession_key,
                     function(state) { return digger.call(this, state,
@@ -156,7 +156,7 @@ export const professions = {
             return state;
         }},
 
-    'mason': {name: 'Mason', resource: 'stone', home: 'quarry', locked_till: 'quarry', text: 'The mason produces stone. The quarry will improve its work.',
+    'mason': {name: 'Mason', resource: 'stone', home: 'quarry', locked_till: 'quarry', text: 'The mason produces stone, consuming shovels. The quarry will improve its work.',
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key, function(state) {
                 return digger.call(this, state, function(state) {
@@ -167,7 +167,7 @@ export const professions = {
     'woodcutter': {name: 'Woodcutter', resource: 'wood', home: 'sawmill', locked_till: true, text: 'The woodcutter produces wood. The sawmill will improve its work.',
         onTick: function(state, profession_key) {
             return getter.call(this, state, profession_key); }},
-    'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron. The mine will improve its work and add stone to extraction.',
+    'miner': {name: 'Miner', resource: 'iron', home: 'mine', locked_till: 'mine', text: 'The miner produces iron, consuming shovels. The mine will improve its work and add stone to extraction.',
         onTick: function(state, profession_key) {
             return productor.call(this, state, profession_key, function(state) {
                 return digger.call(this, state, function(state) {
