@@ -4,10 +4,12 @@
     /* display: inline; */
 
     height: 60px;
-    width: 215px;
-    backgroundRepeat: 'no-repeat';
-    backgroundPosition: 'center center';
-    backgroundSize: '100%';
+    max-width: 600px;
+    /* width: 215px; */
+    /* background-repeat: no-repeat; */
+    background-position: center center;
+    background-blend-mode: hard-light;
+    /* background-size: 50%; */
 
     padding: .2em .6em .3em;
     margin: 2px;

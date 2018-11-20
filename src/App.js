@@ -536,11 +536,12 @@ class App extends Component {
         const make_arrows = (stat, name) =>
             <div key={stat + name}>
                 {name}
-                <button className="arrow-button" onClick={() => { this.detachWorker(stat, true); }}> 0 </button>
-                <button className="arrow-button" onClick={() => { this.detachWorker(stat); }}> {'<'} </button>
+
+                <span style={{fontSize: '18px'}} className={classNames('badge', 'filament')}><button className="btn btn-info arrow-button" onClick={() => { this.detachWorker(stat, true); }}> 0 </button></span>
+                <span style={{fontSize: '18px'}} className={classNames('badge', 'filament')}><button className="btn btn-info arrow-button" onClick={() => { this.detachWorker(stat); }}> {'<'} </button></span>
                 <span className="font-weight-bold badge h4" style={{width: '28px'}}> {this.state[stat]} </span>
-                <button className="arrow-button" onClick={() => { this.assignWorker(stat); }}> {'>'} </button>
-                <button className="arrow-button" onClick={() => { this.assignWorker(stat, true); }}> ∞ </button>
+                <span style={{fontSize: '18px'}} className={classNames('badge', 'filament')}><button className="btn btn-info arrow-button" onClick={() => { this.assignWorker(stat); }}> {'>'} </button></span>
+                <span style={{fontSize: '18px'}} className={classNames('badge', 'filament')}><button className="btn btn-info arrow-button" onClick={() => { this.assignWorker(stat, true); }}> ∞ </button></span>
             </div>;
 
 
@@ -558,7 +559,7 @@ class App extends Component {
                         <div className="container">
                             <div>
                                 <h1>Your nation has become extinct. </h1>
-                                <h1>You have lived {Math.floor(this.state.tick/24)+1} days. </h1>
+                                <h1>You have lived {Math.floor(this.state.tick / 24) + 1} days. </h1>
                                 <h1>Your legacy: {this.state.moai} moai.</h1>
                                 {make_button('refresh', 'New Game', this.newGame, '')}
                             </div>
@@ -568,17 +569,17 @@ class App extends Component {
                             <div className="flex-container-row">
                                 <span className="pull-left flex-element cheat"> {make_button('cheat', ' ', () => {
                                     this.setState({
-                                        wood: 10000,
-                                        stone: 10000,
-                                        iron: 500,
-                                        fruits: 10000,
-                                        fish: 10000,
-                                        meals: 10000,
-                                        tools: 1000,
+                                        wood:        10000,
+                                        stone:       10000,
+                                        iron:        500,
+                                        fruits:      10000,
+                                        fish:        10000,
+                                        meals:       10000,
+                                        tools:       1000,
                                         instruments: 500,
-                                        population: 100,
-                                        });
-                                    }, 'text', ' cheat')}
+                                        population:  100,
+                                    });
+                                }, 'text', ' cheat')}
                                 </span>
                             </div>
 
@@ -586,13 +587,16 @@ class App extends Component {
 
                                 { // Left Column
                                 }
-                                <div className="flex-element fat panel panel-default no-scroller clearfix" style={{'flexGrow': 3, 'minWidth': '450px'}}>
+                                <div className="flex-element fat panel panel-default no-scroller clearfix"
+                                     style={{'flexGrow': 3, 'minWidth': '450px'}}>
                                     {this.state.storyline === true && true === false ?
                                         <div>
                                             <p className="h4 fat">{this.getStep().text}</p>
                                             <span>
                                                 {this.getStep().actions.map((action, key) => {
-                                                    return make_button('action_'+key, action.text, () => { this.storylineClick(action); }, action.text, action.style);
+                                                    return make_button('action_' + key, action.text, () => {
+                                                        this.storylineClick(action);
+                                                    }, action.text, action.style);
                                                 })}
                                             </span>
                                             {this.state.splash_counter ? <p className="h4 fat">{this.state.splash_counter}</p> : ''}
@@ -605,10 +609,14 @@ class App extends Component {
                                         <div style={{paddingRight: '12px'}}>
                                             <div className="flex-container-row">
                                                 <div className="flex-element">
-                                                    <span title="Shore" className="badge bg-shore titled"> {this.state.space.shore - this.built('shore')} </span>
-                                                    <span title="Fertile land" className="badge bg-fertile titled"> {this.state.space.fertile - this.built('fertile')} </span>
-                                                    <span title="Mountain" className="badge bg-mountain titled"> {this.state.space.mountain - this.built('mountain')} </span>
-                                                    <span title="Wasteland" className="badge bg-wasteland titled"> {this.state.space.wasteland - this.built('wasteland')} </span>
+                                                    <span title="Shore"
+                                                          className="badge bg-shore titled"> {this.state.space.shore - this.built('shore')} </span>
+                                                    <span title="Fertile land"
+                                                          className="badge bg-fertile titled"> {this.state.space.fertile - this.built('fertile')} </span>
+                                                    <span title="Mountain"
+                                                          className="badge bg-mountain titled"> {this.state.space.mountain - this.built('mountain')} </span>
+                                                    <span title="Wasteland"
+                                                          className="badge bg-wasteland titled"> {this.state.space.wasteland - this.built('wasteland')} </span>
                                                     =
                                                     <span title="Free Space" className="badge"> {this.sumSpace() - this.sumBuild()} </span>
                                                     free space
@@ -627,15 +635,22 @@ class App extends Component {
 
                                                     return <div className="clearfix" style={{'width': '100%'}}
                                                                 key={building_key}>
-                                                        <div className="alignleft">
-                                                            { !this.lockedTill(buildings[building_key].locked_till) || this.state[building_key] > 0
-                                                                ?
-                                                                <div className="building-container"
-                                                                      title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
-                                                                      style={{backgroundImage: 'url(/buildings/'+building_key+'.jpg)'}} key={building_key}>
+                                                        {      !this.lockedTill(buildings[building_key].locked_till)
+                                                            || (profession_key !== null && !this.lockedTill(professions[profession_key].locked_till))
+                                                            || this.state[building_key] > 0
+                                                            ?
+                                                            <div className="building-container"
+                                                                 title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}
+                                                                 style={{backgroundImage: 'url(/buildings/' + building_key + '.jpg)'}}
+                                                                 key={building_key}>
+
+                                                                <div className="alignleft">
                                                                     <div className="building-container-content h2 fat">
-                                                                        <span className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key]} </span>
-                                                                        {make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost))}
+                                                                        <span style={{fontSize: '18px'}}
+                                                                              className={classNames('badge', 'filament', 'bg-' + buildings[building_key].build_on)}> {this.state[building_key] ? this.state[building_key] : null} </span>
+
+                                                                        { !this.lockedTill(buildings[building_key].locked_till) ?
+                                                                             make_buy_button(building_key, buildings[building_key].name, buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)) : null }
                                                                         {this.state[building_key] > 0 ? make_button(building_key + '_del', 'del',
                                                                             () => {
                                                                                 this.ruin(building_key, 'buildings');
@@ -643,30 +658,33 @@ class App extends Component {
                                                                             'Destroy ' + buildings[building_key].name,
                                                                             'btn-danger btn-xs filament' + (this.state[building_key] === 0 ? ' disabled' : ''))
                                                                             : ''}
-                                                                        <span className="filament" title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
+                                                                        <span className="filament"
+                                                                              title={buildings[building_key].text + ' Cost: ' + this.drawCost(buildings[building_key].cost)}>
                                                                             <span>{buildings[building_key].name}</span>
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                : ''
-                                                            }
-                                                        </div>
-                                                        <div className="alignright">
-                                                            {profession_key === null ? '' :
-                                                                this.lockedTill(professions[profession_key].locked_till)
-                                                                    ? ''
-                                                                    :
-                                                                    <div key={profession_key} className="filament">
-                                                                        <h4 className="slim">
-                                                                            {make_arrows(profession_key, <span
-                                                                                key={profession_key}
-                                                                                className="label label-default titled"
-                                                                                title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
-                                                                        </h4>
-                                                                    </div>
 
-                                                            }
-                                                        </div>
+                                                                <div className="alignright">
+                                                                    {profession_key === null ? '' :
+                                                                        this.lockedTill(professions[profession_key].locked_till)
+                                                                            ? ''
+                                                                            :
+                                                                            <div key={profession_key} className="filament">
+                                                                                <h4 className="slim">
+                                                                                    {make_arrows(profession_key, <span
+                                                                                        key={profession_key}
+                                                                                        className="label label-default titled"
+                                                                                        title={professions[profession_key].text}> {professions[profession_key].name} </span>)}
+                                                                                </h4>
+                                                                            </div>
+
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                            : ''
+                                                        }
+
                                                     </div>;
                                                 })}
                                             </div>
@@ -683,15 +701,15 @@ class App extends Component {
 
 
                                 {!(this.state.canoe > 0 || this.state.proa > 0 || this.state.catamaran > 0 || this.state.carpentry > 0 || this.state.sawmill > 0 || this.state.forge > 0) ? '' :
-                                <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
-                                    <div className="panel panel-info">
-                                        <h4 className="App-title">Fleet</h4>
-                                        <div>
-                                            <div className="flex-container-column">
-                                                {_.keys(ships).map((ship_key) => {
-                                                    return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
-                                                        ?
-                                                        <div key={ship_key} className="flex-element">
+                                    <div className="flex-element fat panel panel-info" style={{'height': '100%', 'minWidth': '160px'}}>
+                                        <div className="panel panel-info">
+                                            <h4 className="App-title">Fleet</h4>
+                                            <div>
+                                                <div className="flex-container-column">
+                                                    {_.keys(ships).map((ship_key) => {
+                                                        return !this.lockedTill(ships[ship_key].locked_till) || this.state[ship_key] > 0
+                                                            ?
+                                                            <div key={ship_key} className="flex-element">
                                                             <span className="h4">
                                                                 <span className="badge"> {this.state[ship_key]} </span>
                                                                 {this.state.embarked && !this.state.mission ? make_button(ship_key + '_del', 'del',
@@ -707,105 +725,105 @@ class App extends Component {
                                                                 <span className="label label-default titled"
                                                                       title={ships[ship_key].text + ' Cost: ' + this.drawCost(ships[ship_key].cost)}> {ships[ship_key].name} </span>
                                                             </span>
-                                                        </div>
-                                                        : '';
-                                                })}
-                                            </div>
-                                            <div>
+                                                            </div>
+                                                            : '';
+                                                    })}
+                                                </div>
+                                                <div>
                                                 <span>
                                                     Ships: {this.shipsSum()} Crew: {this.state.sailor} / {this.sailorsNeed()}
                                                 </span>
-                                                <div>
-                                                    Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
-                                                </div>
-                                                {(this.state.embarked && !this.state.mission) ? <div className="">
-                                                    {make_arrows('sailor', <span key='sailor'
-                                                                                 className="label label-default titled"
-                                                                                 title={professions.sailor.text}> {professions.sailor.name} </span>)}
-                                                </div> : ''}
-                                            </div>
-                                            <div>
-                                                {this.state.mission
-                                                    ? <div>Your fleet in {this.state.mission}. Return back
-                                                    in {this.state.mission_timer} hours.</div>
-                                                    :
-                                                    <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
-                                                        {this.lockedTill('embarked') ? '' : make_button('fishing', 'Fishing', () => {
-                                                            this.startMission('fishing');
-                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-info btn-sm disabled' : ' btn-info btn-sm')}
-                                                        {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
-                                                            this.startMission('discovery');
-                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-warning btn-sm disabled' : ' btn-warning btn-sm')}
-                                                        {this.lockedTill('lodge') ? '' : make_button('robbery', 'Robbery', () => {
-                                                            this.startMission('robbery');
-                                                        }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-danger btn-sm disabled' : ' btn-danger btn-sm')}
-                                                        {this.lockedTill('embarked') ? '' : make_button('resettlement', 'Resettlement', this.resettlement,
-                                                            'text', this.state.sailor < this.sailorsNeed() ? ' btn-primary btn-sm disabled' : ' btn-primary btn-sm')}
-                                                    </div>
-                                                }
-                                            </div>
-                                            <div>
-                                                {this.state.mission_text !== null
-                                                    ?
                                                     <div>
-                                                        {this.state.mission_text}
-                                                        {make_button('ok', 'ok', () => {
-                                                            this.setState({'mission_text': null});
-                                                        }, '', 'btn-info btn-xs')}
+                                                        Speed: {this.fleetSpeed()} Capacity: {this.fleetCapacity()}
                                                     </div>
-                                                    : ''
-                                                }
+                                                    {(this.state.embarked && !this.state.mission) ? <div className="">
+                                                        {make_arrows('sailor', <span key='sailor'
+                                                                                     className="label label-default titled"
+                                                                                     title={professions.sailor.text}> {professions.sailor.name} </span>)}
+                                                    </div> : ''}
+                                                </div>
+                                                <div>
+                                                    {this.state.mission
+                                                        ? <div>Your fleet in {this.state.mission}. Return back
+                                                        in {this.state.mission_timer} hours.</div>
+                                                        :
+                                                        <div className={this.shipsSum() === 0 ? 'hidden' : ''}>
+                                                            {this.lockedTill('embarked') ? '' : make_button('fishing', 'Fishing', () => {
+                                                                this.startMission('fishing');
+                                                            }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-info btn-sm disabled' : ' btn-info btn-sm')}
+                                                            {this.lockedTill('lighthouse') ? '' : make_button('discovery', 'Discovery', () => {
+                                                                this.startMission('discovery');
+                                                            }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-warning btn-sm disabled' : ' btn-warning btn-sm')}
+                                                            {this.lockedTill('lodge') ? '' : make_button('robbery', 'Robbery', () => {
+                                                                this.startMission('robbery');
+                                                            }, 'text', this.state.sailor < this.sailorsNeed() ? ' btn-danger btn-sm disabled' : ' btn-danger btn-sm')}
+                                                            {this.lockedTill('embarked') ? '' : make_button('resettlement', 'Resettlement', this.resettlement,
+                                                                'text', this.state.sailor < this.sailorsNeed() ? ' btn-primary btn-sm disabled' : ' btn-primary btn-sm')}
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    {this.state.mission_text !== null
+                                                        ?
+                                                        <div>
+                                                            {this.state.mission_text}
+                                                            {make_button('ok', 'ok', () => {
+                                                                this.setState({'mission_text': null});
+                                                            }, '', 'btn-info btn-xs')}
+                                                        </div>
+                                                        : ''
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div>
-                                        {this.state.trader !== false
-                                            ?
-                                            <div className="fat ">
-                                                {this.state.trader.type === 'gift'
-                                                    ?
-                                                    <div className="panel panel-info">
-                                                        <h4>Traders arrived with gifts.</h4>
-                                                        <p>Their gift is <span
-                                                            className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
-                                                        </p>
-                                                        {make_button('take', 'Take',
-                                                            () => {
-                                                                console.log(this.state.trader);
-                                                                let o = {};
-                                                                o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
-                                                                o['trader'] = false;
-                                                                this.setState(o);
-                                                            }, '', 'btn-success btn-sm')}
-                                                    </div>
-                                                    :
-                                                    <div className="panel panel-info">
-                                                        <h4>Traders arrived.</h4>
-                                                        <p>They offer <span
-                                                            className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
-                                                            for <span
-                                                                className="badge">{this.state.trader.offer.count2} {this.state.trader.offer.resource2}</span>
-                                                        </p>
-                                                        {make_button('trade', 'Trade',
-                                                            () => {
-                                                                if (this.state[this.state.trader.offer.resource2] < this.state.trader.offer.count2) return false;
-                                                                let o = {};
-                                                                o[this.state.trader.offer.resource2] = this.state[this.state.trader.offer.resource2] - this.state.trader.offer.count2;
-                                                                o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
-                                                                o['trader'] = false;
-                                                                this.setState(o);
-                                                            }, '', 'btn-success btn-sm')}
-                                                        {make_button('cancel', 'Cancel', () => {
-                                                            this.setState({trader: false});
-                                                        }, '', 'btn-danger btn-sm')}
-                                                    </div>
-                                                }
-                                            </div>
-                                            : ""
-                                        }
+                                        <div>
+                                            {this.state.trader !== false
+                                                ?
+                                                <div className="fat ">
+                                                    {this.state.trader.type === 'gift'
+                                                        ?
+                                                        <div className="panel panel-info">
+                                                            <h4>Traders arrived with gifts.</h4>
+                                                            <p>Their gift is <span
+                                                                className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
+                                                            </p>
+                                                            {make_button('take', 'Take',
+                                                                () => {
+                                                                    console.log(this.state.trader);
+                                                                    let o = {};
+                                                                    o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                                                    o['trader'] = false;
+                                                                    this.setState(o);
+                                                                }, '', 'btn-success btn-sm')}
+                                                        </div>
+                                                        :
+                                                        <div className="panel panel-info">
+                                                            <h4>Traders arrived.</h4>
+                                                            <p>They offer <span
+                                                                className="badge">{this.state.trader.offer.count1} {this.state.trader.offer.resource1}</span>
+                                                                for <span
+                                                                    className="badge">{this.state.trader.offer.count2} {this.state.trader.offer.resource2}</span>
+                                                            </p>
+                                                            {make_button('trade', 'Trade',
+                                                                () => {
+                                                                    if (this.state[this.state.trader.offer.resource2] < this.state.trader.offer.count2) return false;
+                                                                    let o = {};
+                                                                    o[this.state.trader.offer.resource2] = this.state[this.state.trader.offer.resource2] - this.state.trader.offer.count2;
+                                                                    o[this.state.trader.offer.resource1] = this.state[this.state.trader.offer.resource1] + this.state.trader.offer.count1;
+                                                                    o['trader'] = false;
+                                                                    this.setState(o);
+                                                                }, '', 'btn-success btn-sm')}
+                                                            {make_button('cancel', 'Cancel', () => {
+                                                                this.setState({trader: false});
+                                                            }, '', 'btn-danger btn-sm')}
+                                                        </div>
+                                                    }
+                                                </div>
+                                                : ""
+                                            }
+                                        </div>
                                     </div>
-                                </div>
                                 }
 
                                 { // Right Column 2
@@ -816,8 +834,9 @@ class App extends Component {
                                         <div className="datablock">
                                             {_.keys(resources).map((resource_key) => {
                                                 return (!this.lockedTill(resources[resource_key].locked_till) || this.state[resource_key] > 0 )
-                                                    ? <div className={classNames('titled', resources[resource_key].style)} title={resources[resource_key].text}
-                                                        key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
+                                                    ? <div className={classNames('titled', resources[resource_key].style)}
+                                                           title={resources[resource_key].text}
+                                                           key={resource_key}>{resources[resource_key].name}: {this.state[resource_key]}</div>
                                                     : ''
                                             })}
                                             {_.keys(items).map((item_key) => {
@@ -833,18 +852,19 @@ class App extends Component {
                                     {this.state.in_sea ? <div className="panel panel-info">
                                         <h4 className="App-title">High Seas</h4>
                                         <div className="datablock">
-                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1}  in sea
+                                            {Math.floor(this.state.tick % 24)}:00, day {Math.floor(this.state.tick / 24) + 1} in sea
                                         </div>
                                     </div> : ''}
 
                                     {this.state.embarked ? <div className="panel panel-info">
                                         <h4 className="App-title">Natural Resources</h4>
                                         <div className="datablock">
-                                            {Math.floor(this.state.tick%24)}:00, day {Math.floor(this.state.tick/24)+1} on {island_types[this.state.island_type].name} island
+                                            {Math.floor(this.state.tick % 24)}:00, day {Math.floor(this.state.tick / 24) + 1}
+                                            on {island_types[this.state.island_type].name} island
                                             <div>Size: {this.sumSpace()} ({this.drawCost({
-                                                shore: this.state.space.shore,
-                                                fertile: this.state.space.fertile,
-                                                mountain: this.state.space.mountain,
+                                                shore:     this.state.space.shore,
+                                                fertile:   this.state.space.fertile,
+                                                mountain:  this.state.space.mountain,
                                                 wasteland: this.state.space.wasteland
                                             })})
                                             </div>
@@ -867,19 +887,19 @@ class App extends Component {
 
                     &nbsp;
                     <a target="_blank" rel="noopener noreferrer" href="https://t.me/polynezia">
-                        <img alt="" src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico" />
+                        <img alt="" src="http://www.advanceduninstaller.com/7b12b396d38166a899fff585e466e50d-icon.ico"/>
                         &nbsp;
                         telegram
                     </a>
                     &nbsp;&nbsp;&nbsp;
                     <a target="_blank" rel="noopener noreferrer" href="#">
-                        <img alt="" src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png" />
+                        <img alt="" src="https://static.filehorse.com/icons-web/educational-software/wikipedia-icon-32.png"/>
                         &nbsp;
                         wiki
                     </a>
                     &nbsp;&nbsp;&nbsp;
                     <a target="_blank" rel="noopener noreferrer" href="#">
-                        <img alt="" src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png" />
+                        <img alt="" src="https://images-na.ssl-images-amazon.com/images/I/418PuxYS63L.png"/>
                         &nbsp;
                         reddit
                     </a>

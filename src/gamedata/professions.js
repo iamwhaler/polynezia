@@ -69,13 +69,13 @@ function get(state, profession_key) {
     let ecofactor = state.volumes[profession.resource] / state.caps[profession.resource];
     let difficulty = resources[profession.resource].difficulty;
 
-    if (state.tools > 0) difficulty /= 2;
-    if (state.instruments > 0) difficulty /= 3;
+    if (state.tools > 0) difficulty /= 1.5;
+    if (state.instruments > 0) difficulty /= 2;
 
     let top = 1 + Math.round(difficulty / ecofactor);
     let chance = Math.ceil(_.random(1, top));
 
-    if (state.tools > 0 && _.random(1, Math.floor((250 + (state.workshop * 100)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
+    if (state.tools > 0 && _.random(1, Math.floor((420 + (state.workshop * 100)) / (resources[profession.resource].vegetation ? 1 : 3))) === 1) {
         state['tools']--;
     }
     if (state.instruments > 0 && _.random(1, Math.floor((1000 + (state.forge * 250)) / (resources[profession.resource].is_nature ? 1 : 3))) === 1) {

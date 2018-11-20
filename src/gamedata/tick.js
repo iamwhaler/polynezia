@@ -163,7 +163,7 @@ export default function tick(state) {
     // attract new people
     if ((state.bonfire > 0 || state.house > 0 || state.moai > 0) && state.population < ((state.hut * 2) + (state.house * 4))) {
         let pro = 1 + state.bonfire + (2 * state.house) + (10 * state.moai);
-        let contra = 60 + (20 * state.population);
+        let contra = (50 * state.population);
         let ratio = Math.floor(contra / pro);
         let top = 30 + ratio;
         let chance = _.random(1, top);
@@ -275,7 +275,7 @@ export default function tick(state) {
         if (state.volumes[resource_key] < state.caps[resource_key]) {
             let new_counter = 0;
             if (resource.vegetation && state.aquarius > 0) {
-                let regen = resource.regen + Math.floor(resource.regen * this.productivity('aquarius') / 10);
+                let regen = resource.regen + Math.floor(resource.regen * this.productivity('aquarius') / 100);
                 new_counter = state.volumes[resource_key] + regen;
             }
             else {
