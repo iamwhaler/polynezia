@@ -21,7 +21,7 @@ function collect(state, resource_key) {
 
 
 function storm(state, strategy = 'normal', gear = false) {
-    let modifer = {'safe': 1, 'normal': 3, 'fast': 5}[strategy] * (gear ? 1 : 2);
+    let modifier = {'safe': 1, 'normal': 3, 'fast': 5}[strategy] * (gear ? 1 : 2);
     let cargo = {};
     let loss = {};
 
@@ -31,7 +31,7 @@ function storm(state, strategy = 'normal', gear = false) {
 
     _.each(_.keys(cargo), (key) => {
         if (_.random(0, 5 * _.size(cargo) * (gear ? 2 : 1)) === 0) {
-            let loosed = Math.floor(state[key] * 0.01 * modifer);
+            let loosed = Math.floor(state[key] * 0.01 * modifier);
             loss[key] = loosed;
             state[key] -= loosed;
         }
@@ -130,8 +130,8 @@ const prologue = {
             ]
         },
         'fast_pier': {
-            text: `When you ran to the pier, you saw a widely deployed sail on your brother's Proa boat. After jumping from a run into the boat, you rushed into the arms of your brother. "I took some vegetables," said the brother. It was clear that he was waiting for you and was worried.`,
-            'on_enter': function(state) { state.population++; state.sailor++; state.proa += 1; state.vegetables += 50; return state; },
+            text: `When you ran to the pier, you saw a widely deployed sail on your brother's Proa boat. After jumping from a run into the boat, you rushed into the arms of your brother. "I took some fruits," said the brother. It was clear that he was waiting for you and was worried.`,
+            'on_enter': function(state) { state.population++; state.sailor++; state.proa += 1; state.fruits += 50; return state; },
             'actions': [
                 {text: 'Sail away!', style: 'btn-info', next: 'end'},
             ]
@@ -404,9 +404,32 @@ const island = {
 };
 
 
+const fast = {
+    init: function(state) {
+        state.embarked = true;
+        state.environment = 'embarked';
+        return state;
+    },
+    story: {
+        'start': {
+            text: `You landed on the shore. There are fruit trees all around.`,
+            'on_enter': null,
+            'on_tick': null,
+            'actions': [
+                {text: 'Collect Fruits', style: 'btn-info', on_click: function(state) { return collect.call(this, state, 'fruits'); }},
+                {text: 'Collect Wood', style: 'btn-info', on_click: function(state) { return collect.call(this, state, 'wood'); }},
+            ]
+        }
+    }
+};
+
+
+
+
 export const storylines = {
     'prologue': prologue,
     'first_travel': first_travel,
     'resettlement': resettlement,
     'island': island,
+    'fast': fast,
 };

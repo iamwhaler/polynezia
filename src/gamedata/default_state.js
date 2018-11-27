@@ -1,4 +1,4 @@
-export const default_building_space = 42;
+export const default_building_space = 24;
 
 const default_state = {
     population: 1,
@@ -14,7 +14,6 @@ const default_state = {
 
     firs_slide: true,
     in_sea: false,
-    shore: false,
     score: false,
 
     trip_duration: 0,
@@ -22,8 +21,8 @@ const default_state = {
     fishing_tools: 0,
     storm_set: 0,
 
-    luck: 0,
-    sea_search: 0,
+    luck: 0,  // not used at all
+    sea_search: 0, // wtf?)
 
     island_type: null,
     space: {shore: 0, fertile: 0, mountain: 0, wasteland: 100},
@@ -59,44 +58,44 @@ const default_state = {
     iron: 0,
     moai: 0,
 
-    vegetables: 0,
+    //vegetables: 0,
     human_meat: 0,
     meals: 0,
     coal: 0,
-    turf: 0,
+    //turf: 0,
     obsidian: 0,
     wool: 0,
     skin: 0,
     shovels: 0,
     tools: 0,
     instruments: 0,
-    weapon: 0,
+    //weapon: 0,
     armor: 0,
-    gold: 0,
+    //gold: 0,
 
 
     hut: 0,
     house: 0,
-    monastery: 0,
+    //monastery: 0,
     bonfire: 0,
     pier: 0,
     lighthouse: 0,
     orchard: 0,
-    garden: 0,
+    //garden: 0,
     canal: 0,
     field: 0,
     pasture: 0,
     lodge: 0,
     quarry: 0,
     mine: 0,
-    megalith: 0,
+    //megalith: 0,
     carpentry: 0,
     workshop: 0,
     sawmill: 0,
     forge: 0,
-    weapon_forge: 0,
+    //weapon_forge: 0,
     armory: 0,
-    ground: 0,
+    //ground: 0,
     ahu: 0,
 
 
@@ -105,7 +104,7 @@ const default_state = {
     fisherman: 0,
     navigator: 0,
     keeper: 0,
-    gardener: 0,
+    //gardener: 0,
     aquarius: 0,
     fielder: 0,
     herdsman: 0,
@@ -113,13 +112,13 @@ const default_state = {
     hunter: 0,
     mason: 0,
     miner: 0,
-    astronomer: 0,
+    //astronomer: 0,
     carpenter: 0,
     master: 0,
     smith: 0,
-    weaponsmith: 0,
+    //weaponsmith: 0,
     armorer: 0,
-    instructor: 0,
+    //instructor: 0,
     builder: 0,
 
 
@@ -139,12 +138,12 @@ const default_state = {
     trader: false,
 
 
-    legacy: 0,
-    heritage: 0,
+    //legacy: 0,
+    //heritage: 0,
 
 
     game_speed: 1000,
-    game_speed_multiplier: 1,
+    game_speed_multiplier: 2,
     game_paused: true,
     tick: 0
 };
